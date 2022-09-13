@@ -6,13 +6,48 @@ from typing import Optional
 from sqlmodel import Field, Relationship, SQLModel, Enum
 from sqlalchemy import Column
 
+# --- Biomarkers --- #
+class BiomarkerBase(SQLModel):
+    name: str
+    type: str
+
+
+class Biomarker(BiomarkerBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+
+class BiomarkerCreate(BiomarkerBase):
+    pass
+
+
+class BiomarkerRead(BiomarkerBase):
+    id: int
+
+
+# --- Codes --- #
+# TODO: check current indexes and check constraints
+class CodeBase(SQLModel):
+    system: str
+    code: str
+    display: str
+
+
+class Code(CodeBase, table=True):
+    pass
+
+
+class CodeCreate(CodeBase):
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+
+class CodeRead:
+    id: int
+
 
 # --- Countries --- #
-
 # TODO: This table seems to only be used by groups and almost all of them
 # are GB. Is this used by anything else? Can we remove this?
 class CountryBase(SQLModel):
-
     code: str = Field(primary_key=True)
     label: str
 
@@ -26,6 +61,37 @@ class CountryCreate(CountryBase):
 
 
 class CountryRead(CountryBase):
+    pass
+
+
+# --- Consents --- #
+
+
+class ConsentTypeEnum(str, enum.Enum):
+    form = "FORM"
+    information_sheet = "INFORMATION_SHEET"
+
+
+class ConsentBase(SQLModel):
+    code: str
+    label: Optional[str]
+    paediatric: bool = Field(default=False)
+    from_date: datetime
+    link_url: str
+    retired: bool = Field(default=False)
+    consent_type: ConsentTypeEnum = Field(sa_column=Column(Enum(ConsentTypeEnum)))
+    weight: int
+
+
+class Consents(ConsentBase, table=True):
+    pass
+
+
+class ConsentsCreate(ConsentBase):
+    pass
+
+
+class ConsentRead(ConsentBase):
     pass
 
 
@@ -166,3 +232,101 @@ class UserCreate(UserBase):
 
 class UserRead(UserBase):
     id: int
+
+
+# --- AlportClinicalPicture --- #
+class AlportClinicalPictureBase(SQLModel):
+    pass
+
+
+class AlportClinicalPicture(AlportClinicalPictureBase, table=True):
+    pass
+
+
+class AlportClinicalPictureCreate(AlportClinicalPictureBase):
+    pass
+
+
+class AlportClinicalPictureRead(AlportClinicalPictureBase):
+    pass
+
+
+Biomarker
+BiomarkerBarcode
+BiomarkerResult
+BiomarkerSample
+Code
+Consent
+Consultant
+Country
+CountryEthnicity
+CountryNationality
+CurrentMedication
+Diagnose
+DiagnosisCode
+Dialysi
+Drug
+DrugGroup
+Entry
+Ethnicity
+FamilyHistory
+FamilyHistoryRelative
+FetalAnomalyScan
+FetalUltrasound
+Form
+FuanClinicalPicture
+Genetic
+Group
+GroupConsultant
+GroupDiagnose
+GroupForm
+GroupObservation
+GroupPage
+GroupPatient
+GroupQuestionnaire
+GroupUser
+Hnf1bClinicalPicture
+Hospitalisation
+IndiaEthnicity
+InsClinicalPicture
+InsRelapse
+LiverDisease
+LiverImaging
+LiverTransplant
+Log
+Medication
+MpgnClinicalPicture
+Nationality
+Nephrectomy
+NurtureDatum
+NurtureSample
+NurtureSamplesBlood
+NurtureSamplesOption
+NurtureSamplesUrine
+Nutrition
+Observation
+Pathology
+Patient
+PatientAddress
+PatientAliase
+PatientConsent
+PatientConsultant
+PatientDemographic
+PatientDiagnose
+PatientLock
+PatientNumber
+Plasmapheresi
+Post
+Pregnancy
+RenalImaging
+RenalProgression
+Result
+RituximabBaselineAsse
+RituximabCriterion
+SaltWastingClinicalFe
+Specialty
+Transplant
+TransplantBiopsy
+TransplantRejection
+User
+UserSession
