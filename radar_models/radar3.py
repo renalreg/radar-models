@@ -324,11 +324,88 @@ class FamilyHistoryRead(FamilyHistoryBase):
     pass
 
 # --- FamilyHistoryRelative --- #
+
+class FamilyHistoryRelativeBase(SQLModel):
+    pass
+
+class FamilyHistoryRelative(FamilyHistoryRelativeBase, table=True):
+    pass
+
+class FamilyHistoryRelativeCreate(FamilyHistoryRelativeBase):
+    pass
+
+class FamilyHistoryRelativeRead(FamilyHistoryRelativeBase):
+    pass
+
 # --- FetalAnomalyScan --- #
+
+class FetalAnomalyScanBase(SQLModel):
+    pass
+
+class FetalAnomalyScan(FetalAnomalyScanBase, table=True):
+    pass
+
+class FetalAnomalyScanCreate(FetalAnomalyScanBase):
+    pass
+
+class FetalAnomalyScanRead(FetalAnomalyScanBase):
+    pass
+
 # --- FetalUltrasound --- #
+
+class FetalUltrasoundBase(SQLModel):
+    pass
+
+class FetalUltrasound(FetalUltrasoundBase, table=True):
+    pass
+
+class FetalUltrasoundCreate(FetalUltrasoundBase):
+    pass
+
+class FetalUltrasoundRead(FetalUltrasoundBase):
+    pass
+
 # --- Form --- #
+
+class FormBase(SQLModel):
+    pass
+
+class Form(FormBase, table=True):
+    pass
+
+class FormCreate(FormBase):
+    pass
+
+class FormRead(FormBase):
+    pass
+
 # --- FuanClinicalPicture --- #
-# --- Genetic --- #
+
+class FuanClinicalPictureBase(SQLModel):
+    pass
+
+class FuanClinicalPicture(FuanClinicalPictureBase, table=True):
+    pass
+
+class FuanClinicalPictureCreate(FuanClinicalPictureBase):
+    pass
+
+class FuanClinicalPictureRead(FuanClinicalPictureBase):
+    pass
+
+# --- Genetics --- #
+
+class GeneticsBase(SQLModel):
+    pass
+
+class Genetics(GeneticsBase, table=True):
+    pass
+
+class GeneticsCreate(GeneticsBase):
+    pass
+
+class GeneticsRead(GeneticsBase):
+    pass
 
 # --- Group --- #
 # TODO: This should be a new table
@@ -337,7 +414,6 @@ class GroupTypeEnum(str, enum.Enum):
     hospital = "HOSPITAL"
     other = "OTHER"
     system = "SYSTEM"
-
 
 # TODO: DB has a composite index [code, type] which seems overkill for a table with less than
 # 200 rows. Figure out if you need it, speak to George.
@@ -365,26 +441,258 @@ class GroupCreate(GroupBase):
 class GroupRead(GroupBase):
     id: int
 
-
-
 # --- GroupConsultant --- #
+
+class GroupConsultantBase(SQLModel):
+    pass
+
+class GroupConsultant(GroupConsultantBase, table=True):
+    pass
+
+class GroupConsultantCreate(GroupConsultantBase):
+    pass
+
+class GroupConsultantRead(GroupConsultantBase):
+    pass
+
 # --- GroupDiagnose --- #
+
+class GroupDiagnoseBase(SQLModel):
+    pass
+
+class GroupDiagnose(GroupDiagnoseBase, table=True):
+    pass
+
+class GroupDiagnoseCreate(GroupDiagnoseBase):
+    pass
+
+class GroupDiagnoseRead(GroupDiagnoseBase):
+    pass
+
 # --- GroupForm --- #
+
+class GroupFormBase(SQLModel):
+    pass
+
+class GroupForm(GroupFormBase, table=True):
+    pass
+
+class GroupFormCreate(GroupFormBase):
+    pass
+
+class GroupFormRead(GroupFormBase):
+    pass
+
 # --- GroupObservation --- #
+
+class GroupObservationBase(SQLModel):
+    pass
+
+class GroupObservation(GroupObservationBase, table=True):
+    pass
+
+class GroupObservationCreate(GroupObservationBase):
+    pass
+
+class GroupObservationRead(GroupObservationBase):
+    pass
+
 # --- GroupPage --- #
+
+class GroupPageBase(SQLModel):
+    pass
+
+class GroupPage(GroupPageBase, table=True):
+    pass
+
+class GroupPageCreate(GroupPageBase):
+    pass
+
+class GroupPageRead(GroupPageBase):
+    pass
+
 # --- GroupPatient --- #
+
+class GroupPatientBase(SQLModel):
+    pass
+
+class GroupPatient(GroupPatientBase, table=True):
+    pass
+
+class GroupPatientCreate(GroupPatientBase):
+    pass
+
+class GroupPatientRead(GroupPatientBase):
+    pass
+
 # --- GroupQuestionnaire --- #
+
+class GroupQuestionnaireBase(SQLModel):
+    pass
+
+class GroupQuestionnaire(GroupQuestionnaireBase, table=True):
+    pass
+
+class GroupQuestionnaireCreate(GroupQuestionnaireBase):
+    pass
+
+class GroupQuestionnaireRead(GroupQuestionnaireBase):
+    pass
+
 # --- GroupUser --- #
+
+class GroupUserBase(SQLModel):
+    pass
+
+class GroupUser(GroupUserBase, table=True):
+    pass
+
+class GroupUserCreate(GroupUserBase):
+    pass
+
+class GroupUserRead(GroupUserBase):
+    pass
+
 # --- Hnf1bClinicalPicture --- #
+
+class Hnf1bClinicalPictureBase(SQLModel):
+    pass
+
+class Hnf1bClinicalPicture(Hnf1bClinicalPictureBase, table=True):
+    pass
+
+class Hnf1bClinicalPictureCreate(Hnf1bClinicalPictureBase):
+    pass
+
+class Hnf1bClinicalPictureRead(Hnf1bClinicalPictureBase):
+    pass
+
 # --- Hospitalisation --- #
+
+class HospitalisationBase(SQLModel):
+    pass
+
+class Hospitalisation(HospitalisationBase, table=True):
+    pass
+
+class HospitalisationCreate(HospitalisationBase):
+    pass
+
+class HospitalisationRead(HospitalisationBase):
+    pass
+
 # --- IndiaEthnicity --- #
+
+class IndiaEthnicityBase(SQLModel):
+    pass
+
+class IndiaEthnicity(IndiaEthnicityBase, table=True):
+    pass
+
+class IndiaEthnicityCreate(IndiaEthnicityBase):
+    pass
+
+class IndiaEthnicityRead(IndiaEthnicityBase):
+    pass
+
 # --- InsClinicalPicture --- #
+
+class InsClinicalPictureBase(SQLModel):
+    pass
+
+class InsClinicalPicture(InsClinicalPictureBase, table=True):
+    pass
+
+class InsClinicalPictureCreate(InsClinicalPictureBase):
+    pass
+
+class InsClinicalPictureRead(InsClinicalPictureBase):
+    pass
+
 # --- InsRelapse --- #
+
+class InsRelapseBase(SQLModel):
+    pass
+
+class InsRelapse(InsRelapseBase, table=True):
+    pass
+
+class InsRelapseCreate(InsRelapseBase):
+    pass
+
+class InsRelapseRead(InsRelapseBase):
+    pass
+
 # --- LiverDisease --- #
+
+class LiverDiseaseBase(SQLModel):
+    pass
+
+class LiverDisease(LiverDiseaseBase, table=True):
+    pass
+
+class LiverDiseaseCreate(LiverDiseaseBase):
+    pass
+
+class LiverDiseaseRead(LiverDiseaseBase):
+    pass
+
 # --- LiverImaging --- #
+
+class LiverImagingBase(SQLModel):
+    pass
+
+class LiverImaging(LiverImagingBase, table=True):
+    pass
+
+class LiverImagingCreate(LiverImagingBase):
+    pass
+
+class LiverImagingRead(LiverImagingBase):
+    pass
+
 # --- LiverTransplant --- #
+
+class LiverTransplantBase(SQLModel):
+    pass
+
+class LiverTransplant(LiverTransplantBase, table=True):
+    pass
+
+class LiverTransplantCreate(LiverTransplantBase):
+    pass
+
+class LiverTransplantRead(LiverTransplantBase):
+    pass
+
 # --- Log --- #
+
+class LogBase(SQLModel):
+    pass
+
+class Log(LogBase, table=True):
+    pass
+
+class LogCreate(LogBase):
+    pass
+
+class LogRead(LogBase):
+    pass
+
 # --- Medication --- #
+
+class MedicationBase(SQLModel):
+    pass
+
+class Medication(MedicationBase, table=True):
+    pass
+
+class MedicationCreate(MedicationBase):
+    pass
+
+class MedicationRead(MedicationBase):
+    pass
+
 # --- MpgnClinicalPicture --- #
 # --- Nationality --- #
 # --- Nephrectomy --- #
