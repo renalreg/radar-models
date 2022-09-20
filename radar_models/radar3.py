@@ -1033,9 +1033,81 @@ class NurtureSamplesOptionRead(NurtureSamplesOptionBase):
 
 
 # --- NurtureSamplesUrine --- #
+
+
+class NurtureSamplesUrineBase(SQLModel):
+    pass
+
+
+class NurtureSamplesUrine(NurtureSamplesUrineBase, table=True):
+    pass
+
+
+class NurtureSamplesUrineCreate(NurtureSamplesUrineBase):
+    pass
+
+
+class NurtureSamplesUrineRead(NurtureSamplesUrineBase):
+    pass
+
+
 # --- Nutrition --- #
+
+
+class NutritionBase(SQLModel):
+    pass
+
+
+class Nutrition(NutritionBase, table=True):
+    pass
+
+
+class NutritionCreate(NutritionBase):
+    pass
+
+
+class NutritionRead(NutritionBase):
+    pass
+
+
 # --- Observation --- #
+
+
+class ObservationBase(SQLModel):
+    pass
+
+
+class Observation(ObservationBase, table=True):
+    pass
+
+
+class ObservationCreate(ObservationBase):
+    pass
+
+
+class ObservationRead(ObservationBase):
+    pass
+
+
 # --- Pathology --- #
+
+
+class PathologyBase(SQLModel):
+    pass
+
+
+class Pathology(PathologyBase, table=True):
+    pass
+
+
+class PathologyCreate(PathologyBase):
+    pass
+
+
+class PathologyRead(PathologyBase):
+    pass
+
+
 # --- Patient --- #
 
 
@@ -1065,12 +1137,137 @@ class PatientRead(PatientBase):
 
 
 # --- PatientAddress --- #
+
+
+class PatientAddressBase(SQLModel):
+    pass
+
+
+class PatientAddress(PatientAddressBase, table=True):
+    pass
+
+
+class PatientAddressCreate(PatientAddressBase):
+    pass
+
+
+class PatientAddressRead(PatientAddressBase):
+    pass
+
+
 # --- PatientAliase --- #
+
+
+class PatientAliaseBase(SQLModel):
+    pass
+
+
+class PatientAliase(PatientAliaseBase, table=True):
+    pass
+
+
+class PatientAliaseCreate(PatientAliaseBase):
+    pass
+
+
+class PatientAliaseRead(PatientAliaseBase):
+    pass
+
+
 # --- PatientConsent --- #
+
+
+class PatientConsentBase(SQLModel):
+    pass
+
+
+class PatientConsent(PatientConsentBase, table=True):
+    pass
+
+
+class PatientConsentCreate(PatientConsentBase):
+    pass
+
+
+class PatientConsentRead(PatientConsentBase):
+    pass
+
+
 # --- PatientConsultant --- #
+
+
+class PatientConsultantBase(SQLModel):
+    pass
+
+
+class PatientConsultant(PatientConsultantBase, table=True):
+    pass
+
+
+class PatientConsultantCreate(PatientConsultantBase):
+    pass
+
+
+class PatientConsultantRead(PatientConsultantBase):
+    pass
+
+
 # --- PatientDemographic --- #
+
+
+class PatientDemographicBase(SQLModel):
+    pass
+
+
+class PatientDemographic(PatientDemographicBase, table=True):
+    pass
+
+
+class PatientDemographicCreate(PatientDemographicBase):
+    pass
+
+
+class PatientDemographicRead(PatientDemographicBase):
+    pass
+
+
 # --- PatientDiagnose --- #
+
+
+class PatientDiagnoseBase(SQLModel):
+    pass
+
+
+class PatientDiagnose(PatientDiagnoseBase, table=True):
+    pass
+
+
+class PatientDiagnoseCreate(PatientDiagnoseBase):
+    pass
+
+
+class PatientDiagnoseRead(PatientDiagnoseBase):
+    pass
+
+
 # --- PatientLock --- #
+
+
+class PatientLockBase(SQLModel):
+    pass
+
+
+class PatientLock(PatientLockBase, table=True):
+    pass
+
+
+class PatientLockCreate(PatientLockBase):
+    pass
+
+
+class PatientLockRead(PatientLockBase):
+    pass
+
 
 # --- PatientNumber --- #
 
@@ -1107,18 +1304,252 @@ class PatientNumberRead(PatientBase):
 
 
 # --- Plasmapheresi --- #
+
+
+class PlasmapheresiBase(SQLModel):
+    pass
+
+
+class Plasmapheresi(PlasmapheresiBase, table=True):
+    pass
+
+
+class PlasmapheresiCreate(PlasmapheresiBase):
+    pass
+
+
+class PlasmapheresiRead(PlasmapheresiBase):
+    pass
+
+
 # --- Post --- #
+
+
+class PostBase(SQLModel):
+    pass
+
+
+class Post(PostBase, table=True):
+    pass
+
+
+class PostCreate(PostBase):
+    pass
+
+
+class PostRead(PostBase):
+    pass
+
+
 # --- Pregnancy --- #
+
+
+class PregnancyBase(SQLModel):
+    pass
+
+
+class Pregnancy(PregnancyBase, table=True):
+    pass
+
+
+class PregnancyCreate(PregnancyBase):
+    pass
+
+
+class PregnancyRead(PregnancyBase):
+    pass
+
+
 # --- RenalImaging --- #
+
+
+class RenalImagingBase(SQLModel):
+    pass
+
+
+class RenalImaging(RenalImagingBase, table=True):
+    pass
+
+
+class RenalImagingCreate(RenalImagingBase):
+    pass
+
+
+class RenalImagingRead(RenalImagingBase):
+    pass
+
+
 # --- RenalProgression --- #
+
+
+class RenalProgressionBase(SQLModel):
+    pass
+
+
+class RenalProgression(RenalProgressionBase, table=True):
+    pass
+
+
+class RenalProgressionCreate(RenalProgressionBase):
+    pass
+
+
+class RenalProgressionRead(RenalProgressionBase):
+    pass
+
+
 # --- Result --- #
+
+
+class ResultBase(SQLModel):
+    pass
+
+
+class Result(ResultBase):
+    pass
+
+
+class ResultCreate(ResultBase):
+    pass
+
+
+class ResultRead(ResultBase):
+    pass
+
+
 # --- RituximabBaselineAsse --- #
+
+
+class RituximabBaselineAsseBase(SQLModel):
+    pass
+
+
+class RituximabBaselineAsse(RituximabBaselineAsseBase, table=True):
+    pass
+
+
+class RituximabBaselineAsseCreate(RituximabBaselineAsseBase):
+    pass
+
+
+class RituximabBaselineAsseRead(RituximabBaselineAsseBase):
+    pass
+
+
 # --- RituximabCriterion --- #
+
+
+class RituximabCriterionBase(SQLModel):
+    pass
+
+
+class RituximabCriterion(RituximabCriterionBase, table=True):
+    pass
+
+
+class RituximabCriterionCreate(RituximabCriterionBase):
+    pass
+
+
+class RituximabCriterionRead(RituximabCriterionBase):
+    pass
+
+
 # --- SaltWastingClinicalFe --- #
+
+
+class SaltWastingClinicalFeBase(SQLModel):
+    pass
+
+
+class SaltWastingClinicalFe(SaltWastingClinicalFeBase, table=True):
+    pass
+
+
+class SaltWastingClinicalFeCreate(SaltWastingClinicalFeBase):
+    pass
+
+
+class SaltWastingClinicalFeRead(SaltWastingClinicalFeBase):
+    pass
+
+
 # --- Specialty --- #
+
+
+class SpecialtyBase(SQLModel):
+    pass
+
+
+class Specialty(SpecialtyBase, table=True):
+    pass
+
+
+class SpecialtyCreate(SpecialtyBase):
+    pass
+
+
+class SpecialtyRead(SpecialtyBase):
+    pass
+
+
 # --- Transplant --- #
+
+
+class TransplantBase(SQLModel):
+    pass
+
+
+class Transplant(TransplantBase, table=True):
+    pass
+
+
+class TransplantCreate(TransplantBase):
+    pass
+
+
+class TransplantRead(TransplantBase):
+    pass
+
+
 # --- TransplantBiopsy --- #
+
+
+class TransplantBiopsyBase(SQLModel):
+    pass
+
+
+class TransplantBiopsy(TransplantBiopsyBase, table=True):
+    pass
+
+
+class TransplantBiopsyCreate(TransplantBiopsyBase):
+    pass
+
+
+class TransplantBiopsyRead(TransplantBiopsyBase):
+    pass
+
+
 # --- TransplantRejection --- #
+
+
+class TransplantRejectionBase(SQLModel):
+    pass
+
+
+class TransplantRejection(TransplantRejectionBase, table=True):
+    pass
+
+
+class TransplantRejectionCreate(TransplantRejectionBase):
+    pass
+
+
+class TransplantRejectionRead(TransplantRejectionBase):
+    pass
+
+
 # --- User --- #
 
 
@@ -1160,3 +1591,19 @@ class UserRead(UserBase):
 
 
 # --- UserSession --- #
+
+
+class UserSessionBase(SQLModel):
+    pass
+
+
+class UserSession(UserSessionBase, table=True):
+    pass
+
+
+class UserSessionCreate(UserSessionBase):
+    pass
+
+
+class UserSessionRead(UserSessionBase):
+    pass
