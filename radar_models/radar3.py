@@ -1,22 +1,35 @@
 import enum
-from msilib.schema import tables
-import uuid
+from uuid import UUID, uuid4
 from datetime import datetime
 from typing import Optional
 
-from sqlmodel import Field, Relationship, SQLModel, Enum
-from sqlalchemy import Column
+from sqlmodel import Date, DateTime, Field, Relationship, SQLModel, Enum
+from sqlalchemy import Column, ForeignKey
+
+from radar_models.radar2 import Patient
 
 
 # --- AlportClinicalPicture --- #
 
 
 class AlportClinicalPictureBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id", index=True)
+    date_of_picture: DateTime
+    deafness: int
+    deafness_date: Optional[Date]
+    hearing_aid_date: Optional[Date]
+    created_user_id: int = Field(foreign_key="users.id")
+    created_date: datetime = Field(default=datetime.now())
+    modified_user_id: int = Field(foreign_key="users.id")
+    modified_date: datetime = Field(default=datetime.now())
+
+    created_user: Users = Relationship(back_populates="users")
+    modified_user: Users = Relationship(back_populates="users")
+    patient: Patient = Relationship(back_populates="patients")
 
 
 class AlportClinicalPicture(AlportClinicalPictureBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class AlportClinicalPictureCreate(AlportClinicalPictureBase):
@@ -24,7 +37,7 @@ class AlportClinicalPictureCreate(AlportClinicalPictureBase):
 
 
 class AlportClinicalPictureRead(AlportClinicalPictureBase):
-    pass
+    id: UUID
 
 
 # --- Biomarker --- #
@@ -51,11 +64,16 @@ class BiomarkerRead(BiomarkerBase):
 
 
 class BiomarkerBarcodeBase(SQLModel):
-    pass
+    # TODO: choose either pat_id or patient_id and make consistent across DB
+    pat_id: int = Field(ForeignKey=patients.id)
+    barcode: str
+    sample_date: DateTime
+
+    patient: Patient = Relationship(back_populates="patients")
 
 
 class BiomarkerBarcode(BiomarkerBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class BiomarkerBarcodeCreate(BiomarkerBase):
@@ -63,7 +81,7 @@ class BiomarkerBarcodeCreate(BiomarkerBase):
 
 
 class BiomarkerBarcodeRead(BiomarkerBase):
-    pass
+    id: int
 
 
 # --- BiomarkerResult --- #
@@ -1292,7 +1310,7 @@ class PatientNumberBase(SQLModel):
 
 
 class PatientNumber(PatientNumberBase):
-    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class PatientNumberCreate(PatientBase):
@@ -1300,7 +1318,7 @@ class PatientNumberCreate(PatientBase):
 
 
 class PatientNumberRead(PatientBase):
-    id: int
+    id: UUID
 
 
 # --- Plasmapheresi --- #
