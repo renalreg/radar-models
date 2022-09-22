@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlmodel import Date, DateTime, Field, Relationship, SQLModel, Enum
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column
 
 
 # --- AlportClinicalPicture --- #
@@ -295,11 +295,12 @@ class CurrentMedicationRead(CurrentMedicationBase):
 
 
 class DiagnosesBase(SQLModel):
-    pass
+    name: str
+    retired: bool = Field(default=False)
 
 
 class Diagnoses(DiagnosesBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class DiagnosesCreate(DiagnosesBase):
@@ -307,18 +308,20 @@ class DiagnosesCreate(DiagnosesBase):
 
 
 class DiagnosesRead(DiagnosesBase):
-    pass
+    id: int
 
 
 # --- DiagnosisCode --- #
+# TODO: composite index
 
 
 class DiagnosisCodeBase(SQLModel):
-    pass
+    diagnosis_id: int = Field(foreign_key="diagnoses.id")
+    code_id: int = Field(foreign_key="codes.id")
 
 
 class DiagnosisCode(DiagnosisCodeBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class DiagnosisCodeCreate(DiagnosisCodeBase):
@@ -326,18 +329,23 @@ class DiagnosisCodeCreate(DiagnosisCodeBase):
 
 
 class DiagnosisCodeRead(DiagnosisCodeBase):
-    pass
+    id: int
 
 
 # --- Dialysis --- #
 
 
 class DialysisBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    source_group_id: int = Field(foreign_key="groups.id")
+    source_type: str
+    from_date: Date
+    to_date: Optional[Date]
+    modality: int
 
 
 class Dialysis(DialysisBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class DialysisCreate(DialysisBase):
@@ -345,18 +353,19 @@ class DialysisCreate(DialysisBase):
 
 
 class DialysisRead(DialysisBase):
-    pass
+    id: int
 
 
 # --- Drug --- #
 
 
 class DrugBase(SQLModel):
-    pass
+    name: str
+    drug_group_id: Optional[int] = Field(foreign_key="drug_groups.id")
 
 
 class Drug(DrugBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class DrugCreate(DrugBase):
@@ -364,18 +373,20 @@ class DrugCreate(DrugBase):
 
 
 class DrugRead(DrugBase):
-    pass
+    id: int
 
 
 # --- DrugGroup --- #
 
 
 class DrugGroupBase(SQLModel):
-    pass
+    name: Optional[str] = Field(unique=True)
+    # TODO: Check that everything in here makes sense
+    parent_drug_group_id: Optional[int] = Field(foreign_key="drug_groups.id")
 
 
 class DrugGroup(DrugGroupBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class DrugGroupCreate(DrugGroupBase):
@@ -383,18 +394,22 @@ class DrugGroupCreate(DrugGroupBase):
 
 
 class DrugGroupRead(DrugGroupBase):
-    pass
+    id: int
 
 
 # --- Entry --- #
+# TODO: This table needs to be burnt in the fires of hell
 
 
 class EntryBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    form_id: int = Field(foreign_key="forms.id")
+    # TODO: No idea if dict will convert json
+    data: dict
 
 
 class Entry(EntryBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class EntryCreate(EntryBase):
@@ -402,18 +417,19 @@ class EntryCreate(EntryBase):
 
 
 class EntryRead(EntryBase):
-    pass
+    id: UUID
 
 
 # --- Ethnicity --- #
 
 
 class EthnicityBase(SQLModel):
-    pass
+    code: str
+    label: str
 
 
 class Ethnicity(EthnicityBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class EthnicityCreate(EthnicityBase):
@@ -421,7 +437,7 @@ class EthnicityCreate(EthnicityBase):
 
 
 class EthnicityRead(EthnicityBase):
-    pass
+    id: int
 
 
 # --- FamilyHistory --- #
