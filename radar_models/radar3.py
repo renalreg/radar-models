@@ -6,8 +6,6 @@ from typing import Optional
 from sqlmodel import Date, DateTime, Field, Relationship, SQLModel, Enum
 from sqlalchemy import Column, ForeignKey
 
-from radar_models.radar2 import Patient
-
 
 # --- AlportClinicalPicture --- #
 
@@ -18,14 +16,6 @@ class AlportClinicalPictureBase(SQLModel):
     deafness: int
     deafness_date: Optional[Date]
     hearing_aid_date: Optional[Date]
-    created_user_id: int = Field(foreign_key="users.id")
-    created_date: datetime = Field(default=datetime.now())
-    modified_user_id: int = Field(foreign_key="users.id")
-    modified_date: datetime = Field(default=datetime.now())
-
-    created_user: Users = Relationship(back_populates="users")
-    modified_user: Users = Relationship(back_populates="users")
-    patient: Patient = Relationship(back_populates="patients")
 
 
 class AlportClinicalPicture(AlportClinicalPictureBase, table=True):
@@ -65,11 +55,9 @@ class BiomarkerRead(BiomarkerBase):
 
 class BiomarkerBarcodeBase(SQLModel):
     # TODO: choose either pat_id or patient_id and make consistent across DB
-    pat_id: int = Field(ForeignKey=patients.id)
+    pat_id: int = Field(foreign_key="patients.id")
     barcode: str
     sample_date: DateTime
-
-    patient: Patient = Relationship(back_populates="patients")
 
 
 class BiomarkerBarcode(BiomarkerBase, table=True):
@@ -88,11 +76,16 @@ class BiomarkerBarcodeRead(BiomarkerBase):
 
 
 class BiomarkerResultBase(SQLModel):
-    pass
+    bio_id: int = Field(foreign_key="biomarkers.id")
+    sample_id: int = Field(foreign_key="biomarker_samples.id")
+    value: float
+    unit_measure: str
+    proc_date: DateTime
+    hospital: str
 
 
 class BiomarkerResult(BiomarkerResultBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class BiomarkerResultCreate(BiomarkerResultBase):
@@ -100,18 +93,19 @@ class BiomarkerResultCreate(BiomarkerResultBase):
 
 
 class BiomarkerResultRead(BiomarkerResultBase):
-    pass
+    id: int
 
 
 # --- BiomarkerSample --- #
 
 
 class BiomarkerSampleBase(SQLModel):
-    pass
+    barcode_id: int = Field(foreign_key="biomarker_barcodes.id")
+    label: str
 
 
 class BiomarkerSample(BiomarkerSampleBase):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class BiomarkerSampleCreate(BiomarkerSampleBase):
@@ -119,7 +113,7 @@ class BiomarkerSampleCreate(BiomarkerSampleBase):
 
 
 class BiomarkerSampleRead(BiomarkerSampleBase):
-    pass
+    id: int
 
 
 # --- Code --- #
@@ -145,6 +139,7 @@ class CodeRead:
 
 
 # --- Consent --- #
+# TODO: SHould be a table
 
 
 class ConsentTypeEnum(str, enum.Enum):
@@ -164,7 +159,7 @@ class ConsentBase(SQLModel):
 
 
 class Consents(ConsentBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class ConsentsCreate(ConsentBase):
@@ -172,14 +167,24 @@ class ConsentsCreate(ConsentBase):
 
 
 class ConsentRead(ConsentBase):
-    pass
+    id: int
 
 
 # --- Consultant --- #
+# TODO: Composite index
+# TODO: Question the need for consultants data
 
 
 class ConsultantBase(SQLModel):
-    pass
+    first_name: str
+    last_name: str
+    email: Optional[str]
+    telephone_number: Optional[str]
+    # TODO:
+    gmc_number: Optional[int]
+    specialty_id: int = Field(foreign_key="groups.id")
+
+    specialty: Specialty = Relationship(back_populates="specialty")
 
 
 class Consultant(ConsultantBase, table=True):
@@ -198,33 +203,35 @@ class ConsultantRead(ConsultantBase):
 # TODO: This table seems to only be used by groups and almost all of them
 # are GB. Is this used by anything else? Can we remove this?
 
+# TODO: Check handling of primary key
+
 
 class CountryBase(SQLModel):
-    code: str = Field(primary_key=True)
     label: str
 
 
 class Countries(CountryBase, table=True):
-    pass
+    code: str = Field(primary_key=True)
 
 
 class CountryCreate(CountryBase):
-    pass
+    code: str
 
 
 class CountryRead(CountryBase):
-    pass
+    code: str
 
 
 # --- CountryEthnicity --- #
 
 
 class CountryEthnicityBase(SQLModel):
-    pass
+    ethnicity_id: int = Field(foreign_key="ethnicities.id")
+    country_code: str = Field(foreign_key="countries.code")
 
 
 class CountryEthnicity(CountryEthnicityBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class CountryEthnicityCreate(CountryEthnicityBase):
@@ -232,18 +239,19 @@ class CountryEthnicityCreate(CountryEthnicityBase):
 
 
 class CountryEthnicityRead(CountryEthnicityBase):
-    pass
+    id: int
 
 
 # --- CountryNationality --- #
 
 
 class CountryNationalityBase(SQLModel):
-    pass
+    nationality_id: int = Field(foreign_key="nationalities.id")
+    country_code: int = Field(foreign_key="countries.code")
 
 
 class CountryNationality(CountryNationalityBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class CountryNationalityCreate(CountryNationalityBase):
@@ -251,18 +259,28 @@ class CountryNationalityCreate(CountryNationalityBase):
 
 
 class CountryNationalityRead(CountryNationalityBase):
-    pass
+    id: int
 
 
 # --- CurrentMedication --- #
 
 
 class CurrentMedicationBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    source_group_id: int = Field(foreign_key="groups.id")
+    source_type: str
+    date_recorded: Date
+    drug_id: int = Field(foreign_key="drugs.id")
+    dose_quantity: Optional[float]
+    dose_unit: Optional[str]
+    frequency: Optional[str]
+    route: Optional[str]
+    drug_text: Optional[str]
+    dose_text: Optional[str]
 
 
 class CurrentMedication(CurrentMedicationBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class CurrentMedicationCreate(CurrentMedicationBase):
@@ -270,7 +288,7 @@ class CurrentMedicationCreate(CurrentMedicationBase):
 
 
 class CurrentMedicationRead(CurrentMedicationBase):
-    pass
+    id: UUID
 
 
 # --- Diagnoses --- #
