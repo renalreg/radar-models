@@ -2364,10 +2364,8 @@ class FamilyHistoryRelative(Base):
 
     # TODO: family_history column seems to cause a conflict with table familyhistory
     # family_history = relationship('FamilyHistory')
-    family_history = Column(String)
     # TODO: Same as above, naming conflict
     # patient = relationship("Patient")
-    patient = Column(String)
 
 
 class TransplantBiopsy(Base):

@@ -1,21 +1,21 @@
 import enum
-from uuid import UUID, uuid4
-from datetime import datetime
+from datetime import datetime, date
+from token import OP
 from typing import Optional
+from uuid import UUID, uuid4
 
-from sqlmodel import Date, DateTime, Field, Relationship, SQLModel, Enum
-from sqlalchemy import Column
-
+from sqlalchemy import ARRAY, Column
+from sqlmodel import Enum, Field, Relationship, SQLModel
 
 # --- AlportClinicalPicture --- #
 
 
 class AlportClinicalPictureBase(SQLModel):
     patient_id: int = Field(foreign_key="patients.id", index=True)
-    date_of_picture: DateTime
+    date_of_picture: datetime
     deafness: int
-    deafness_date: Optional[Date]
-    hearing_aid_date: Optional[Date]
+    deafness_date: Optional[date]
+    hearing_aid_date: Optional[date]
 
 
 class AlportClinicalPicture(AlportClinicalPictureBase, table=True):
@@ -57,7 +57,7 @@ class BiomarkerBarcodeBase(SQLModel):
     # TODO: choose either pat_id or patient_id and make consistent across DB
     pat_id: int = Field(foreign_key="patients.id")
     barcode: str
-    sample_date: DateTime
+    sample_date: datetime
 
 
 class BiomarkerBarcode(BiomarkerBase, table=True):
@@ -80,7 +80,7 @@ class BiomarkerResultBase(SQLModel):
     sample_id: int = Field(foreign_key="biomarker_samples.id")
     value: float
     unit_measure: str
-    proc_date: DateTime
+    proc_date: datetime
     hospital: str
 
 
@@ -269,7 +269,7 @@ class CurrentMedicationBase(SQLModel):
     patient_id: int = Field(foreign_key="patients.id")
     source_group_id: int = Field(foreign_key="groups.id")
     source_type: str
-    date_recorded: Date
+    date_recorded: date
     drug_id: int = Field(foreign_key="drugs.id")
     dose_quantity: Optional[float]
     dose_unit: Optional[str]
@@ -339,8 +339,8 @@ class DialysisBase(SQLModel):
     patient_id: int = Field(foreign_key="patients.id")
     source_group_id: int = Field(foreign_key="groups.id")
     source_type: str
-    from_date: Date
-    to_date: Optional[Date]
+    from_date: date
+    to_date: Optional[date]
     modality: int
 
 
@@ -444,11 +444,15 @@ class EthnicityRead(EthnicityBase):
 
 
 class FamilyHistoryBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    group_id: int = Field(foreign_key="groups.id")
+    parental_consanguinity: bool
+    family_history: bool
+    other_family_history: str
 
 
 class FamilyHistory(FamilyHistoryBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class FamilyHistoryCreate(FamilyHistoryBase):
@@ -456,18 +460,21 @@ class FamilyHistoryCreate(FamilyHistoryBase):
 
 
 class FamilyHistoryRead(FamilyHistoryBase):
-    pass
+    id: UUID
 
 
 # --- FamilyHistoryRelative --- #
 
 
 class FamilyHistoryRelativeBase(SQLModel):
-    pass
+    family_history_id: UUID = Field(foreign_key="family_histories.id")
+    relationship: int
+    # TODO: This seems poorly named, although it is trying to point at a patient
+    patient_id: int = Field(foreign_key="patients.id")
 
 
 class FamilyHistoryRelative(FamilyHistoryRelativeBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class FamilyHistoryRelativeCreate(FamilyHistoryRelativeBase):
@@ -475,18 +482,35 @@ class FamilyHistoryRelativeCreate(FamilyHistoryRelativeBase):
 
 
 class FamilyHistoryRelativeRead(FamilyHistoryRelativeBase):
-    pass
+    id: int
 
 
 # --- FetalAnomalyScan --- #
 
 
 class FetalAnomalyScanBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    source_group_id: int = Field(foreign_key="groups.id")
+    source_type: str
+    date_of_scan: date
+    gestational_age: int
+    oligohydramnios: bool
+    right_anomaly_details: Optional[str]
+    right_ultrasound_details: Optional[str]
+    left_anomaly_details: Optional[str]
+    left_ultrasound_details: Optional[str]
+    hypoplasia: Optional[bool]
+    echogenicity: Optional[bool]
+    hepatic_abnormalities: Optional[bool]
+    hepatic_abnormality_details: Optional[str]
+    lung_abnormalities: Optional[bool]
+    lung_abnormality_details: Optional[str]
+    amnioinfusion: Optional[bool]
+    amnioinfusion_count: Optional[int]
 
 
 class FetalAnomalyScan(FetalAnomalyScanBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class FetalAnomalyScanCreate(FetalAnomalyScanBase):
@@ -494,18 +518,28 @@ class FetalAnomalyScanCreate(FetalAnomalyScanBase):
 
 
 class FetalAnomalyScanRead(FetalAnomalyScanBase):
-    pass
+    id: UUID
 
 
 # --- FetalUltrasound --- #
 
 
 class FetalUltrasoundBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    source_group_id: int = Field(foreign_key="groups.id")
+    source_type: str
+    date_of_scan: date
+    fetal_identifier: Optional[str]
+    gestational_age: int
+    head_centile: Optional[int]
+    abdomen_centile: Optional[int]
+    uterine_artery_notched: Optional[bool]
+    liquor_volume: Optional[str]
+    comments: Optional[str]
 
 
 class FetalUltrasound(FetalUltrasoundBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class FetalUltrasoundCreate(FetalUltrasoundBase):
@@ -513,18 +547,21 @@ class FetalUltrasoundCreate(FetalUltrasoundBase):
 
 
 class FetalUltrasoundRead(FetalUltrasoundBase):
-    pass
+    id: UUID
 
 
 # --- Form --- #
 
 
 class FormBase(SQLModel):
-    pass
+    name: str
+    slug: str = Field(unique=True)
+    # TODO: No idea if dict will convert json
+    data: dict
 
 
 class Form(FormBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class FormCreate(FormBase):
@@ -532,18 +569,27 @@ class FormCreate(FormBase):
 
 
 class FormRead(FormBase):
-    pass
+    id: int
 
 
 # --- FuanClinicalPicture --- #
 
 
 class FuanClinicalPictureBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    picture_date: date
+    gout: bool
+    gout_date: Optional[date]
+    family_gout: Optional[bool]
+    # TODO: This is the devils work. Should be using family_history_relatives table
+    family_gout_relatives: dict = Field(sa_column=Column(ARRAY(int)))
+    thp: Optional[str]
+    uti: Optional[bool]
+    comments: Optional[str]
 
 
 class FuanClinicalPicture(FuanClinicalPictureBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class FuanClinicalPictureCreate(FuanClinicalPictureBase):
@@ -551,18 +597,25 @@ class FuanClinicalPictureCreate(FuanClinicalPictureBase):
 
 
 class FuanClinicalPictureRead(FuanClinicalPictureBase):
-    pass
+    id: UUID
 
 
 # --- Genetics --- #
 
 
 class GeneticsBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    group_id: int = Field(foreign_key="groups.id")
+    date_sent: datetime
+    laboratory: str
+    reference_number: Optional[str]
+    karyotype: Optional[int]
+    results: Optional[str]
+    summary: Optional[str]
 
 
 class Genetics(GeneticsBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class GeneticsCreate(GeneticsBase):
@@ -570,7 +623,7 @@ class GeneticsCreate(GeneticsBase):
 
 
 class GeneticsRead(GeneticsBase):
-    pass
+    id: UUID
 
 
 # --- Group --- #
@@ -613,11 +666,12 @@ class GroupRead(GroupBase):
 
 
 class GroupConsultantBase(SQLModel):
-    pass
+    group_id: int = Field(foreign_key="groups.id")
+    consultant_id: int = Field(foreign_key="consultants.id")
 
 
 class GroupConsultant(GroupConsultantBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class GroupConsultantCreate(GroupConsultantBase):
@@ -625,18 +679,26 @@ class GroupConsultantCreate(GroupConsultantBase):
 
 
 class GroupConsultantRead(GroupConsultantBase):
-    pass
+    id: int
 
 
 # --- GroupDiagnose --- #
 
 
+class GroupDiagnoseTypeEnum(str, enum.Enum):
+    primary = "PRIMARY"
+    secondary = "SECONDARY"
+
+
 class GroupDiagnoseBase(SQLModel):
-    pass
+    group_id: int = Field(foreign_key="groups.id")
+    diagnosis_id: int = Field(foreign_key="diagnosis.id")
+    type: GroupDiagnoseTypeEnum = Field(sa_column=Column(Enum(GroupDiagnoseTypeEnum)))
+    weight: int
 
 
 class GroupDiagnose(GroupDiagnoseBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class GroupDiagnoseCreate(GroupDiagnoseBase):
@@ -644,18 +706,20 @@ class GroupDiagnoseCreate(GroupDiagnoseBase):
 
 
 class GroupDiagnoseRead(GroupDiagnoseBase):
-    pass
+    id: int
 
 
 # --- GroupForm --- #
 
 
 class GroupFormBase(SQLModel):
-    pass
+    group_id: int = Field(foreign_key="groups.id")
+    form_id: int = Field(foreign_key="forms.id")
+    weight: int
 
 
 class GroupForm(GroupFormBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class GroupFormCreate(GroupFormBase):
@@ -663,18 +727,20 @@ class GroupFormCreate(GroupFormBase):
 
 
 class GroupFormRead(GroupFormBase):
-    pass
+    id: int
 
 
 # --- GroupObservation --- #
 
 
 class GroupObservationBase(SQLModel):
-    pass
+    group_id: int = Field(foreign_key="groups.id")
+    observation_id: int = Field(foreign_key="observations.id")
+    weight: int
 
 
 class GroupObservation(GroupObservationBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class GroupObservationCreate(GroupObservationBase):
@@ -682,18 +748,20 @@ class GroupObservationCreate(GroupObservationBase):
 
 
 class GroupObservationRead(GroupObservationBase):
-    pass
+    id: int
 
 
 # --- GroupPage --- #
 
 
 class GroupPageBase(SQLModel):
-    pass
+    group_id: int = Field(foreign_key="groups.id")
+    page: str
+    weight: int
 
 
 class GroupPage(GroupPageBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class GroupPageCreate(GroupPageBase):
@@ -701,18 +769,22 @@ class GroupPageCreate(GroupPageBase):
 
 
 class GroupPageRead(GroupPageBase):
-    pass
+    id: int
 
 
 # --- GroupPatient --- #
 
 
 class GroupPatientBase(SQLModel):
-    pass
+    group_id: int = Field(foreign_key="groups.id")
+    patient_id: int = Field(foreign_key="patients.id")
+    from_date: datetime
+    to_date: Optional[datetime]
+    discharged_date: date
 
 
 class GroupPatient(GroupPatientBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class GroupPatientCreate(GroupPatientBase):
@@ -720,18 +792,20 @@ class GroupPatientCreate(GroupPatientBase):
 
 
 class GroupPatientRead(GroupPatientBase):
-    pass
+    id: int
 
 
 # --- GroupQuestionnaire --- #
 
 
 class GroupQuestionnaireBase(SQLModel):
-    pass
+    group_id: int = Field(foreign_key="groups.id")
+    form_id: int = Field(foreign_key="forms.id")
+    weight: Optional[int]
 
 
 class GroupQuestionnaire(GroupQuestionnaireBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class GroupQuestionnaireCreate(GroupQuestionnaireBase):
@@ -739,18 +813,29 @@ class GroupQuestionnaireCreate(GroupQuestionnaireBase):
 
 
 class GroupQuestionnaireRead(GroupQuestionnaireBase):
-    pass
+    id: int
 
 
 # --- GroupUser --- #
 
+# TODO: Another enum that should be in a table
+class UserRoleEnum(str, enum.Enum):
+    admin = "ADMIN"
+    clinicain = "CLINICIAN"
+    it = "IT"
+    researcher = "RESEARCHER"
+    senior_clinician = "SENIOR_CLINICIAN"
+    senior_researcher = "SENIOR_RESEARCHER"
+
 
 class GroupUserBase(SQLModel):
-    pass
+    group_id: int = Field(foreign_key="groups.id")
+    user_id: int = Field(foreign_key="users.id")
+    role: UserRoleEnum = Field(sa_column=Column(Enum(UserRoleEnum)))
 
 
 class GroupUser(GroupUserBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class GroupUserCreate(GroupUserBase):
@@ -758,18 +843,25 @@ class GroupUserCreate(GroupUserBase):
 
 
 class GroupUserRead(GroupUserBase):
-    pass
+    id: int
 
 
 # --- Hnf1bClinicalPicture --- #
 
 
 class Hnf1bClinicalPictureBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    date_of_picture: date
+    single_kidney: bool
+    hyperuricemia_gout: bool
+    genital_malformation: bool
+    genital_malformation_details: str
+    familial_cystic_disease: bool
+    hypertension: bool
 
 
 class Hnf1bClinicalPicture(Hnf1bClinicalPictureBase, table=True):
-    pass
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
 
 
 class Hnf1bClinicalPictureCreate(Hnf1bClinicalPictureBase):
@@ -777,18 +869,23 @@ class Hnf1bClinicalPictureCreate(Hnf1bClinicalPictureBase):
 
 
 class Hnf1bClinicalPictureRead(Hnf1bClinicalPictureBase):
-    pass
+    id: UUID
 
 
 # --- Hospitalisation --- #
 
 
 class HospitalisationBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    source_group_id: int = Field(foreign_key="groups.id")
+    source_type: str
+    date_of_admission: datetime
+    date_of_discharge: datetime
+    reason_of_admission: str
 
 
 class Hospitalisation(HospitalisationBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class HospitalisationCreate(HospitalisationBase):
@@ -796,18 +893,24 @@ class HospitalisationCreate(HospitalisationBase):
 
 
 class HospitalisationRead(HospitalisationBase):
-    pass
+    id: UUID
 
 
 # --- IndiaEthnicity --- #
 
 
 class IndiaEthnicityBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    source_group_id: int = Field(foreign_key="groups.id")
+    source_type: str
+    father_ancestral_state: str
+    father_language: str
+    mother_ancestral_state: str
+    mother_language: str
 
 
 class IndiaEthnicity(IndiaEthnicityBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class IndiaEthnicityCreate(IndiaEthnicityBase):
@@ -815,18 +918,33 @@ class IndiaEthnicityCreate(IndiaEthnicityBase):
 
 
 class IndiaEthnicityRead(IndiaEthnicityBase):
-    pass
+    id: UUID
 
 
 # --- InsClinicalPicture --- #
 
 
 class InsClinicalPictureBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    date_of_picture: date
+    oedema: bool
+    hypovalaemia: bool
+    fever: bool
+    thrombosis: bool
+    peritonitis: bool
+    pulmonary_odemea: bool
+    hypertension: bool
+    rash: bool
+    rash_details: str
+    infection: bool
+    infection_details: str
+    ophthalmoscopy: bool
+    ophthalmoscopy_details: str
+    comments: str
 
 
 class InsClinicalPicture(InsClinicalPictureBase, table=True):
-    pass
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
 
 
 class InsClinicalPictureCreate(InsClinicalPictureBase):
@@ -834,18 +952,34 @@ class InsClinicalPictureCreate(InsClinicalPictureBase):
 
 
 class InsClinicalPictureRead(InsClinicalPictureBase):
-    pass
+    id: UUID
 
 
 # --- InsRelapse --- #
 
 
 class InsRelapseBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    date_of_relapse: date
+    kidney_type: str
+    viral_trigger: str
+    immunisation_trigger: str
+    other_trigger: str
+    high_dose_oral_prednisolone: bool
+    iv_methyl_prednisolone: bool
+    date_of_remission: date
+    remission_type: str
+    peak_acr: float
+    peak_pcr: float
+    remission_acr: float
+    remission_pcr: float
+    peak_protein_dipstick: str
+    remission_protein_dipstick: str
+    relapse_sample_taken: bool
 
 
 class InsRelapse(InsRelapseBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class InsRelapseCreate(InsRelapseBase):
@@ -853,18 +987,40 @@ class InsRelapseCreate(InsRelapseBase):
 
 
 class InsRelapseRead(InsRelapseBase):
-    pass
+    id: UUID
 
 
 # --- LiverDisease --- #
 
 
 class LiverDiseaseBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    portal_hypertension: bool
+    portal_hypertension_date: date
+    ascites: bool
+    ascites_date: date
+    oesophageal: bool
+    oesophageal_date: date
+    oesophageal_bleeding: bool
+    oesophageal_bleeding_date: date
+    gastric: bool
+    gastric_date: date
+    gastric_bleeding: bool
+    gastric_bleeding_date: date
+    anorectal: bool
+    anorectal_date: date
+    anorectal_bleeding: bool
+    anorectal_bleeding_date: date
+    cholangitis_acute: bool
+    cholangitis_acute_date: date
+    cholangitis_recurrent: bool
+    cholangitis_recurrent_date: date
+    spleen_palpable: bool
+    spleen_palpable_date: date
 
 
 class LiverDisease(LiverDiseaseBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class LiverDiseaseCreate(LiverDiseaseBase):
@@ -872,18 +1028,28 @@ class LiverDiseaseCreate(LiverDiseaseBase):
 
 
 class LiverDiseaseRead(LiverDiseaseBase):
-    pass
+    id: UUID
 
 
 # --- LiverImaging --- #
 
 
 class LiverImagingBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    source_group_id: int = Field(foreign_key="groups.id")
+    source_type: str
+    date: datetime
+    imaging_type: str
+    size: float
+    hepatic_fibrosis: bool
+    hepatic_cysts: bool
+    bile_duct_cysts: bool
+    dilated_bile_ducts: bool
+    cholangitis: bool
 
 
 class LiverImaging(LiverImagingBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class LiverImagingCreate(LiverImagingBase):
@@ -891,18 +1057,29 @@ class LiverImagingCreate(LiverImagingBase):
 
 
 class LiverImagingRead(LiverImagingBase):
-    pass
+    id: UUID
 
 
 # --- LiverTransplant --- #
 
 
 class LiverTransplantBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    source_group_id: int = Field(foreign_key="groups.id")
+    source_type: str
+    transplant_group_id: int = Field(foreign_key="groups.id")
+    registration_date: date
+    transplant_date: date
+    # TODO: More arrays!!!
+    indications: dict = Field(sa_column=Column(ARRAY(str)))
+    other_indications: str
+    first_graft_source: str
+    loss_reason: str
+    other_loss_reason: str
 
 
 class LiverTransplant(LiverTransplantBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class LiverTransplantCreate(LiverTransplantBase):
@@ -910,12 +1087,12 @@ class LiverTransplantCreate(LiverTransplantBase):
 
 
 class LiverTransplantRead(LiverTransplantBase):
-    pass
+    id: UUID
 
 
 # --- Log --- #
 
-
+# TODO: Remove this table and come up with a better solution
 class LogBase(SQLModel):
     pass
 
