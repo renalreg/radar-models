@@ -1,14 +1,13 @@
 import enum
 from datetime import datetime, date
-from msilib import sequence
 from multiprocessing.dummy import Array
-from token import OP
 from typing import Optional
 from uuid import UUID, uuid4
-import uuid
 
 from sqlalchemy import ARRAY, Column
 from sqlmodel import Enum, Field, Relationship, SQLModel
+from sqlalchemy.dialects.postgresql import INET, JSONB
+
 
 # --- AlportClinicalPicture --- #
 
@@ -1074,7 +1073,8 @@ class LiverTransplantBase(SQLModel):
     registration_date: date
     transplant_date: date
     # TODO: More arrays!!!
-    indications: dict = Field(sa_column=Column(ARRAY(str)))
+    # TODO: Trying out a JSONB type. If it works apply to all
+    indications: JSONB
     other_indications: str
     first_graft_source: str
     loss_reason: str
@@ -1950,34 +1950,48 @@ class RituximabCriterionRead(RituximabCriterionBase):
     id: UUID
 
 
-# --- SaltWastingClinicalFe --- #
+# --- SaltWastingClinicalFeature --- #
 
 
-class SaltWastingClinicalFeBase(SQLModel):
+class SaltWastingClinicalFeatureBase(SQLModel):
+    patient_id: int = Field(foreign_key="patients.id")
+    normal_pregnancy: bool
+    abnormal_pregnancy_text: str
+    neurological_problems: bool
+    seizures: bool
+    abnormal_gait: bool
+    deafness: bool
+    other_neurological_problem: bool
+    other_neurological_problem_text: str
+    joint_problems: bool
+    joint_problems_age: int
+    x_ray_abnormalities: bool
+    chondrocalcinosis: bool
+    other_x_ray_abnormality: bool
+    other_x_ray_abnormality_text: str
+
+
+class SaltWastingClinicalFeature(SaltWastingClinicalFeatureBase, table=True):
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+
+
+class SaltWastingClinicalFeatureCreate(SaltWastingClinicalFeatureBase):
     pass
 
 
-class SaltWastingClinicalFe(SaltWastingClinicalFeBase, table=True):
-    pass
-
-
-class SaltWastingClinicalFeCreate(SaltWastingClinicalFeBase):
-    pass
-
-
-class SaltWastingClinicalFeRead(SaltWastingClinicalFeBase):
-    pass
+class SaltWastingClinicalFeatureRead(SaltWastingClinicalFeatureBase):
+    id: UUID
 
 
 # --- Specialty --- #
 
 
 class SpecialtyBase(SQLModel):
-    pass
+    name: str = Field(unique=True)
 
 
 class Specialty(SpecialtyBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class SpecialtyCreate(SpecialtyBase):
@@ -1985,18 +1999,30 @@ class SpecialtyCreate(SpecialtyBase):
 
 
 class SpecialtyRead(SpecialtyBase):
-    pass
+    id: int
 
 
 # --- Transplant --- #
 
 
 class TransplantBase(SQLModel):
-    pass
+    patient_id: int = Field(foreign_key="patients.id")
+    source_group_id: int = Field(foreign_key="groups.id")
+    transplant_group_id: int = Field(foreign_key="groups.id")
+    source_type: str
+    date: date
+    modality: int
+    date_of_recurrence: date
+    date_of_failure: date
+    recurrence: bool
+    date_of_cmv_infection: date
+    donor_hla: str
+    recipient_hla: str
+    graft_loss_cause: str
 
 
 class Transplant(TransplantBase, table=True):
-    pass
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
 
 
 class TransplantCreate(TransplantBase):
@@ -2004,18 +2030,20 @@ class TransplantCreate(TransplantBase):
 
 
 class TransplantRead(TransplantBase):
-    pass
+    id: UUID
 
 
 # --- TransplantBiopsy --- #
 
 
 class TransplantBiopsyBase(SQLModel):
-    pass
+    transplant_id: int = Field(foreign_key="transplants.id")
+    date_of_biopsy: date
+    recurrence: bool
 
 
 class TransplantBiopsy(TransplantBiopsyBase, table=True):
-    pass
+    id: int = Field(default=None, primary_key=True)
 
 
 class TransplantBiopsyCreate(TransplantBiopsyBase):
@@ -2023,18 +2051,20 @@ class TransplantBiopsyCreate(TransplantBiopsyBase):
 
 
 class TransplantBiopsyRead(TransplantBiopsyBase):
-    pass
+    id: int
 
 
 # --- TransplantRejection --- #
 
 
 class TransplantRejectionBase(SQLModel):
-    pass
+    transplant_id: int = Field(foreign_key="transplants.id")
+    # TODO: Rename rejection date
+    date_of_rejection: date
 
 
 class TransplantRejection(TransplantRejectionBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class TransplantRejectionCreate(TransplantRejectionBase):
@@ -2042,7 +2072,7 @@ class TransplantRejectionCreate(TransplantRejectionBase):
 
 
 class TransplantRejectionRead(TransplantRejectionBase):
-    pass
+    id: int
 
 
 # --- User --- #
@@ -2089,11 +2119,13 @@ class UserRead(UserBase):
 
 
 class UserSessionBase(SQLModel):
-    pass
+    user_id: int = Field(foreign_key="users.id")
+    date: datetime
+    ip_address: INET
 
 
 class UserSession(UserSessionBase, table=True):
-    pass
+    id: Optional[int] = Field(default=None, primary_key=True)
 
 
 class UserSessionCreate(UserSessionBase):
@@ -2101,4 +2133,4 @@ class UserSessionCreate(UserSessionBase):
 
 
 class UserSessionRead(UserSessionBase):
-    pass
+    id: int
