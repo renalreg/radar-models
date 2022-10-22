@@ -1,5 +1,6 @@
 import enum
 from datetime import datetime, date
+from msilib.schema import tables
 from multiprocessing.dummy import Array
 from typing import Optional
 from uuid import UUID, uuid4
@@ -15,7 +16,7 @@ from sqlalchemy.dialects.postgresql import INET, JSONB
 class AlportClinicalPictureBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", index=True)
     date_of_picture: date
-    deafness_state: int
+    deafness_index: int
     deafness_date: Optional[date]
     hearing_aid_date: Optional[date]
 
@@ -143,71 +144,56 @@ class CohortCreate(CohortBase):
 
 
 # # --- Consent --- #
-# # TODO: SHould be a table
 
 
-# class ConsentTypeEnum(str, enum.Enum):
-#     form = "FORM"
-#     information_sheet = "INFORMATION_SHEET"
+class ConsentBase(SQLModel):
+    consent_code: str
+    consent_label: Optional[str]
+    is_paediatric: bool = Field(default=False)
+    release_date: date
+    consent_url: str
+    is_retired: bool = Field(default=False)
 
 
-# class ConsentBase(SQLModel):
-#     code: str
-#     label: Optional[str]
-#     paediatric: bool = Field(default=False)
-#     from_date: datetime
-#     link_url: str
-#     retired: bool = Field(default=False)
-#     consent_type: ConsentTypeEnum = Field(sa_column=Column(Enum(ConsentTypeEnum)))
-#     weight: int
+class Consent(ConsentBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class Consents(ConsentBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class ConsentCreate(ConsentBase):
+    pass
 
 
-# class ConsentsCreate(ConsentBase):
-#     pass
+class ConsentRead(ConsentBase):
+    id: int
 
 
-# class ConsentRead(ConsentBase):
-#     id: int
+# --- Consultant --- #
+# TODO: Composite index
+# TODO: Question the need for consultants data
 
 
-# # --- Consultant --- #
-# # TODO: Composite index
-# # TODO: Question the need for consultants data
+class ConsultantBase(SQLModel):
+    specialty_id: int = Field(foreign_key="specialty.id")
+    first_name: str
+    last_name: str
+    email: Optional[str]
+    telephone_number: Optional[str]
+    gmc_number: Optional[int]
 
 
-# class ConsultantBase(SQLModel):
-#     first_name: str
-#     last_name: str
-#     email: Optional[str]
-#     telephone_number: Optional[str]
-#     # TODO:
-#     gmc_number: Optional[int]
-#     specialty_id: int = Field(foreign_key="groups.id")
-
-#     specialty: Specialty = Relationship(back_populates="specialty")
+class Consultant(ConsultantBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class Consultant(ConsultantBase, table=True):
-#     pass
+class ConsultantCreate(ConsultantBase):
+    pass
 
 
-# class ConsultantCreate(ConsultantBase):
-#     pass
-
-
-# class ConsultantRead(ConsultantBase):
-#     pass
+class ConsultantRead(ConsultantBase):
+    id: int
 
 
 # --- Country --- #
-# TODO: This table seems to only be used by groups and almost all of them
-# are GB. Is this used by anything else? Can we remove this?
-
-# TODO: Check handling of primary key
 
 
 class CountryBase(SQLModel):
@@ -227,96 +213,79 @@ class CountryRead(CountryBase):
     id: int
 
 
-# # --- CountryEthnicity --- #
+# --- CountryEthnicity --- #
 
 
-# class CountryEthnicityBase(SQLModel):
-#     ethnicity_id: int = Field(foreign_key="ethnicities.id")
-#     country_code: str = Field(foreign_key="countries.code")
+class CountryEthnicityBase(SQLModel):
+    ethnicity_id: int = Field(foreign_key="ethnicity.id")
+    country_id: int = Field(foreign_key="country.id")
 
 
-# class CountryEthnicity(CountryEthnicityBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class CountryEthnicity(CountryEthnicityBase, table=True):
+    __tablename__: str = "country_ethnicity"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class CountryEthnicityCreate(CountryEthnicityBase):
-#     pass
+class CountryEthnicityCreate(CountryEthnicityBase):
+    pass
 
 
-# class CountryEthnicityRead(CountryEthnicityBase):
-#     id: int
+class CountryEthnicityRead(CountryEthnicityBase):
+    id: int
 
 
-# # --- CountryNationality --- #
+# --- CountryNationality --- #
 
 
-# class CountryNationalityBase(SQLModel):
-#     nationality_id: int = Field(foreign_key="nationalities.id")
-#     country_code: int = Field(foreign_key="countries.code")
+class CountryNationalityBase(SQLModel):
+    nationality_id: int = Field(foreign_key="nationality.id")
+    country_id: int = Field(foreign_key="country.id")
 
 
-# class CountryNationality(CountryNationalityBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class CountryNationality(CountryNationalityBase, table=True):
+    __tablename__: str = "country_nationality"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class CountryNationalityCreate(CountryNationalityBase):
-#     pass
+class CountryNationalityCreate(CountryNationalityBase):
+    pass
 
 
-# class CountryNationalityRead(CountryNationalityBase):
-#     id: int
+class CountryNationalityRead(CountryNationalityBase):
+    id: int
 
 
-# # --- CurrentMedication --- #
+# --- CurrentMedication --- #
 
 
-# class CurrentMedicationBase(SQLModel):
-#     patient_id: int = Field(foreign_key="patients.id")
-#     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
-#     date_recorded: date
-#     drug_id: int = Field(foreign_key="drugs.id")
-#     dose_quantity: Optional[float]
-#     dose_unit: Optional[str]
-#     frequency: Optional[str]
-#     route: Optional[str]
-#     drug_text: Optional[str]
-#     dose_text: Optional[str]
+class CurrentMedicationBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    cohort_id: int = Field(foreign_key="cohort.id")
+    drug_id: int = Field(foreign_key="drug.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    recorded_date: date
+    dose_quantity: Optional[float]
+    dose_unit: Optional[str]
+    frequency: Optional[str]
+    route: Optional[str]
+    drug_text: Optional[str]
+    dose_text: Optional[str]
 
 
-# class CurrentMedication(CurrentMedicationBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class CurrentMedication(CurrentMedicationBase, table=True):
+    __tablename__: str = "current_medication"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class CurrentMedicationCreate(CurrentMedicationBase):
-#     pass
+class CurrentMedicationCreate(CurrentMedicationBase):
+    pass
 
 
-# class CurrentMedicationRead(CurrentMedicationBase):
-#     id: int
+class CurrentMedicationRead(CurrentMedicationBase):
+    id: int
 
 
-# # --- Diagnoses --- #
-
-
-# class DiagnosesBase(SQLModel):
-#     name: str
-#     retired: bool = Field(default=False)
-
-
-# class Diagnoses(DiagnosesBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
-
-
-# class DiagnosesCreate(DiagnosesBase):
-#     pass
-
-
-# class DiagnosesRead(DiagnosesBase):
-#     id: int
-
-
-# --- DiagnosisCode --- #
+# --- ClassificationCode --- #
 # TODO: check current indexes and check constraints
 
 
@@ -339,90 +308,132 @@ class ClassificationCodeRead(ClassificationCodeBase):
     id: int
 
 
-# # --- DiagnosisCode --- #
-# # TODO: composite index
+# --- DataSource --- #
 
 
-# class DiagnosisCodeBase(SQLModel):
-#     diagnosis_id: int = Field(foreign_key="diagnoses.id")
-#     code_id: int = Field(foreign_key="codes.id")
+class DataSourceBase(SQLModel):
+    data_source_name: str
 
 
-# class DiagnosisCode(DiagnosisCodeBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class DataSource(DataSourceBase, table=True):
+    __tablename__: str = "data_source"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class DiagnosisCodeCreate(DiagnosisCodeBase):
-#     pass
+class DataSourceCreate(DataSourceBase):
+    pass
 
 
-# class DiagnosisCodeRead(DiagnosisCodeBase):
-#     id: int
+class DataSourceRead(DataSourceBase):
+    id: int
 
 
-# # --- Dialysis --- #
+# --- Diagnoses --- #
 
 
-# class DialysisBase(SQLModel):
-#     patient_id: int = Field(foreign_key="patients.id")
-#     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
-#     from_date: date
-#     to_date: Optional[date]
-#     modality: int
+class DiagnosisBase(SQLModel):
+    diagnosis_name: str
+    is_retired: bool = Field(default=False)
 
 
-# class Dialysis(DialysisBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class Diagnosis(DiagnosisBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class DialysisCreate(DialysisBase):
-#     pass
+class DiagnosisCreate(DiagnosisBase):
+    pass
 
 
-# class DialysisRead(DialysisBase):
-#     id: int
+class DiagnosisRead(DiagnosisBase):
+    id: int
 
 
-# # --- Drug --- #
+# --- DiagnosisCode --- #
+# TODO: composite index
 
 
-# class DrugBase(SQLModel):
-#     name: str
-#     drug_group_id: Optional[int] = Field(foreign_key="drug_groups.id")
+class DiagnosisCodeBase(SQLModel):
+    diagnosis_id: int = Field(foreign_key="diagnosis.id")
+    classification_code_id: int = Field(foreign_key="classification_code.id")
 
 
-# class Drug(DrugBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class DiagnosisCode(DiagnosisCodeBase, table=True):
+    __tablename__: str = "diagnosis_code"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class DrugCreate(DrugBase):
-#     pass
+class DiagnosisCodeCreate(DiagnosisCodeBase):
+    pass
 
 
-# class DrugRead(DrugBase):
-#     id: int
+class DiagnosisCodeRead(DiagnosisCodeBase):
+    id: int
 
 
-# # --- DrugGroup --- #
+# --- Dialysis --- #
 
 
-# class DrugGroupBase(SQLModel):
-#     name: Optional[str] = Field(unique=True)
-#     # TODO: Check that everything in here makes sense
-#     parent_drug_group_id: Optional[int] = Field(foreign_key="drug_groups.id")
+class DialysisBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    hospital_id: int = Field(foreign_key="hospital.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    timeline_start: date
+    timeline_end: Optional[date]
+    modality: int
 
 
-# class DrugGroup(DrugGroupBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class Dialysis(DialysisBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class DrugGroupCreate(DrugGroupBase):
-#     pass
+class DialysisCreate(DialysisBase):
+    pass
 
 
-# class DrugGroupRead(DrugGroupBase):
-#     id: int
+class DialysisRead(DialysisBase):
+    id: int
+
+
+# --- Drug --- #
+
+
+class DrugBase(SQLModel):
+    drug_name: str
+    drug_group_id: Optional[int] = Field(foreign_key="drug_group.id")
+
+
+class Drug(DrugBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class DrugCreate(DrugBase):
+    pass
+
+
+class DrugRead(DrugBase):
+    id: int
+
+
+# --- DrugGroup --- #
+
+
+class DrugGroupBase(SQLModel):
+    drug_group: Optional[str] = Field(unique=True)
+    # TODO: Check that everything in here makes sense
+    parent_drug_group_id: Optional[int] = Field(foreign_key="drug_group.id")
+
+
+class DrugGroup(DrugGroupBase, table=True):
+    __tablename__: str = "drug_group"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class DrugGroupCreate(DrugGroupBase):
+    pass
+
+
+class DrugGroupRead(DrugGroupBase):
+    id: int
 
 
 # # --- Entry --- #
@@ -448,69 +459,70 @@ class ClassificationCodeRead(ClassificationCodeBase):
 #     id: int
 
 
-# # --- Ethnicity --- #
+# --- Ethnicity --- #
 
 
-# class EthnicityBase(SQLModel):
-#     code: str
-#     label: str
+class EthnicityBase(SQLModel):
+    ethnicity_code: str
+    ethnicity_label: str
 
 
-# class Ethnicity(EthnicityBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class Ethnicity(EthnicityBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class EthnicityCreate(EthnicityBase):
-#     pass
+class EthnicityCreate(EthnicityBase):
+    pass
 
 
-# class EthnicityRead(EthnicityBase):
-#     id: int
+class EthnicityRead(EthnicityBase):
+    id: int
 
 
-# # --- FamilyHistory --- #
+# --- FamilyHistory --- #
 
 
-# class FamilyHistoryBase(SQLModel):
-#     patient_id: int = Field(foreign_key="patients.id")
-#     group_id: int = Field(foreign_key="groups.id")
-#     parental_consanguinity: bool
-#     family_history: bool
-#     other_family_history: str
+class FamilyHistoryBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    cohort_id: int = Field(foreign_key="cohort.id")
+    is_parental_consanguinity: bool
+    is_family_history: bool
+    other_family_history: Optional[str]
 
 
-# class FamilyHistory(FamilyHistoryBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class FamilyHistory(FamilyHistoryBase, table=True):
+    __tablename__: str = "family_history"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class FamilyHistoryCreate(FamilyHistoryBase):
-#     pass
+class FamilyHistoryCreate(FamilyHistoryBase):
+    pass
 
 
-# class FamilyHistoryRead(FamilyHistoryBase):
-#     id: int
+class FamilyHistoryRead(FamilyHistoryBase):
+    id: int
 
 
-# # --- FamilyHistoryRelative --- #
+# --- FamilyHistoryRelative --- #
 
 
-# class FamilyHistoryRelativeBase(SQLModel):
-#     family_history_id: int = Field(foreign_key="family_histories.id")
-#     relationship: int
-#     # TODO: This seems poorly named, although it is trying to point at a patient
-#     patient_id: int = Field(foreign_key="patients.id")
+class FamilyHistoryRelationBase(SQLModel):
+    family_history_id: int = Field(foreign_key="family_history.id")
+    relation_id: int = Field(foreign_key="relation.id")
+    relative_patient_id: int = Field(foreign_key="patient.id")
 
 
-# class FamilyHistoryRelative(FamilyHistoryRelativeBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class FamilyHistoryRelation(FamilyHistoryRelationBase, table=True):
+    __tablename__: str = "family_history_relation"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class FamilyHistoryRelativeCreate(FamilyHistoryRelativeBase):
-#     pass
+class FamilyHistoryRelationCreate(FamilyHistoryRelationBase):
+    pass
 
 
-# class FamilyHistoryRelativeRead(FamilyHistoryRelativeBase):
-#     id: int
+class FamilyHistoryRelationRead(FamilyHistoryRelationBase):
+    id: int
 
 
 # # --- FetalAnomalyScan --- #
@@ -519,7 +531,7 @@ class ClassificationCodeRead(ClassificationCodeBase):
 # class FetalAnomalyScanBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date_of_scan: date
 #     gestational_age: int
 #     oligohydramnios: bool
@@ -555,7 +567,7 @@ class ClassificationCodeRead(ClassificationCodeBase):
 # class FetalUltrasoundBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date_of_scan: date
 #     fetal_identifier: Optional[str]
 #     gestational_age: int
@@ -892,7 +904,7 @@ class HospitalRead(HospitalBase):
 # class HospitalisationBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date_of_admission: datetime
 #     date_of_discharge: datetime
 #     reason_of_admission: str
@@ -916,7 +928,7 @@ class HospitalRead(HospitalBase):
 # class IndiaEthnicityBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     father_ancestral_state: str
 #     father_language: str
 #     mother_ancestral_state: str
@@ -1051,7 +1063,7 @@ class HospitalRead(HospitalBase):
 # class LiverImagingBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date: datetime
 #     imaging_type: str
 #     size: float
@@ -1080,7 +1092,7 @@ class HospitalRead(HospitalBase):
 # class LiverTransplantBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     transplant_group_id: int = Field(foreign_key="groups.id")
 #     registration_date: date
 #     transplant_date: date
@@ -1130,7 +1142,7 @@ class HospitalRead(HospitalBase):
 # class MedicationBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     from_date: date
 #     to_date: date
 #     drug_id: int = Field(foreign_key="drugs.id")
@@ -1183,23 +1195,23 @@ class HospitalRead(HospitalBase):
 #     id: int
 
 
-# # --- Nationality --- #
+# --- Nationality --- #
 
 
-# class NationalityBase(SQLModel):
-#     label: str
+class NationalityBase(SQLModel):
+    nationality_label: str
 
 
-# class Nationality(NationalityBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class Nationality(NationalityBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class NationalityCreate(NationalityBase):
-#     pass
+class NationalityCreate(NationalityBase):
+    pass
 
 
-# class NationalityRead(NationalityBase):
-#     id: int
+class NationalityRead(NationalityBase):
+    id: int
 
 
 # # --- Nephrectomy --- #
@@ -1208,7 +1220,7 @@ class HospitalRead(HospitalBase):
 # class NephrectomyBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date: date
 #     kidney_side: str
 #     kidney_type: str
@@ -1396,7 +1408,7 @@ class HospitalRead(HospitalBase):
 # class NutritionBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     feeding_type: str
 #     from_date: date
 #     to_date: date
@@ -1469,7 +1481,7 @@ class HospitalRead(HospitalBase):
 # class PathologyBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date: date
 #     kidney_type: str
 #     kidney_side: str
@@ -1518,7 +1530,7 @@ class PatientRead(PatientBase):
 # class PatientAddressBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     from_date: date
 #     to_date: date
 #     address1: str
@@ -1617,7 +1629,7 @@ class PatientRead(PatientBase):
 #     source_group_id: int = Field(foreign_key="groups.id")
 #     ethnicity_id: int = Field(foreign_key="ethnicities.id")
 #     nationality_id: Field(foreign_key="nationalities.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     first_name: str
 #     last_name: str
 #     date_of_birth: date
@@ -1649,7 +1661,7 @@ class PatientRead(PatientBase):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
 #     diagnosis_id: int = Field(foreign_key="diagnoses.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     diagnosis_text: str
 #     symptoms_date: date
 #     from_date: date
@@ -1702,7 +1714,7 @@ class PatientRead(PatientBase):
 
 #     patient_id: int = Field(foreign_key="patients.id", index=True)
 #     source_group_id: int = Field(foreign_key="groups.id", index=True)
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     number_group_id: int = Field(foreign_key="groups.id", index=True)
 #     number: str
 
@@ -1725,7 +1737,7 @@ class PatientRead(PatientBase):
 # class PlasmapheresiBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     from_date: date
 #     to_date: date
 #     # TODO: rename to just exchanges
@@ -1796,6 +1808,24 @@ class PatientRead(PatientBase):
 # class PregnancyRead(PregnancyBase):
 #     id: int
 
+# --- Relation --- #
+
+
+class RelationBase(SQLModel):
+    relationship: str
+
+
+class Relation(RelationBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class RelationCreate(RelationBase):
+    pass
+
+
+class RelationRead(RelationBase):
+    id: int
+
 
 # # --- RenalImaging --- #
 
@@ -1803,7 +1833,7 @@ class PatientRead(PatientBase):
 # class RenalImagingBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date: datetime
 #     imaging_type: str
 #     right_present: bool
@@ -1871,7 +1901,7 @@ class PatientRead(PatientBase):
 # class ResultBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date: datetime
 #     value: str
 
@@ -1894,7 +1924,7 @@ class PatientRead(PatientBase):
 # class RituximabBaselineAssessmentBase(SQLModel):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date: date
 #     nephropathy: str
 #     # TODO: More array madness
@@ -1995,23 +2025,23 @@ class PatientRead(PatientBase):
 #     id: int
 
 
-# # --- Specialty --- #
+# --- Specialty --- #
 
 
-# class SpecialtyBase(SQLModel):
-#     name: str = Field(unique=True)
+class SpecialtyBase(SQLModel):
+    specialty: str = Field(unique=True)
 
 
-# class Specialty(SpecialtyBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class Specialty(SpecialtyBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class SpecialtyCreate(SpecialtyBase):
-#     pass
+class SpecialtyCreate(SpecialtyBase):
+    pass
 
 
-# class SpecialtyRead(SpecialtyBase):
-#     id: int
+class SpecialtyRead(SpecialtyBase):
+    id: int
 
 
 # # --- Transplant --- #
@@ -2021,7 +2051,7 @@ class PatientRead(PatientBase):
 #     patient_id: int = Field(foreign_key="patients.id")
 #     source_group_id: int = Field(foreign_key="groups.id")
 #     transplant_group_id: int = Field(foreign_key="groups.id")
-#     source_type: str
+#     data_source_id: int = Field(foreign_key="data_source.id")
 #     date: date
 #     modality: int
 #     date_of_recurrence: date
