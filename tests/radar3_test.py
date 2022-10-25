@@ -1,4 +1,6 @@
 from copyreg import dispatch_table
+from pickletools import pybool
+from xml.dom import WrongDocumentErr
 from sqlmodel import SQLModel, create_engine, Session
 from faker import Faker
 
@@ -171,5 +173,60 @@ session.add(
 session.add(
     FamilyHistoryRelation(family_history_id=1, relation_id=1, relative_patient_id=1)
 )
+
+session.add(
+    FetalAnomalyScan(
+        patient_id=1,
+        hospital_id=1,
+        data_source_id=1,
+        date_of_scan=f.date(),
+        gestational_age=f.pyint(),
+        oligohydramnios=f.pybool(),
+        right_anomaly_details=f.word(),
+        right_ultrasound_details=f.word(),
+        left_anomaly_details=f.word(),
+        left_ultrasound_details=f.word(),
+        hypoplasia=f.pybool(),
+        echogenicity=f.pybool(),
+        hepatic_abnormalities=f.pybool(),
+        hepatic_abnormality_details=f.word(),
+        lung_abnormalities=f.pybool(),
+        lung_abnormality_details=f.word(),
+        amnioinfusion=f.pybool(),
+        amnioinfusion_count=f.pyint(),
+    )
+)
+
+session.add(
+    FetalUltrasound(
+        patient_id=1,
+        hospital_id=1,
+        data_source_id=1,
+        date_of_scan=f.date(),
+        fetal_identifier=f.word(),
+        gestational_age=f.pyint(max_value=110),
+        head_centile=f.pyint(max_value=80),
+        abdomen_centile=f.pyint(max_value=150),
+        uterine_artery_notched=f.pybool(),
+        liquor_volume=f.word(),
+        fetal_ultrasound_comment=f.sentence(nb_words=10),
+    )
+)
+
+session.add(
+    FuanClinicalPicture(
+        patient_id=1,
+        picture_date=f.date(),
+        gout=f.pybool(),
+        gout_date=f.date(),
+        family_gout=f.date(),
+        family_gout_relatives=f.pylist(value_types=["int"]),
+        thp=f.word(),
+        uti=f.word(),
+        fuan_comments=f.sentence(nb_words=10),
+    )
+)
+
+session.add(FuanClinicalPictureRelative(fuan_clinical_picture_id=1, relation_id=1))
 
 session.commit()

@@ -2,11 +2,11 @@ import enum
 from datetime import datetime, date
 from msilib.schema import tables
 from multiprocessing.dummy import Array
-from typing import Optional
+from typing import Optional, ClassVar, Union, Callable
 from uuid import UUID, uuid4
 
 from sqlalchemy import ARRAY, Column, BigInteger
-from sqlmodel import Enum, Field, Relationship, SQLModel
+from sqlmodel import Enum, Field, Relationship, SQLModel, Integer
 from sqlalchemy.dialects.postgresql import INET, JSONB
 
 
@@ -22,7 +22,7 @@ class AlportClinicalPictureBase(SQLModel):
 
 
 class AlportClinicalPicture(AlportClinicalPictureBase, table=True):
-    __tablename__: str = "alport_clinical_picture"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "alport_clinical_picture"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -65,7 +65,7 @@ class BiomarkerBarcodeBase(SQLModel):
 
 
 class BiomarkerBarcode(BiomarkerBarcodeBase, table=True):
-    __tablename__: str = "biomarker_barcode"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "biomarker_barcode"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -89,7 +89,7 @@ class BiomarkerResultBase(SQLModel):
 
 
 class BiomarkerResult(BiomarkerResultBase, table=True):
-    __tablename__: str = "biomarker_result"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "biomarker_result"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -110,7 +110,7 @@ class BiomarkerSampleBase(SQLModel):
 
 
 class BiomarkerSample(BiomarkerSampleBase, table=True):
-    __tablename__: str = "biomarker_sample"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "biomarker_sample"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -222,7 +222,7 @@ class CountryEthnicityBase(SQLModel):
 
 
 class CountryEthnicity(CountryEthnicityBase, table=True):
-    __tablename__: str = "country_ethnicity"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "country_ethnicity"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -243,7 +243,7 @@ class CountryNationalityBase(SQLModel):
 
 
 class CountryNationality(CountryNationalityBase, table=True):
-    __tablename__: str = "country_nationality"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "country_nationality"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -273,7 +273,7 @@ class CurrentMedicationBase(SQLModel):
 
 
 class CurrentMedication(CurrentMedicationBase, table=True):
-    __tablename__: str = "current_medication"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "current_medication"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -296,7 +296,7 @@ class ClassificationCodeBase(SQLModel):
 
 
 class ClassificationCode(ClassificationCodeBase, table=True):
-    __tablename__: str = "classification_code"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "classification_code"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -316,7 +316,7 @@ class DataSourceBase(SQLModel):
 
 
 class DataSource(DataSourceBase, table=True):
-    __tablename__: str = "data_source"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "data_source"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -358,7 +358,7 @@ class DiagnosisCodeBase(SQLModel):
 
 
 class DiagnosisCode(DiagnosisCodeBase, table=True):
-    __tablename__: str = "diagnosis_code"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "diagnosis_code"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -424,7 +424,7 @@ class DrugGroupBase(SQLModel):
 
 
 class DrugGroup(DrugGroupBase, table=True):
-    __tablename__: str = "drug_group"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "drug_group"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -491,7 +491,7 @@ class FamilyHistoryBase(SQLModel):
 
 
 class FamilyHistory(FamilyHistoryBase, table=True):
-    __tablename__: str = "family_history"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "family_history"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -509,11 +509,11 @@ class FamilyHistoryRead(FamilyHistoryBase):
 class FamilyHistoryRelationBase(SQLModel):
     family_history_id: int = Field(foreign_key="family_history.id")
     relation_id: int = Field(foreign_key="relation.id")
-    relative_patient_id: int = Field(foreign_key="patient.id")
+    relative_patient_id: Optional[int] = Field(foreign_key="patient.id")
 
 
 class FamilyHistoryRelation(FamilyHistoryRelationBase, table=True):
-    __tablename__: str = "family_history_relation"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "family_history_relation"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -525,69 +525,71 @@ class FamilyHistoryRelationRead(FamilyHistoryRelationBase):
     id: int
 
 
-# # --- FetalAnomalyScan --- #
+# --- FetalAnomalyScan --- #
 
 
-# class FetalAnomalyScanBase(SQLModel):
-#     patient_id: int = Field(foreign_key="patients.id")
-#     source_group_id: int = Field(foreign_key="groups.id")
-#     data_source_id: int = Field(foreign_key="data_source.id")
-#     date_of_scan: date
-#     gestational_age: int
-#     oligohydramnios: bool
-#     right_anomaly_details: Optional[str]
-#     right_ultrasound_details: Optional[str]
-#     left_anomaly_details: Optional[str]
-#     left_ultrasound_details: Optional[str]
-#     hypoplasia: Optional[bool]
-#     echogenicity: Optional[bool]
-#     hepatic_abnormalities: Optional[bool]
-#     hepatic_abnormality_details: Optional[str]
-#     lung_abnormalities: Optional[bool]
-#     lung_abnormality_details: Optional[str]
-#     amnioinfusion: Optional[bool]
-#     amnioinfusion_count: Optional[int]
+class FetalAnomalyScanBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    hospital_id: int = Field(foreign_key="hospital.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    date_of_scan: date
+    gestational_age: int
+    oligohydramnios: bool
+    right_anomaly_details: Optional[str]
+    right_ultrasound_details: Optional[str]
+    left_anomaly_details: Optional[str]
+    left_ultrasound_details: Optional[str]
+    hypoplasia: Optional[bool]
+    echogenicity: Optional[bool]
+    hepatic_abnormalities: Optional[bool]
+    hepatic_abnormality_details: Optional[str]
+    lung_abnormalities: Optional[bool]
+    lung_abnormality_details: Optional[str]
+    amnioinfusion: Optional[bool]
+    amnioinfusion_count: Optional[int]
 
 
-# class FetalAnomalyScan(FetalAnomalyScanBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class FetalAnomalyScan(FetalAnomalyScanBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "fetal_anomaly_scan"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class FetalAnomalyScanCreate(FetalAnomalyScanBase):
-#     pass
+class FetalAnomalyScanCreate(FetalAnomalyScanBase):
+    pass
 
 
-# class FetalAnomalyScanRead(FetalAnomalyScanBase):
-#     id: int
+class FetalAnomalyScanRead(FetalAnomalyScanBase):
+    id: int
 
 
-# # --- FetalUltrasound --- #
+# --- FetalUltrasound --- #
 
 
-# class FetalUltrasoundBase(SQLModel):
-#     patient_id: int = Field(foreign_key="patients.id")
-#     source_group_id: int = Field(foreign_key="groups.id")
-#     data_source_id: int = Field(foreign_key="data_source.id")
-#     date_of_scan: date
-#     fetal_identifier: Optional[str]
-#     gestational_age: int
-#     head_centile: Optional[int]
-#     abdomen_centile: Optional[int]
-#     uterine_artery_notched: Optional[bool]
-#     liquor_volume: Optional[str]
-#     comments: Optional[str]
+class FetalUltrasoundBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    hospital_id: int = Field(foreign_key="hospital.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    date_of_scan: date
+    fetal_identifier: Optional[str]
+    gestational_age: int
+    head_centile: Optional[int]
+    abdomen_centile: Optional[int]
+    uterine_artery_notched: Optional[bool]
+    liquor_volume: Optional[str]
+    fetal_ultrasound_comment: Optional[str]
 
 
-# class FetalUltrasound(FetalUltrasoundBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class FetalUltrasound(FetalUltrasoundBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "fetal_ultrasound"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class FetalUltrasoundCreate(FetalUltrasoundBase):
-#     pass
+class FetalUltrasoundCreate(FetalUltrasoundBase):
+    pass
 
 
-# class FetalUltrasoundRead(FetalUltrasoundBase):
-#     id: int
+class FetalUltrasoundRead(FetalUltrasoundBase):
+    id: int
 
 
 # # --- Form --- #
@@ -612,32 +614,54 @@ class FamilyHistoryRelationRead(FamilyHistoryRelationBase):
 #     id: int
 
 
-# # --- FuanClinicalPicture --- #
+# --- FuanClinicalPicture --- #
 
 
-# class FuanClinicalPictureBase(SQLModel):
-#     patient_id: int = Field(foreign_key="patients.id")
-#     picture_date: date
-#     gout: bool
-#     gout_date: Optional[date]
-#     family_gout: Optional[bool]
-#     # TODO: This is the devils work. Should be using family_history_relatives table
-#     family_gout_relatives: dict = Field(sa_column=Column(ARRAY(int)))
-#     thp: Optional[str]
-#     uti: Optional[bool]
-#     comments: Optional[str]
+class FuanClinicalPictureBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    picture_date: date
+    gout: bool
+    gout_date: Optional[date]
+    family_gout: Optional[bool]
+    thp: Optional[str]
+    uti: Optional[bool]
+    comments: Optional[str]
 
 
-# class FuanClinicalPicture(FuanClinicalPictureBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class FuanClinicalPicture(FuanClinicalPictureBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "fuan_clinical_picture"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class FuanClinicalPictureCreate(FuanClinicalPictureBase):
-#     pass
+class FuanClinicalPictureCreate(FuanClinicalPictureBase):
+    pass
 
 
-# class FuanClinicalPictureRead(FuanClinicalPictureBase):
-#     id: int
+class FuanClinicalPictureRead(FuanClinicalPictureBase):
+    id: int
+
+
+# --- FuanClinicalPicture_relatives --- #
+
+
+class FuanClinicalPictureRelativeBase(SQLModel):
+    fuan_clinical_picture_id: int = Field(foreign_key="fuan_clinical_picture.id")
+    relation_id: int = Field(foreign_key="relation.id")
+
+
+class FuanClinicalPictureRelative(FuanClinicalPictureRelativeBase, table=True):
+    __tablename__: ClassVar[
+        Union[str, Callable[..., str]]
+    ] = "fuan_clinical_picture_relative"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class FuanClinicalPictureRelativeBaseCreate(FuanClinicalPictureRelativeBase):
+    pass
+
+
+class FuanClinicalPictureRelativeBaseRead(FuanClinicalPictureRelativeBase):
+    id: int
 
 
 # # --- Genetics --- #
