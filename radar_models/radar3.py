@@ -1,6 +1,5 @@
 import enum
 from datetime import datetime, date
-from msilib.schema import tables
 from multiprocessing.dummy import Array
 from typing import Optional, ClassVar, Union, Callable
 from uuid import UUID, uuid4
@@ -58,7 +57,6 @@ class BiomarkerRead(BiomarkerBase):
 
 
 class BiomarkerBarcodeBase(SQLModel):
-    # TODO: choose either pat_id or patient_id and make consistent across DB
     patient_id: int = Field(foreign_key="patient.id")
     barcode: str
     sample_date: datetime
@@ -143,6 +141,77 @@ class CohortCreate(CohortBase):
     id: int
 
 
+# --- CohortDiagnose --- #
+
+
+class CohortDiagnosisTypeEnum(enum.Enum):
+    primary = "PRIMARY"
+    secondary = "SECONDARY"
+
+
+class CohortDiagnosisBase(SQLModel):
+    cohort_id: int = Field(foreign_key="cohort.id")
+    diagnosis_id: int = Field(foreign_key="diagnosis.id")
+    diagnosis_type: CohortDiagnosisTypeEnum
+
+
+class CohortDiagnosis(CohortDiagnosisBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "cohort_diagnosis"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class CohortDiagnosisCreate(CohortDiagnosisBase):
+    pass
+
+
+class CohortDiagnosisRead(CohortDiagnosisBase):
+    id: int
+
+
+# --- CohortPatient --- #
+
+
+class CohortPatientBase(SQLModel):
+    cohort_id: int = Field(foreign_key="cohort.id")
+    patient_id: int = Field(foreign_key="patient.id")
+    recruited_date: date
+    removed_date: Optional[date]
+
+
+class CohortPatient(CohortPatientBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "cohort_patient"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class CohortPatientCreate(CohortPatientBase):
+    pass
+
+
+class CohortPatientRead(CohortPatientBase):
+    id: int
+
+
+# --- CohortObservation --- #
+
+# TODO: Turn this on when you have finished the observation table
+# class CohortObservationBase(SQLModel):
+#     cohort_id: int = Field(foreign_key="cohort.id")
+#     observation_id: int = Field(foreign_key="observations.id")
+#     weight: int
+
+
+# class CohortObservation(CohortObservationBase, table=True):
+#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+# class CohortObservationCreate(CohortObservationBase):
+#     pass
+
+
+# class CohortObservationRead(CohortObservationBase):
+#     id: int
+
+
 # # --- Consent --- #
 
 
@@ -169,7 +238,6 @@ class ConsentRead(ConsentBase):
 
 # --- Consultant --- #
 # TODO: Composite index
-# TODO: Question the need for consultants data
 
 
 class ConsultantBase(SQLModel):
@@ -437,7 +505,7 @@ class DrugGroupRead(DrugGroupBase):
 
 
 # # --- Entry --- #
-# # TODO: This table needs to be burnt in the fires of hell
+# TODO: This table needs to be burnt in the fires of hell
 
 
 # class EntryBase(SQLModel):
@@ -594,6 +662,7 @@ class FetalUltrasoundRead(FetalUltrasoundBase):
 
 # # --- Form --- #
 
+# TODO: This table need to be converted into frontend code
 
 # class FormBase(SQLModel):
 #     name: str
@@ -664,81 +733,56 @@ class FuanClinicalPictureRelativeBaseRead(FuanClinicalPictureRelativeBase):
     id: int
 
 
-# # --- Genetics --- #
+# --- Genetics --- #
 
 
-# class GeneticsBase(SQLModel):
-#     patient_id: int = Field(foreign_key="patients.id")
-#     group_id: int = Field(foreign_key="groups.id")
-#     date_sent: datetime
-#     laboratory: str
-#     reference_number: Optional[str]
-#     karyotype: Optional[int]
-#     results: Optional[str]
-#     summary: Optional[str]
+class GeneticsBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    cohort_id: int = Field(foreign_key="cohort.id")
+    date_sent: datetime
+    laboratory: str
+    reference_number: Optional[str]
+    karyotype: Optional[int]
+    results: Optional[str]
+    summary: Optional[str]
 
 
-# class Genetics(GeneticsBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class Genetics(GeneticsBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class GeneticsCreate(GeneticsBase):
-#     pass
+class GeneticsCreate(GeneticsBase):
+    pass
 
 
-# class GeneticsRead(GeneticsBase):
-#     id: int
+class GeneticsRead(GeneticsBase):
+    id: int
 
 
-# # --- GroupConsultant --- #
+# --- HospitalConsultant --- #
 
 
-# class GroupConsultantBase(SQLModel):
-#     group_id: int = Field(foreign_key="groups.id")
-#     consultant_id: int = Field(foreign_key="consultants.id")
+class HospitalConsultantBase(SQLModel):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "hospital_consultant"
+    hospital_id: int = Field(foreign_key="hospital.id")
+    consultant_id: int = Field(foreign_key="consultant.id")
 
 
-# class GroupConsultant(GroupConsultantBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class HospitalConsultant(HospitalConsultantBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# class GroupConsultantCreate(GroupConsultantBase):
-#     pass
+class HospitalConsultantCreate(HospitalConsultantBase):
+    pass
 
 
-# class GroupConsultantRead(GroupConsultantBase):
-#     id: int
+class HospitalConsultantRead(HospitalConsultantBase):
+    id: int
 
 
-# # --- GroupDiagnose --- #
+# # --- GroupForm --- # #
 
-
-# class GroupDiagnoseTypeEnum(str, enum.Enum):
-#     primary = "PRIMARY"
-#     secondary = "SECONDARY"
-
-
-# class GroupDiagnoseBase(SQLModel):
-#     group_id: int = Field(foreign_key="groups.id")
-#     diagnosis_id: int = Field(foreign_key="diagnosis.id")
-#     type: GroupDiagnoseTypeEnum = Field(sa_column=Column(Enum(GroupDiagnoseTypeEnum)))
-#     weight: int
-
-
-# class GroupDiagnose(GroupDiagnoseBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
-
-
-# class GroupDiagnoseCreate(GroupDiagnoseBase):
-#     pass
-
-
-# class GroupDiagnoseRead(GroupDiagnoseBase):
-#     id: int
-
-
-# # --- GroupForm --- #
-
+# TODO: Decide if this should be removed and instead handle it with permissions
 
 # class GroupFormBase(SQLModel):
 #     group_id: int = Field(foreign_key="groups.id")
@@ -758,29 +802,9 @@ class FuanClinicalPictureRelativeBaseRead(FuanClinicalPictureRelativeBase):
 #     id: int
 
 
-# # --- GroupObservation --- #
-
-
-# class GroupObservationBase(SQLModel):
-#     group_id: int = Field(foreign_key="groups.id")
-#     observation_id: int = Field(foreign_key="observations.id")
-#     weight: int
-
-
-# class GroupObservation(GroupObservationBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
-
-
-# class GroupObservationCreate(GroupObservationBase):
-#     pass
-
-
-# class GroupObservationRead(GroupObservationBase):
-#     id: int
-
-
 # # --- GroupPage --- #
 
+# TODO: Decide if this should be removed and instead handle it with permissions
 
 # class GroupPageBase(SQLModel):
 #     group_id: int = Field(foreign_key="groups.id")
@@ -797,29 +821,6 @@ class FuanClinicalPictureRelativeBaseRead(FuanClinicalPictureRelativeBase):
 
 
 # class GroupPageRead(GroupPageBase):
-#     id: int
-
-
-# # --- GroupPatient --- #
-
-
-# class GroupPatientBase(SQLModel):
-#     group_id: int = Field(foreign_key="groups.id")
-#     patient_id: int = Field(foreign_key="patients.id")
-#     from_date: datetime
-#     to_date: Optional[datetime]
-#     discharged_date: date
-
-
-# class GroupPatient(GroupPatientBase, table=True):
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
-
-
-# class GroupPatientCreate(GroupPatientBase):
-#     pass
-
-
-# class GroupPatientRead(GroupPatientBase):
 #     id: int
 
 
@@ -944,6 +945,28 @@ class HospitalRead(HospitalBase):
 
 # class HospitalisationRead(HospitalisationBase):
 #     id: int
+
+# --- HospitalPatient --- #
+
+
+class HospitalPatientBase(SQLModel):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "hospital_patient"
+    hospital_id: int = Field(foreign_key="hospital.id")
+    patient_id: int = Field(foreign_key="patient.id")
+    first_seen_date: date
+    discharged_date: Optional[date]
+
+
+class HospitalPatient(HospitalPatientBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class HospitalPatientCreate(HospitalPatientBase):
+    pass
+
+
+class HospitalPatientRead(HospitalPatientBase):
+    id: int
 
 
 # # --- IndiaEthnicity --- #
