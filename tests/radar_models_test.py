@@ -3,7 +3,7 @@ from sqlalchemy.sql.type_api import TypeEngine
 from sqlmodel import SQLModel
 
 from tests.test_lists import tables, enums
-from radar_models.radar3 import *
+from radar_models import radar3
 
 
 def pg_dump(sql: TypeEngine, *args, **kwargs):
@@ -20,10 +20,3 @@ def test_create_tables(capsys):
     captured = capsys.readouterr()
     for table in tables:
         assert f"CREATE TABLE {table}" in captured.out
-
-
-def test_create_enum(capsys):
-    SQLModel.metadata.create_all(bind=postgres_engine, checkfirst=False)
-    captured = capsys.readouterr()
-    for enum in enums:
-        assert f"CREATE TYPE {enum} AS ENUM {enums[enum]};" in captured.out
