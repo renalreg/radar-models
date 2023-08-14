@@ -122,6 +122,7 @@ class BiomarkerSampleRead(BiomarkerSampleBase):
 
 class CodeBase(SQLModel):
     coding_system: str
+    code_describes: str
     code: str
     code_label: str
 
@@ -357,12 +358,32 @@ class DataSourceRead(DataSourceBase):
     id: int
 
 
+# --- Death --- #
+
+
+class DeathBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    date_of_death: date
+    cause_of_death: Optional[str]
+
+
+class Death(DeathBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class DeathCreate(DeathBase):
+    pass
+
+
+class DeathRead(DeathBase):
+    id: int
+
+
 # --- Diagnoses --- #
 
 
 class DiagnosisBase(SQLModel):
     diagnosis_name: str
-    is_retired: bool = Field(default=False)
 
 
 class Diagnosis(DiagnosisBase, table=True):
@@ -1042,216 +1063,79 @@ class NationalityRead(NationalityBase):
     id: int
 
 
-# # # --- Nephrectomy --- #
+# --- Nephrectomy --- #
 
 
-# # class NephrectomyBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     date: date
-# #     kidney_side: str
-# #     kidney_type: str
-# #     entry_type: str
+class NephrectomyBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    hospital_id: int = Field(foreign_key="hospital.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    date: date
+    kidney_side: str
+    kidney_type: str
+    entry_type: str
 
 
-# # class Nephrectomy(NephrectomyBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class Nephrectomy(NephrectomyBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class NephrectomyCreate(NephrectomyBase):
-# #     pass
+class NephrectomyCreate(NephrectomyBase):
+    pass
 
 
-# # class NephrectomyRead(NephrectomyBase):
-# #     id: int
+class NephrectomyRead(NephrectomyBase):
+    id: int
 
 
-# # # --- NurtureDatum --- #
+# --- NurtureMetadata --- #
 
 
-# # class NurtureDatumBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     signed_off_state: int
-# #     follow_up_refused_date: date
-# #     blood_tests: bool
-# #     blood_refused_date: date
-# #     interviews: bool
-# #     interviews_refused_date: date
+class NurtureMetadataBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    signed_off_state: int
+    follow_up_refused_date: date
+    blood_tests: bool
+    blood_refused_date: date
+    interviews: bool
+    interviews_refused_date: date
 
 
-# # class NurtureDatum(NurtureDatumBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class NurtureMetadata(NurtureMetadataBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "nurture_metadata"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class NurtureDatumCreate(NurtureDatumBase):
-# #     pass
+class NurtureMetadataCreate(NurtureMetadataBase):
+    pass
 
 
-# # class NurtureDatumRead(NurtureDatumBase):
-# #     id: int
+class NurtureMetadataRead(NurtureMetadataBase):
+    id: int
 
 
-# # # --- NurtureSample --- #
+# --- Nutrition --- #
 
 
-# # class NurtureSampleBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     taken_on: date
-# #     barcode: int
-# #     epa: int
-# #     epb: int
-# #     lpa: int
-# #     lpb: int
-# #     uc: int
-# #     ub: int
-# #     ud: int
-# #     fub: int
-# #     sc: int
-# #     sa: int
-# #     sb: int
-# #     rna: int
-# #     wb: int
+class NutritionBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    hospital_id: int = Field(foreign_key="hospital.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    feeding_type: str
+    from_date: date
+    to_date: date
 
 
-# # class NurtureSample(NurtureSampleBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class Nutrition(NutritionBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class NurtureSampleCreate(NurtureSampleBase):
-# #     pass
+class NutritionCreate(NutritionBase):
+    pass
 
 
-# # class NurtureSampleRead(NurtureSampleBase):
-# #     id: int
-
-
-# # # --- NurtureSamplesBlood --- #
-
-
-# # class NurtureSamplesBloodBase(SQLModel):
-# #     sample_id: str = Field(primary_key=True)
-# #     sample_date: datetime
-# #     radar_id: str
-# #     bnp: str
-# #     creat: str
-# #     crp: str
-# #     cyst: str
-# #     gdf15: str
-# #     trop: str
-# #     ins_state: int
-# #     comments_label: str
-# #     comments_sample: str
-
-
-# # class NurtureSamplesBlood(NurtureSamplesBloodBase, table=True):
-# #     pass
-
-
-# # class NurtureSamplesBloodCreate(NurtureSamplesBloodBase):
-# #     pass
-
-
-# # class NurtureSamplesBloodRead(NurtureSamplesBloodBase):
-# #     pass
-
-
-# # # --- NurtureSamplesOption --- #
-
-# # # TODO: Figure out if and where this table is being used
-
-
-# # class NurtureSampleOptionEnum(str, enum.Enum):
-# #     adult_ns = "ADULT_NS"
-# #     adult_ckd = "ADULT_CKD"
-# #     children_15_2nd = "CHILDREN15_2ND"
-# #     children_15_b = "CHILDREN15_B"
-# #     children_less_15_2nd = "CHILDREN_LESS_15_2ND"
-# #     children_less_15_b = "CHILDREN_LESS_15_B"
-# #     children_30_2nd = "CHILDREN30_2ND"
-# #     children_30_b = "CHILDREN30_B"
-
-
-# # class NurtureSamplesOptionBase(SQLModel):
-# #     id: NurtureSampleOptionEnum = Field(
-# #         sa_column=Column(Enum(NurtureSampleOptionEnum)), primary_key=True
-# #     )
-# #     label: str
-# #     epa: int
-# #     epb: int
-# #     lpa: int
-# #     lpb: int
-# #     uc: int
-# #     ub: int
-# #     ud: int
-# #     fub: int
-# #     sc: int
-# #     sa: int
-# #     sb: int
-# #     rna: int
-# #     wb: int
-
-
-# # class NurtureSamplesOption(NurtureSamplesOptionBase, table=True):
-# #     pass
-
-
-# # class NurtureSamplesOptionCreate(NurtureSamplesOptionBase):
-# #     pass
-
-
-# # class NurtureSamplesOptionRead(NurtureSamplesOptionBase):
-# #     pass
-
-
-# # # --- NurtureSamplesUrine --- #
-
-
-# # class NurtureSamplesUrineBase(SQLModel):
-# #     sample_id: str = Field(primary_key=True)
-# #     sample_date: datetime
-# #     radar_id: str
-# #     albumin: str
-# #     creatinin: str
-# #     ins_state: int
-# #     comments_label: str
-# #     comments_sample: str
-
-
-# # class NurtureSamplesUrine(NurtureSamplesUrineBase, table=True):
-# #     pass
-
-
-# # class NurtureSamplesUrineCreate(NurtureSamplesUrineBase):
-# #     pass
-
-
-# # class NurtureSamplesUrineRead(NurtureSamplesUrineBase):
-# #     pass
-
-
-# # # --- Nutrition --- #
-
-
-# # class NutritionBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     feeding_type: str
-# #     from_date: date
-# #     to_date: date
-
-
-# # class Nutrition(NutritionBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
-
-
-# # class NutritionCreate(NutritionBase):
-# #     pass
-
-
-# # class NutritionRead(NutritionBase):
-# #     id: int
+class NutritionRead(NutritionBase):
+    id: int
 
 
 # --- Observation --- #
@@ -1339,35 +1223,36 @@ class OptionRead(OptionBase):
     id: int
 
 
-# # # --- Pathology --- #
+# --- Pathology --- #
 
 
-# # class PathologyBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     date: date
-# #     kidney_type: str
-# #     kidney_side: str
-# #     reference_number: str
-# #     image_url: str
-# #     histological_summary: str
-# #     em_findings: str
+class PathologyBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    hospital_id: int = Field(foreign_key="hospital.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    date: date
+    kidney_type: str
+    kidney_side: str
+    reference_number: str
+    image_url: str
+    histological_summary: str
+    em_findings: str
+    report_cleaned_date: date
 
 
-# # class Pathology(PathologyBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class Pathology(PathologyBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PathologyCreate(PathologyBase):
-# #     pass
+class PathologyCreate(PathologyBase):
+    pass
 
 
-# # class PathologyRead(PathologyBase):
-# #     id: int
+class PathologyRead(PathologyBase):
+    id: int
 
 
-# # --- Patient --- #
+# --- Patient --- #
 
 
 class PatientBase(SQLModel):
@@ -1388,289 +1273,328 @@ class PatientRead(PatientBase):
     id: int
 
 
-# # # --- PatientAddress --- #
+# --- PatientAddress --- #
 
 
-# # class PatientAddressBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     from_date: date
-# #     to_date: date
-# #     address1: str
-# #     address2: str
-# #     address3: str
-# #     address4: str
-# #     postcode: str
-# #     country: str
+class PatientAddressBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    country_id: str = Field(foreign_key="country.id")
+    from_date: date
+    to_date: date
+    address1: str
+    address2: str
+    address3: str
+    address4: str
+    postcode: str
 
 
-# # class PatientAddress(PatientAddressBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class PatientAddress(PatientAddressBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "patient_address"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PatientAddressCreate(PatientAddressBase):
-# #     pass
+class PatientAddressCreate(PatientAddressBase):
+    pass
 
 
-# # class PatientAddressRead(PatientAddressBase):
-# #     id: int
+class PatientAddressRead(PatientAddressBase):
+    id: int
 
 
-# # # --- PatientAliase --- #
+# --- PatientAlias --- #
 
 
-# # class PatientAliaseBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     first_name: str
-# #     last_name: str
+class PatientAliasBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    first_name: str
+    last_name: str
 
 
-# # class PatientAliase(PatientAliaseBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class PatientAlias(PatientAliasBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "patient_alias"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PatientAliaseCreate(PatientAliaseBase):
-# #     pass
+class PatientAliasCreate(PatientAliasBase):
+    pass
 
 
-# # class PatientAliaseRead(PatientAliaseBase):
-# #     id: int
+class PatientAliasRead(PatientAliasBase):
+    id: int
 
 
-# # # --- PatientConsent --- #
+# --- PatientConsent --- #
 
 
-# # class PatientConsentBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     consent_id: int = Field(foreign_key="consents.id")
-# #     signed_on_date: date
-# #     withdrawn_on_date: Optional[date]
-# #     reconsent_letter_returned_date: date
-# #     reconsent_letter_sent_date: date
+class PatientConsentBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    consent_id: int = Field(foreign_key="consent.id")
+    signed_on_date: date
+    withdrawn_on_date: Optional[date]
 
 
-# # class PatientConsent(PatientConsentBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class PatientConsent(PatientConsentBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "patient_consent"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PatientConsentCreate(PatientConsentBase):
-# #     pass
+class PatientConsentCreate(PatientConsentBase):
+    pass
 
 
-# # class PatientConsentRead(PatientConsentBase):
-# #     id: int
+class PatientConsentRead(PatientConsentBase):
+    id: int
 
 
-# # # --- PatientConsultant --- #
+# --- PatientConsultant --- #
 
 
-# # class PatientConsultantBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     consultant_id: int = Field(foreign_key="consultants.id")
-# #     from_date: date
-# #     to_date: Optional[date]
+class PatientConsultantBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    consultant_id: int = Field(foreign_key="consultant.id")
+    from_date: date
+    to_date: Optional[date]
 
 
-# # class PatientConsultant(PatientConsultantBase, table=True):
-# #     id: int = Field(default=None, primary_key=True)
+class PatientConsultant(PatientConsultantBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "patient_consultant"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PatientConsultantCreate(PatientConsultantBase):
-# #     pass
+class PatientConsultantCreate(PatientConsultantBase):
+    pass
 
 
-# # class PatientConsultantRead(PatientConsultantBase):
-# #     id: int
+class PatientConsultantRead(PatientConsultantBase):
+    id: int
 
 
-# # # --- PatientDemographic --- #
+# --- PatientDemographic --- #
 
 
-# # class PatientDemographicBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     ethnicity_id: int = Field(foreign_key="ethnicities.id")
-# #     nationality_id: Field(foreign_key="nationalities.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     first_name: str
-# #     last_name: str
-# #     date_of_birth: date
-# #     date_of_death: date
-# #     gender: int
-# #     home_number: str
-# #     work_number: str
-# #     mobile_number: str
-# #     email_address: str
-# #     cause_of_death: str
+class PatientDemographicBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    ethnicity_id: int = Field(foreign_key="ethnicity.id")
+    country_of_birth: int = Field(foreign_key="country.id")
+    first_name: str
+    last_name: str
+    date_of_birth: date
+    gender: int
+    mobile_number: str
+    email_address: str
 
 
-# # class PatientDemographic(PatientDemographicBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class PatientDemographic(PatientDemographicBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PatientDemographicCreate(PatientDemographicBase):
-# #     pass
+class PatientDemographicCreate(PatientDemographicBase):
+    pass
 
 
-# # class PatientDemographicRead(PatientDemographicBase):
-# #     id: int
+class PatientDemographicRead(PatientDemographicBase):
+    id: int
 
 
-# # # --- PatientDiagnose --- #
+# --- PatientDiagnose --- #
 
 
-# # class PatientDiagnoseBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     diagnosis_id: int = Field(foreign_key="diagnoses.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     diagnosis_text: str
-# #     symptoms_date: date
-# #     from_date: date
-# #     to_date: date
-# #     gene_test: bool
-# #     biochemistry: bool
-# #     clinical_picture: bool
-# #     biopsy: bool
-# #     biopsy_diagnosis: int
-# #     comments: str
-# #     prenatal: bool
+class PatientDiagnoseBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    hospital_id: int = Field(foreign_key="hospital.id")
+    data_source_id: int = Field(foreign_key="data_source.id")
+    diagnosis_id: int = Field(foreign_key="diagnosis.id")
+    diagnosis_text: str
+    symptoms_date: date
+    from_date: date
+    to_date: date
+    gene_test: bool
+    biochemistry: bool
+    clinical_picture: bool
+    biopsy: bool
+    biopsy_diagnosis: int
+    comments: str
+    prenatal: bool
 
 
-# # class PatientDiagnose(PatientDiagnoseBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class PatientDiagnose(PatientDiagnoseBase, table=True):
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PatientDiagnoseCreate(PatientDiagnoseBase):
-# #     pass
+class PatientDiagnoseCreate(PatientDiagnoseBase):
+    pass
 
 
-# # class PatientDiagnoseRead(PatientDiagnoseBase):
-# #     id: int
+class PatientDiagnoseRead(PatientDiagnoseBase):
+    id: int
 
 
-# # # --- PatientLock --- #
+# --- PatientNationality --- #
 
 
-# # class PatientLockBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     sequence_number: int
+class PatientNationalityBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    nationality_id: int = Field(foreign_key="nationality.id")
 
 
-# # class PatientLock(PatientLockBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class PatientNationality(PatientNationalityBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "patient_nationality"
+    id: int = Field(default=None, primary_key=True)
 
 
-# # class PatientLockCreate(PatientLockBase):
-# #     pass
+class PatientNationalityCreate(PatientNationalityBase):
+    pass
 
 
-# # class PatientLockRead(PatientLockBase):
-# #     id: int
+class patientNationalityRead(PatientNationalityBase):
+    id: int
 
 
-# # # --- PatientNumber --- #
+# # --- PatientLock --- #
 
 
-# # class PatientNumberBase(SQLModel):
+# # # class PatientLockBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     sequence_number: int
 
-# #     patient_id: int = Field(foreign_key="patient.id", index=True)
-# #     source_group_id: int = Field(foreign_key="groups.id", index=True)
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     number_group_id: int = Field(foreign_key="groups.id", index=True)
-# #     number: str
 
+# # # class PatientLock(PatientLockBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
-# # class PatientNumber(PatientNumberBase):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
+# # # class PatientLockCreate(PatientLockBase):
+# # #     pass
 
-# # class PatientNumberCreate(PatientBase):
-# #     pass
 
+# # # class PatientLockRead(PatientLockBase):
+# # #     id: int
 
-# # class PatientNumberRead(PatientBase):
-# #     id: int
 
+# # # # --- PatientNumber --- #
 
-# # # --- Plasmapheresi --- #
 
+# # # class PatientNumberBase(SQLModel):
 
-# # class PlasmapheresiBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     from_date: date
-# #     to_date: date
-# #     # TODO: rename to just exchanges
-# #     no_of_exchanges: str
-# #     response: str
+# # #     patient_id: int = Field(foreign_key="patient.id", index=True)
+# # #     source_group_id: int = Field(foreign_key="groups.id", index=True)
+# # #     data_source_id: int = Field(foreign_key="data_source.id")
+# # #     number_group_id: int = Field(foreign_key="groups.id", index=True)
+# # #     number: str
 
 
-# # class Plasmapheresi(PlasmapheresiBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class PatientNumber(PatientNumberBase):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PlasmapheresiCreate(PlasmapheresiBase):
-# #     pass
+# # # class PatientNumberCreate(PatientBase):
+# # #     pass
 
 
-# # class PlasmapheresiRead(PlasmapheresiBase):
-# #     id: int
+# # # class PatientNumberRead(PatientBase):
+# # #     id: int
 
 
-# # # --- Post --- #
+# --- PatientReconsent --- #
 
 
-# # class PostBase(SQLModel):
-# #     title: str
-# #     published_date: datetime
-# #     body: str
+class PatientReconsentBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    sent_date: date
+    response_date: date
 
 
-# # class Post(PostBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+class PatientReconsent(PatientReconsentBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "patient_reconsent"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PostCreate(PostBase):
-# #     pass
+class PatientReconsentRead(PatientReconsentBase):
+    pass
 
 
-# # class PostRead(PostBase):
-# #     id: int
+class PatientReconsentCreate(PatientReconsentBase):
+    id: int
 
 
-# # # --- Pregnancy --- #
+# # # # --- Plasmapheresi --- #
 
 
-# # class PregnancyBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     pregnancy_number: int
-# #     date_of_lmp: date
-# #     gravidity: int
-# #     parity1: int
-# #     parity2: int
-# #     outcome: str
-# #     weight: int
-# #     weight_centile: int
-# #     gestational_age: int
-# #     delivery_method: str
-# #     neonatal_intensive_care: bool
-# #     pre_eclampsia: str
+# # # class PlasmapheresiBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     source_group_id: int = Field(foreign_key="groups.id")
+# # #     data_source_id: int = Field(foreign_key="data_source.id")
+# # #     from_date: date
+# # #     to_date: date
+# # #     # TODO: rename to just exchanges
+# # #     no_of_exchanges: str
+# # #     response: str
 
 
-# # class Pregnancy(PregnancyBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class Plasmapheresi(PlasmapheresiBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class PregnancyCreate(PregnancyBase):
-# #     pass
+# # # class PlasmapheresiCreate(PlasmapheresiBase):
+# # #     pass
 
 
-# # class PregnancyRead(PregnancyBase):
-# #     id: int
+# # # class PlasmapheresiRead(PlasmapheresiBase):
+# # #     id: int
+
+
+# # # # --- Post --- #
+
+
+# # # class PostBase(SQLModel):
+# # #     title: str
+# # #     published_date: datetime
+# # #     body: str
+
+
+# # # class Post(PostBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+# # # class PostCreate(PostBase):
+# # #     pass
+
+
+# # # class PostRead(PostBase):
+# # #     id: int
+
+
+# # # # --- Pregnancy --- #
+
+
+# # # class PregnancyBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     pregnancy_number: int
+# # #     date_of_lmp: date
+# # #     gravidity: int
+# # #     parity1: int
+# # #     parity2: int
+# # #     outcome: str
+# # #     weight: int
+# # #     weight_centile: int
+# # #     gestational_age: int
+# # #     delivery_method: str
+# # #     neonatal_intensive_care: bool
+# # #     pre_eclampsia: str
+
+
+# # # class Pregnancy(PregnancyBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+# # # class PregnancyCreate(PregnancyBase):
+# # #     pass
+
+
+# # # class PregnancyRead(PregnancyBase):
+# # #     id: int
 
 # --- Relation --- #
 
@@ -1691,202 +1615,202 @@ class RelationRead(RelationBase):
     id: int
 
 
-# # # --- RenalImaging --- #
+# # # # --- RenalImaging --- #
 
 
-# # class RenalImagingBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     date: datetime
-# #     imaging_type: str
-# #     right_present: bool
-# #     right_type: str
-# #     right_length: int
-# #     right_volume: int
-# #     right_cysts: bool
-# #     right_stones: bool
-# #     right_calcification: bool
-# #     right_nephrocalcinosis: bool
-# #     right_nephrolithiasis: bool
-# #     right_other_malformation: str
-# #     left_present: bool
-# #     left_type: str
-# #     left_length: int
-# #     left_volume: int
-# #     left_cysts: bool
-# #     left_stones: bool
-# #     left_calcification: bool
-# #     left_nephrocalcinosis: bool
-# #     left_nephrolithiasis: bool
-# #     left_other_malformation: str
+# # # class RenalImagingBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     source_group_id: int = Field(foreign_key="groups.id")
+# # #     data_source_id: int = Field(foreign_key="data_source.id")
+# # #     date: datetime
+# # #     imaging_type: str
+# # #     right_present: bool
+# # #     right_type: str
+# # #     right_length: int
+# # #     right_volume: int
+# # #     right_cysts: bool
+# # #     right_stones: bool
+# # #     right_calcification: bool
+# # #     right_nephrocalcinosis: bool
+# # #     right_nephrolithiasis: bool
+# # #     right_other_malformation: str
+# # #     left_present: bool
+# # #     left_type: str
+# # #     left_length: int
+# # #     left_volume: int
+# # #     left_cysts: bool
+# # #     left_stones: bool
+# # #     left_calcification: bool
+# # #     left_nephrocalcinosis: bool
+# # #     left_nephrolithiasis: bool
+# # #     left_other_malformation: str
 
 
-# # class RenalImaging(RenalImagingBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class RenalImaging(RenalImagingBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class RenalImagingCreate(RenalImagingBase):
-# #     pass
+# # # class RenalImagingCreate(RenalImagingBase):
+# # #     pass
 
 
-# # class RenalImagingRead(RenalImagingBase):
-# #     id: int
+# # # class RenalImagingRead(RenalImagingBase):
+# # #     id: int
 
 
-# # # --- RenalProgression --- #
+# # # # --- RenalProgression --- #
 
 
-# # class RenalProgressionBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     onset_date: date
-# #     esrf_date: date
-# #     ckd5_date: date
-# #     ckd4_date: date
-# #     ckd3a_date: date
-# #     ckd3b_date: date
+# # # class RenalProgressionBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     onset_date: date
+# # #     esrf_date: date
+# # #     ckd5_date: date
+# # #     ckd4_date: date
+# # #     ckd3a_date: date
+# # #     ckd3b_date: date
 
 
-# # class RenalProgression(RenalProgressionBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class RenalProgression(RenalProgressionBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class RenalProgressionCreate(RenalProgressionBase):
-# #     pass
+# # # class RenalProgressionCreate(RenalProgressionBase):
+# # #     pass
 
 
-# # class RenalProgressionRead(RenalProgressionBase):
-# #     id: int
+# # # class RenalProgressionRead(RenalProgressionBase):
+# # #     id: int
 
 
-# # # --- Result --- #
+# # # # --- Result --- #
 
 
-# # class ResultBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     date: datetime
-# #     value: str
+# # # class ResultBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     source_group_id: int = Field(foreign_key="groups.id")
+# # #     data_source_id: int = Field(foreign_key="data_source.id")
+# # #     date: datetime
+# # #     value: str
 
 
-# # class Result(ResultBase):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class Result(ResultBase):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class ResultCreate(ResultBase):
-# #     pass
+# # # class ResultCreate(ResultBase):
+# # #     pass
 
 
-# # class ResultRead(ResultBase):
-# #     id: int
+# # # class ResultRead(ResultBase):
+# # #     id: int
 
 
-# # # --- RituximabBaselineAssessment --- #
+# # # # --- RituximabBaselineAssessment --- #
 
 
-# # class RituximabBaselineAssessmentBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     date: date
-# #     nephropathy: str
-# #     # TODO: More array madness
-# #     supportive_medication: set = Field(sa_column=Column(Array(str)))
-# #     # TODO: More json
-# #     previous_treatment: dict = Field(sa_column=Column(Array(str)))
-# #     steroids: bool
-# #     other_previous_treatment: str
-# #     past_remission: bool
-# #     performance_status: int
-# #     comorbidities: bool
+# # # class RituximabBaselineAssessmentBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     source_group_id: int = Field(foreign_key="groups.id")
+# # #     data_source_id: int = Field(foreign_key="data_source.id")
+# # #     date: date
+# # #     nephropathy: str
+# # #     # TODO: More array madness
+# # #     supportive_medication: set = Field(sa_column=Column(Array(str)))
+# # #     # TODO: More json
+# # #     previous_treatment: dict = Field(sa_column=Column(Array(str)))
+# # #     steroids: bool
+# # #     other_previous_treatment: str
+# # #     past_remission: bool
+# # #     performance_status: int
+# # #     comorbidities: bool
 
 
-# # class RituximabBaselineAssessment(RituximabBaselineAssessmentBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class RituximabBaselineAssessment(RituximabBaselineAssessmentBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class RituximabBaselineAssessmentCreate(RituximabBaselineAssessmentBase):
-# #     pass
+# # # class RituximabBaselineAssessmentCreate(RituximabBaselineAssessmentBase):
+# # #     pass
 
 
-# # class RituximabBaselineAssessmentRead(RituximabBaselineAssessmentBase):
-# #     id: int
+# # # class RituximabBaselineAssessmentRead(RituximabBaselineAssessmentBase):
+# # #     id: int
 
 
-# # # --- RituximabCriterion --- #
+# # # # --- RituximabCriterion --- #
 
 
-# # class RituximabCriterionBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     date: date
-# #     criteria1: bool
-# #     criteria2: bool
-# #     criteria3: bool
-# #     criteria4: bool
-# #     criteria5: bool
-# #     criteria6: bool
-# #     criteria7: bool
-# #     alkylating_complication: bool
-# #     alkylating_failure_monitoring_requirements: bool
-# #     cancer: bool
-# #     cni_failure_monitoring_requirements: bool
-# #     cni_therapy_complication: bool
-# #     diabetes: bool
-# #     drug_associated_toxicity: bool
-# #     fall_in_egfr: bool
-# #     hypersensitivity: bool
-# #     risk_factors: bool
-# #     ongoing_severe_disease: bool
-# #     threatened_fertility: bool
-# #     mood_disturbance: bool
-# #     osteoporosis_osteopenia: bool
-# #     previous_hospitalization: bool
+# # # class RituximabCriterionBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     date: date
+# # #     criteria1: bool
+# # #     criteria2: bool
+# # #     criteria3: bool
+# # #     criteria4: bool
+# # #     criteria5: bool
+# # #     criteria6: bool
+# # #     criteria7: bool
+# # #     alkylating_complication: bool
+# # #     alkylating_failure_monitoring_requirements: bool
+# # #     cancer: bool
+# # #     cni_failure_monitoring_requirements: bool
+# # #     cni_therapy_complication: bool
+# # #     diabetes: bool
+# # #     drug_associated_toxicity: bool
+# # #     fall_in_egfr: bool
+# # #     hypersensitivity: bool
+# # #     risk_factors: bool
+# # #     ongoing_severe_disease: bool
+# # #     threatened_fertility: bool
+# # #     mood_disturbance: bool
+# # #     osteoporosis_osteopenia: bool
+# # #     previous_hospitalization: bool
 
 
-# # class RituximabCriterion(RituximabCriterionBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class RituximabCriterion(RituximabCriterionBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class RituximabCriterionCreate(RituximabCriterionBase):
-# #     pass
+# # # class RituximabCriterionCreate(RituximabCriterionBase):
+# # #     pass
 
 
-# # class RituximabCriterionRead(RituximabCriterionBase):
-# #     id: int
+# # # class RituximabCriterionRead(RituximabCriterionBase):
+# # #     id: int
 
 
-# # # --- SaltWastingClinicalFeature --- #
+# # # # --- SaltWastingClinicalFeature --- #
 
 
-# # class SaltWastingClinicalFeatureBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     normal_pregnancy: bool
-# #     abnormal_pregnancy_text: str
-# #     neurological_problems: bool
-# #     seizures: bool
-# #     abnormal_gait: bool
-# #     deafness: bool
-# #     other_neurological_problem: bool
-# #     other_neurological_problem_text: str
-# #     joint_problems: bool
-# #     joint_problems_age: int
-# #     x_ray_abnormalities: bool
-# #     chondrocalcinosis: bool
-# #     other_x_ray_abnormality: bool
-# #     other_x_ray_abnormality_text: str
+# # # class SaltWastingClinicalFeatureBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     normal_pregnancy: bool
+# # #     abnormal_pregnancy_text: str
+# # #     neurological_problems: bool
+# # #     seizures: bool
+# # #     abnormal_gait: bool
+# # #     deafness: bool
+# # #     other_neurological_problem: bool
+# # #     other_neurological_problem_text: str
+# # #     joint_problems: bool
+# # #     joint_problems_age: int
+# # #     x_ray_abnormalities: bool
+# # #     chondrocalcinosis: bool
+# # #     other_x_ray_abnormality: bool
+# # #     other_x_ray_abnormality_text: str
 
 
-# # class SaltWastingClinicalFeature(SaltWastingClinicalFeatureBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class SaltWastingClinicalFeature(SaltWastingClinicalFeatureBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class SaltWastingClinicalFeatureCreate(SaltWastingClinicalFeatureBase):
-# #     pass
+# # # class SaltWastingClinicalFeatureCreate(SaltWastingClinicalFeatureBase):
+# # #     pass
 
 
-# # class SaltWastingClinicalFeatureRead(SaltWastingClinicalFeatureBase):
-# #     id: int
+# # # class SaltWastingClinicalFeatureRead(SaltWastingClinicalFeatureBase):
+# # #     id: int
 
 
 # --- SampleType --- #
@@ -1928,226 +1852,226 @@ class SpecialtyRead(SpecialtyBase):
     id: int
 
 
-# # # --- Transplant --- #
+# # # # --- Transplant --- #
 
 
-# # class TransplantBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     transplant_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     date: date
-# #     modality: int
-# #     date_of_recurrence: date
-# #     date_of_failure: date
-# #     recurrence: bool
-# #     date_of_cmv_infection: date
-# #     donor_hla: str
-# #     recipient_hla: str
-# #     graft_loss_cause: str
+# # # class TransplantBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     source_group_id: int = Field(foreign_key="groups.id")
+# # #     transplant_group_id: int = Field(foreign_key="groups.id")
+# # #     data_source_id: int = Field(foreign_key="data_source.id")
+# # #     date: date
+# # #     modality: int
+# # #     date_of_recurrence: date
+# # #     date_of_failure: date
+# # #     recurrence: bool
+# # #     date_of_cmv_infection: date
+# # #     donor_hla: str
+# # #     recipient_hla: str
+# # #     graft_loss_cause: str
 
 
-# # class Transplant(TransplantBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class Transplant(TransplantBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class TransplantCreate(TransplantBase):
-# #     pass
+# # # class TransplantCreate(TransplantBase):
+# # #     pass
 
 
-# # class TransplantRead(TransplantBase):
-# #     id: int
+# # # class TransplantRead(TransplantBase):
+# # #     id: int
 
 
-# # # --- TransplantBiopsy --- #
+# # # # --- TransplantBiopsy --- #
 
 
-# # class TransplantBiopsyBase(SQLModel):
-# #     transplant_id: int = Field(foreign_key="transplants.id")
-# #     date_of_biopsy: date
-# #     recurrence: bool
+# # # class TransplantBiopsyBase(SQLModel):
+# # #     transplant_id: int = Field(foreign_key="transplants.id")
+# # #     date_of_biopsy: date
+# # #     recurrence: bool
 
 
-# # class TransplantBiopsy(TransplantBiopsyBase, table=True):
-# #     id: int = Field(default=None, primary_key=True)
+# # # class TransplantBiopsy(TransplantBiopsyBase, table=True):
+# # #     id: int = Field(default=None, primary_key=True)
 
 
-# # class TransplantBiopsyCreate(TransplantBiopsyBase):
-# #     pass
+# # # class TransplantBiopsyCreate(TransplantBiopsyBase):
+# # #     pass
 
 
-# # class TransplantBiopsyRead(TransplantBiopsyBase):
-# #     id: int
+# # # class TransplantBiopsyRead(TransplantBiopsyBase):
+# # #     id: int
 
 
-# # # --- TransplantRejection --- #
+# # # # --- TransplantRejection --- #
 
 
-# # class TransplantRejectionBase(SQLModel):
-# #     transplant_id: int = Field(foreign_key="transplants.id")
-# #     # TODO: Rename rejection date
-# #     date_of_rejection: date
+# # # class TransplantRejectionBase(SQLModel):
+# # #     transplant_id: int = Field(foreign_key="transplants.id")
+# # #     # TODO: Rename rejection date
+# # #     date_of_rejection: date
 
 
-# # class TransplantRejection(TransplantRejectionBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class TransplantRejection(TransplantRejectionBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class TransplantRejectionCreate(TransplantRejectionBase):
-# #     pass
+# # # class TransplantRejectionCreate(TransplantRejectionBase):
+# # #     pass
 
 
-# # class TransplantRejectionRead(TransplantRejectionBase):
-# #     id: int
+# # # class TransplantRejectionRead(TransplantRejectionBase):
+# # #     id: int
 
 
-# # # --- User --- #
+# # # # --- User --- #
 
 
-# # class UserBase(SQLModel):
-# #     username: str = Field(index=True)
-# #     password: str
-# #     email: str
-# #     first_name: str
-# #     last_name: str
-# #     telephone_number: Optional[str]
-# #     is_admin: bool = Field(default=False)
-# #     is_bot: bool = Field(default=False)
-# #     is_enabled: bool = Field(default=True)
-# #     reset_password_token: str
-# #     reset_password_date: datetime
-# #     force_password_change: bool = Field(default=False)
-# #     created_user_id: int = Field(foreign_key="users.id")
-# #     created_date: datetime = Field(default=datetime.now())
-# #     modified_user_id: int = Field(foreign_key="users.id")
-# #     modified_date: datetime = Field(default=datetime.now())
+# # # class UserBase(SQLModel):
+# # #     username: str = Field(index=True)
+# # #     password: str
+# # #     email: str
+# # #     first_name: str
+# # #     last_name: str
+# # #     telephone_number: Optional[str]
+# # #     is_admin: bool = Field(default=False)
+# # #     is_bot: bool = Field(default=False)
+# # #     is_enabled: bool = Field(default=True)
+# # #     reset_password_token: str
+# # #     reset_password_date: datetime
+# # #     force_password_change: bool = Field(default=False)
+# # #     created_user_id: int = Field(foreign_key="users.id")
+# # #     created_date: datetime = Field(default=datetime.now())
+# # #     modified_user_id: int = Field(foreign_key="users.id")
+# # #     modified_date: datetime = Field(default=datetime.now())
 
-# #     # Wonder if required
-# #     created_patients: Patients = Relationship(back_populates="patients")
-# #     created_patient_numbers: PatientNumber = Relationship(
-# #         back_populates="patient_numbers"
-# #     )
+# # #     # Wonder if required
+# # #     created_patients: Patients = Relationship(back_populates="patients")
+# # #     created_patient_numbers: PatientNumber = Relationship(
+# # #         back_populates="patient_numbers"
+# # #     )
 
 
-# # class Users(UserBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class Users(UserBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class UserCreate(UserBase):
-# #     pass
+# # # class UserCreate(UserBase):
+# # #     pass
 
 
-# # class UserRead(UserBase):
-# #     id: int
+# # # class UserRead(UserBase):
+# # #     id: int
 
 
-# # # --- UserSession --- #
+# # # # --- UserSession --- #
 
 
-# # class UserSessionBase(SQLModel):
-# #     user_id: int = Field(foreign_key="users.id")
-# #     date: datetime
-# #     ip_address: INET
+# # # class UserSessionBase(SQLModel):
+# # #     user_id: int = Field(foreign_key="users.id")
+# # #     date: datetime
+# # #     ip_address: INET
 
 
-# # class UserSession(UserSessionBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class UserSession(UserSessionBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class UserSessionCreate(UserSessionBase):
-# #     pass
+# # # class UserSessionCreate(UserSessionBase):
+# # #     pass
 
 
-# # class UserSessionRead(UserSessionBase):
-# #     id: int
+# # # class UserSessionRead(UserSessionBase):
+# # #     id: int
 
-# # # --- GroupForm --- # #
+# # # # --- GroupForm --- # #
 
-# # TODO: Decide if this should be removed and instead handle it with permissions
+# # # TODO: Decide if this should be removed and instead handle it with permissions
 
-# # class GroupFormBase(SQLModel):
-# #     group_id: int = Field(foreign_key="groups.id")
-# #     form_id: int = Field(foreign_key="forms.id")
-# #     weight: int
+# # # class GroupFormBase(SQLModel):
+# # #     group_id: int = Field(foreign_key="groups.id")
+# # #     form_id: int = Field(foreign_key="forms.id")
+# # #     weight: int
 
 
-# # class GroupForm(GroupFormBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class GroupForm(GroupFormBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class GroupFormCreate(GroupFormBase):
-# #     pass
+# # # class GroupFormCreate(GroupFormBase):
+# # #     pass
 
 
-# # class GroupFormRead(GroupFormBase):
-# #     id: int
+# # # class GroupFormRead(GroupFormBase):
+# # #     id: int
 
 
-# # # --- GroupPage --- #
+# # # # --- GroupPage --- #
 
-# # TODO: Decide if this should be removed and instead handle it with permissions
+# # # TODO: Decide if this should be removed and instead handle it with permissions
 
-# # class GroupPageBase(SQLModel):
-# #     group_id: int = Field(foreign_key="groups.id")
-# #     page: str
-# #     weight: int
+# # # class GroupPageBase(SQLModel):
+# # #     group_id: int = Field(foreign_key="groups.id")
+# # #     page: str
+# # #     weight: int
 
 
-# # class GroupPage(GroupPageBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class GroupPage(GroupPageBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class GroupPageCreate(GroupPageBase):
-# #     pass
+# # # class GroupPageCreate(GroupPageBase):
+# # #     pass
 
 
-# # class GroupPageRead(GroupPageBase):
-# #     id: int
+# # # class GroupPageRead(GroupPageBase):
+# # #     id: int
 
 
-# # --- GroupQuestionnaire --- #
-# # Assigns questionnaires to groups, I assume to control viewing in the UI.
-# # TODO: Decide if this should be removed and instead handle it with permissions
+# # # --- GroupQuestionnaire --- #
+# # # Assigns questionnaires to groups, I assume to control viewing in the UI.
+# # # TODO: Decide if this should be removed and instead handle it with permissions
 
 
-# # class GroupQuestionnaireBase(SQLModel):
-# #     group_id: int = Field(foreign_key="groups.id")
-# #     form_id: int = Field(foreign_key="forms.id")
-# #     weight: Optional[int]
+# # # class GroupQuestionnaireBase(SQLModel):
+# # #     group_id: int = Field(foreign_key="groups.id")
+# # #     form_id: int = Field(foreign_key="forms.id")
+# # #     weight: Optional[int]
 
 
-# # class GroupQuestionnaire(GroupQuestionnaireBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class GroupQuestionnaire(GroupQuestionnaireBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class GroupQuestionnaireCreate(GroupQuestionnaireBase):
-# #     pass
+# # # class GroupQuestionnaireCreate(GroupQuestionnaireBase):
+# # #     pass
 
 
-# # class GroupQuestionnaireRead(GroupQuestionnaireBase):
-# #     id: int
+# # # class GroupQuestionnaireRead(GroupQuestionnaireBase):
+# # #     id: int
 
-# # # --- IndiaEthnicity --- #
+# # # # --- IndiaEthnicity --- #
 
 
-# # # TODO: Empty table, can probably be removed
-# # class IndiaEthnicityBase(SQLModel):
-# #     patient_id: int = Field(foreign_key="patient.id")
-# #     source_group_id: int = Field(foreign_key="groups.id")
-# #     data_source_id: int = Field(foreign_key="data_source.id")
-# #     father_ancestral_state: str
-# #     father_language: str
-# #     mother_ancestral_state: str
-# #     mother_language: str
+# # # # TODO: Empty table, can probably be removed
+# # # class IndiaEthnicityBase(SQLModel):
+# # #     patient_id: int = Field(foreign_key="patient.id")
+# # #     source_group_id: int = Field(foreign_key="groups.id")
+# # #     data_source_id: int = Field(foreign_key="data_source.id")
+# # #     father_ancestral_state: str
+# # #     father_language: str
+# # #     mother_ancestral_state: str
+# # #     mother_language: str
 
 
-# # class IndiaEthnicity(IndiaEthnicityBase, table=True):
-# #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+# # # class IndiaEthnicity(IndiaEthnicityBase, table=True):
+# # #     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-# # class IndiaEthnicityCreate(IndiaEthnicityBase):
-# #     pass
+# # # class IndiaEthnicityCreate(IndiaEthnicityBase):
+# # #     pass
 
 
-# # class IndiaEthnicityRead(IndiaEthnicityBase):
-# #     id: int
+# # # class IndiaEthnicityRead(IndiaEthnicityBase):
+# # #     id: int

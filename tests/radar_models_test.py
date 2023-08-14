@@ -2,7 +2,7 @@ from sqlalchemy import create_mock_engine
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlmodel import SQLModel
 
-from tests.test_lists import tables, enums
+from tests.test_lists import tables
 from radar_models import radar3
 
 
