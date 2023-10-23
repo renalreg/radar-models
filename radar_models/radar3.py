@@ -1,16 +1,15 @@
 from datetime import datetime, date
-from typing import Optional, ClassVar, Union, Callable
+from typing import Callable, ClassVar, Optional, Union
 
-from sqlalchemy import Column, BigInteger
-from sqlmodel import SQLModel, Field
-
+from sqlalchemy import BigInteger, Column
+from sqlmodel import Field, SQLModel
 
 # --- AdultEQ5D5L --- #
 
 
 class AdultEQ5D5LBase(SQLModel):
-    patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    patient_id: str = Field(foreign_key="patient.id")
+    assessment_date: date
     age: int
     gender: int
     mobility: int
@@ -39,8 +38,8 @@ class AdultEQ5D5LRead(AdultEQ5D5LBase):
 
 class AdverseEventBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
-    hospotalisation: bool
+    review_date: date
+    hospitalisation: bool
     adverse_event: bool
     new_onset_cancer: date
     cancer_cause: bool
@@ -101,7 +100,7 @@ class AlportAssessmentRead(AlportAssessmentBase):
 
 class AnthropometricBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     height: int
     weight: float
     bmi: float
@@ -123,6 +122,7 @@ class AnthropometricBase(SQLModel):
 
 
 class Anthropometric(AnthropometricBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "anthropometric"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -143,6 +143,7 @@ class BiomarkerBase(SQLModel):
 
 
 class Biomarker(BiomarkerBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "biomarker"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -183,7 +184,6 @@ class BiomarkerResultBase(SQLModel):
     biomarker_id: int = Field(foreign_key="biomarker.id")
     biomarker_sample_id: int = Field(foreign_key="biomarker_sample.id")
     biomarker_result_value: float
-    # TODO: Create a unit_of_measure table to hold this
     measure_unit: str
 
 
@@ -221,51 +221,51 @@ class BiomarkerSampleRead(BiomarkerSampleBase):
     id: int
 
 
-# --- CalciphylaxisAssesment --- #
+# --- CalciphylaxisAssessment --- #
 
 
-class CalciphylaxisAssesmentBase(SQLModel):
+class CalciphylaxisAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     lesion: bool
     lesion_location: str
     infection: bool
     infection_location: str
 
 
-class CalciphylaxisAssesment(CalciphylaxisAssesmentBase, table=True):
+class CalciphylaxisAssessment(CalciphylaxisAssessmentBase, table=True):
     __tablename__: ClassVar[Union[str, Callable[..., str]]] = "calciphylaxis_assessment"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-class CalciphylaxisAssesmentCreate(CalciphylaxisAssesmentBase):
+class CalciphylaxisAssessmentCreate(CalciphylaxisAssessmentBase):
     pass
 
 
-class CalciphylaxisAssesmentRead(CalciphylaxisAssesmentBase):
+class CalciphylaxisAssessmentRead(CalciphylaxisAssessmentBase):
     id: int
 
 
-# --- CalciphylaxisAssesmentOption --- #
+# --- CalciphylaxisAssessmentOption --- #
 
 
-class CalciphylaxisAssesmentOptionBase(SQLModel):
+class CalciphylaxisAssessmentOptionBase(SQLModel):
     calciphylaxis_assessment_id: int = Field(foreign_key="calciphylaxis_assessment.id")
     option_id: int = Field(foreign_key="option.id")
 
 
-class CalciphylaxisAssesmentOption(CalciphylaxisAssesmentOptionBase, table=True):
+class CalciphylaxisAssessmentOption(CalciphylaxisAssessmentOptionBase, table=True):
     __tablename__: ClassVar[
         Union[str, Callable[..., str]]
     ] = "calciphylaxis_assessment_option"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
-class CalciphylaxisAssesmentOptionCreate(CalciphylaxisAssesmentOptionBase):
+class CalciphylaxisAssessmentOptionCreate(CalciphylaxisAssessmentOptionBase):
     pass
 
 
-class CalciphylaxisAssesmentOptionRead(CalciphylaxisAssesmentOptionBase):
+class CalciphylaxisAssessmentOptionRead(CalciphylaxisAssessmentOptionBase):
     id: int
 
 
@@ -278,12 +278,13 @@ class CancerTumourBase(SQLModel):
     other_tumour_name: str
     diagnosis_date: date
     tumour_count: int
-    cnsimage: str
+    cns_image: str
     progression_date: date
-    ncat: str
-    mcat: str
+    t_cat: str
+    n_cat: str
+    m_cat: str
     radiologic_tumor_size: str
-    patalogic_tumor_size: str
+    pathologic_tumor_size: str
     tumor_location: str
 
 
@@ -305,7 +306,7 @@ class CancerTumourRead(CancerTumourBase):
 
 class CKDAfricaGeneticBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     sickle_cell: str
     other_sickle_cell: str
     apol_1: str
@@ -329,11 +330,11 @@ class CKDAfricaGeneticRead(CKDAfricaGeneticBase):
 
 class CKDAfricaRiskFactorBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
-    histpretermbirth: str
-    histlowbirthweight: str
-    histmalnutrition: str
-    histhospitalmalnutrition: str
+    assessment_date: date
+    preterm_birth: str
+    low_birth_weight: str
+    malnutrition: str
+    hospital_malnutrition: str
 
 
 class CKDAfricaRiskFactor(CKDAfricaRiskFactorBase, table=True):
@@ -354,7 +355,7 @@ class CKDAfricaRiskFactorRead(CKDAfricaRiskFactorBase):
 
 class ClinicalLettersBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    letter_date: date
     comments: str
 
 
@@ -372,7 +373,6 @@ class ClinicalLettersRead(ClinicalLettersBase):
 
 
 # --- Code --- #
-# TODO: check current indexes and check constraints
 
 
 class CodeBase(SQLModel):
@@ -383,6 +383,7 @@ class CodeBase(SQLModel):
 
 
 class Code(CodeBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "code"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -404,6 +405,7 @@ class CohortBase(SQLModel):
 
 
 class Cohort(CohortBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "cohort"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -495,6 +497,7 @@ class ConsentBase(SQLModel):
 
 
 class Consent(ConsentBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "consent"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -507,7 +510,6 @@ class ConsentRead(ConsentBase):
 
 
 # --- Consultant --- #
-# TODO: Composite index
 
 
 class ConsultantBase(SQLModel):
@@ -520,6 +522,7 @@ class ConsultantBase(SQLModel):
 
 
 class Consultant(ConsultantBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "consultant"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -540,6 +543,7 @@ class CountryBase(SQLModel):
 
 
 class Country(CountryBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "country"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -599,13 +603,13 @@ class CountryNationalityRead(CountryNationalityBase):
 class CystinosisAdultVisitBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     visit: int
-    date: date
+    visit_date: date
     urine_measurement: str
     urine_output: float
     voiding_overnight: str
-    contient_day: str
+    continent_day: str
     fluid_intake: float
-    admison_dehydation: int
+    admission_dehydration: int
     constipation: str
     diarrhea: str
     nausea: str
@@ -613,9 +617,9 @@ class CystinosisAdultVisitBase(SQLModel):
     rickets: str
     kyphoscoliosis: str
     fractures: str
-    muscle_weakness: str
-    ankle_stregth: float
-    elbow_stregth: float
+    muscle_strength: str
+    ankle_strength: float
+    elbow_strength: float
     hand_strength: float
     hip_strength: float
     knee_strength: float
@@ -647,9 +651,9 @@ class CystinosisAdultVisitBase(SQLModel):
     thyroid: str
     hypothyroidism: str
     tanner_stage: str
-    wccystine: float
-    wccystine_date: date
-    wccystine_time: str
+    wc_cystine: float
+    wc_cystine_date: date
+    wc_cystine_time: str
     cysteamine_last_dose: int
     cysteamine_effects: str
 
@@ -673,15 +677,15 @@ class CystinosisAdultVisitRead(CystinosisAdultVisitBase):
 class CystinosisPaedVisitBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     visit: int
-    date: date
+    visit_date: date
     height: float
     weight: float
     urine_measurement: str
     urine_output: float
     voiding_overnight: str
-    contient_day: str
+    continence_day: str
     fluid_intake: float
-    admison_dehydation: int
+    admission_dehydration: int
     constipation: str
     diarrhea: str
     nausea: str
@@ -694,19 +698,19 @@ class CystinosisPaedVisitBase(SQLModel):
     feeding_end_date_2: date
     feeding_start_date_3: date
     feeding_end_date_3: date
-    normmal_food_orally: str
+    normal_food_orally: str
     supplements: str
     growth_hormone_treatment: str
     rickets: str
     kyphoscoliosis: str
     fractures: str
     joint_surgery: str
-    muscle_weakness: str
+    muscle_strength: str
     swallowing_difficulties: str
     nose_snoring: str
-    tonsilectomy_date: date
-    sight_impariment: str
-    severe_sight_impariment: str
+    tonsillectomy_date: date
+    sight_impairment: str
+    severe_sight_impairment: str
     photophobia: str
     photophobia_grade: str
     keratoplasty_date: date
@@ -728,9 +732,9 @@ class CystinosisPaedVisitBase(SQLModel):
     thyroid: str
     hypothyroidism: str
     tanner_stage: str
-    wccystine: float
-    wccystine_date: date
-    wccystine_time: str
+    wc_cystine: float
+    wc_cystine_date: date
+    wc_cystine_time: str
     cysteamine_last_dose: int
     cysteamine_effects: str
 
@@ -801,6 +805,7 @@ class DeathBase(SQLModel):
 
 
 class Death(DeathBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "death"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -817,7 +822,7 @@ class DeathRead(DeathBase):
 
 class DentAndLoweAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     aetiology: str
     causative_agent: str
     other_agent: str
@@ -866,9 +871,9 @@ class DentAndLoweAssessmentOptionRead(DentAndLoweAssessmentOptionBase):
 
 class DiabeticComplicationBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    retrinopathy: int
+    retinopathy: int
     laser_treatment: bool
-    periphal_neuropathy: bool
+    peripheral_neuropathy: bool
     foot_ulcer: bool
 
 
@@ -893,6 +898,7 @@ class DiagnosisBase(SQLModel):
 
 
 class Diagnosis(DiagnosisBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "diagnosis"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -905,7 +911,6 @@ class DiagnosisRead(DiagnosisBase):
 
 
 # --- DiagnosisCode --- #
-# TODO: composite index
 
 
 class DiagnosisCodeBase(SQLModel):
@@ -939,6 +944,7 @@ class DialysisBase(SQLModel):
 
 
 class Dialysis(DialysisBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "dialysis"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -959,6 +965,7 @@ class DrugBase(SQLModel):
 
 
 class Drug(DrugBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "drug"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -975,7 +982,6 @@ class DrugRead(DrugBase):
 
 class DrugGroupBase(SQLModel):
     drug_group: Optional[str] = Field(unique=True)
-    # TODO: Check that everything in here makes sense
     parent_drug_group_id: Optional[int] = Field(foreign_key="drug_group.id")
 
 
@@ -1025,9 +1031,9 @@ class EQ5DYRead(EQ5DYBase):
 
 class EthnicOriginBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     country_of_birth: str
-    year_of_imigration: int
+    year_of_emigration: int
     ethnic_origin: str
 
 
@@ -1053,6 +1059,7 @@ class EthnicityBase(SQLModel):
 
 
 class Ethnicity(EthnicityBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "ethnicity"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1070,7 +1077,6 @@ class EthnicityRead(EthnicityBase):
 class FamilyHistoryBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     diagnosis_id: int = Field(foreign_key="diagnosis.id")
-    relation_id: int = Field(foreign_key="relation.id")
     relation_patient_id: int = Field(foreign_key="patient.id")
     has_condition: bool
 
@@ -1085,6 +1091,50 @@ class FamilyHistoryCreate(FamilyHistoryBase):
 
 
 class FamilyHistoryRead(FamilyHistoryBase):
+    id: int
+
+
+# --- FamilyHistoryRelation --- #
+
+
+class FamilyHistoryRelationBase(SQLModel):
+    family_history_id: int = Field(foreign_key="family_history.id")
+    relation_id: int = Field(foreign_key="relation.id")
+
+
+class FamilyHistoryRelation(FamilyHistoryRelationBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "family_history_relation"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class FamilyHistoryRelationCreate(FamilyHistoryRelationBase):
+    pass
+
+
+class FamilyHistoryRelationRead(FamilyHistoryRelationBase):
+    id: int
+
+
+# --- FamilyHistoryRelationPatient --- #
+
+
+class FamilyHistoryRelationPatientBase(SQLModel):
+    family_history_relation_id: int = Field(foreign_key="family_history_relation.id")
+    patient_id: int = Field(foreign_key="patient.id")
+
+
+class FamilyHistoryRelationPatient(FamilyHistoryRelationPatientBase, table=True):
+    __tablename__: ClassVar[
+        Union[str, Callable[..., str]]
+    ] = "family_history_relation_patient"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class FamilyHistoryRelationPatientCreate(FamilyHistoryRelationPatientBase):
+    pass
+
+
+class FamilyHistoryRelationPatientRead(FamilyHistoryRelationPatientBase):
     id: int
 
 
@@ -1197,6 +1247,7 @@ class GeneticsBase(SQLModel):
 
 
 class Genetics(GeneticsBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "genetics"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1213,7 +1264,7 @@ class GeneticsRead(GeneticsBase):
 
 class HADSBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     a1: int
     d1: int
     a2: int
@@ -1228,7 +1279,7 @@ class HADSBase(SQLModel):
     d6: int
     a7: int
     d7: int
-    aniexty_score: int
+    anxiety_score: int
 
 
 class HADS(HADSBase, table=True):
@@ -1282,6 +1333,7 @@ class HospitalBase(SQLModel):
 
 
 class Hospital(HospitalBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "hospital"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1340,7 +1392,6 @@ class HospitalPatientRead(HospitalPatientBase):
 # --- Hospitalisation --- #
 
 
-# TODO: Discharge and admission are currently datetime. Will need converting
 class HospitalisationBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     hospital_id: int = Field(foreign_key="hospital.id")
@@ -1351,6 +1402,7 @@ class HospitalisationBase(SQLModel):
 
 
 class Hospitalisation(HospitalisationBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "hospitalisation"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1367,7 +1419,7 @@ class HospitalisationRead(HospitalisationBase):
 
 class HSPAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     haematuria: bool
     nephrotic: bool
     m: str
@@ -1398,6 +1450,7 @@ class IdentifierBase(SQLModel):
 
 
 class Identifier(IdentifierBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "identifier"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1414,7 +1467,7 @@ class IdentifierRead(IdentifierBase):
 
 class IGAResearchBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
 
 
 class IGAResearch(IGAResearchBase, table=True):
@@ -1459,6 +1512,7 @@ class IndicatorBase(SQLModel):
 
 
 class Indicator(IndicatorBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "indicator"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1481,7 +1535,7 @@ class InsAssessmentBase(SQLModel):
     fever: Optional[bool]
     thrombosis: Optional[bool]
     peritonitis: Optional[bool]
-    pulmonary_odemea: Optional[bool]
+    pulmonary_oedema: Optional[bool]
     hypertension: Optional[bool]
     rash: Optional[bool]
     rash_details: Optional[str]
@@ -1546,7 +1600,7 @@ class InsRelapseRead(InsRelapseBase):
 
 class IPOSBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     score_1: int
     score_2: int
     score_3: int
@@ -1633,14 +1687,12 @@ class LiverDiseaseRead(LiverDiseaseBase):
 # --- LiverImaging --- #
 
 
-# TODO:
 class LiverImagingBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     hospital_id: int = Field(foreign_key="hospital.id")
     data_source_id: int = Field(foreign_key="data_source.id")
     imaging_date: date
     imaging_type: str
-    # TODO: Originally labelled size. Check this is actually referring to liver size.
     liver_size: Optional[float]
     hepatic_fibrosis: Optional[bool]
     hepatic_cysts: Optional[bool]
@@ -1722,7 +1774,8 @@ class MedicationBase(SQLModel):
     hospital_id: int = Field(foreign_key="hospital.id")
     data_source_id: int = Field(foreign_key="data_source.id")
     drug_id: int = Field(foreign_key="drug.id")
-    start_date: date
+    snapshot_date: Optional[date]
+    start_date: Optional[date]
     finish_date: Optional[date]
     dose_quantity: Optional[float]
     dose_unit: str
@@ -1733,6 +1786,7 @@ class MedicationBase(SQLModel):
 
 
 class Medication(MedicationBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "medication"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1782,6 +1836,7 @@ class NationalityBase(SQLModel):
 
 
 class Nationality(NationalityBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "nationality"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1800,13 +1855,14 @@ class NephrectomyBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     hospital_id: int = Field(foreign_key="hospital.id")
     data_source_id: int = Field(foreign_key="data_source.id")
-    date: date
+    assessment_date: date
     kidney_side: str
     kidney_type: str
     entry_type: str
 
 
 class Nephrectomy(NephrectomyBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "nephrectomy"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1881,11 +1937,11 @@ class NurtureMetadataRead(NurtureMetadataBase):
 
 class NurtureVisitBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    visit_date: date
     visit: int
     comorbidities: int
-    vacination_flu: bool
-    vacination_pneumococcal: bool
+    vaccination_flu: bool
+    vaccination_pneumococcal: bool
     admission: bool
     admission_number: int
     admission_emergency: int
@@ -1926,6 +1982,7 @@ class NutritionBase(SQLModel):
 
 
 class Nutrition(NutritionBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "nutrition"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1950,6 +2007,7 @@ class ObservationBase(SQLModel):
 
 
 class Observation(ObservationBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "observation"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2006,7 +2064,6 @@ class ObservationOptionRead(ObservationOptionsBase):
 # --- Option --- #
 
 
-# TODO: Consider adding a page id to make gathering sets of option easier
 class OptionBase(SQLModel):
     option_group: str
     display_label: str
@@ -2014,6 +2071,7 @@ class OptionBase(SQLModel):
 
 
 class Option(OptionBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "option"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2030,7 +2088,7 @@ class OptionRead(OptionBase):
 
 class PaedsCHU9DBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     worried: int
     sad: int
     pain: int
@@ -2060,7 +2118,7 @@ class PaedsCHU9DRead(PaedsCHU9DBase):
 
 class PAMBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     q1: int
     q2: int
     q3: int
@@ -2089,6 +2147,28 @@ class PAMRead(PAMBase):
     id: int
 
 
+# --- ParentalConsanguinity --- #
+
+
+class ParentalConsanguinityBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    consanguinity: bool
+    consanguinity_details: str
+
+
+class ParentalConsanguinity(ParentalConsanguinityBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "parental_consanguinity"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class ParentalConsanguinityCreate(ParentalConsanguinityBase):
+    pass
+
+
+class ParentalConsanguinityRead(ParentalConsanguinityBase):
+    id: int
+
+
 # --- Pathology --- #
 
 
@@ -2096,7 +2176,7 @@ class PathologyBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     hospital_id: int = Field(foreign_key="hospital.id")
     data_source_id: int = Field(foreign_key="data_source.id")
-    date: date
+    report_date: date
     kidney_type: str
     kidney_side: str
     reference_number: str
@@ -2107,6 +2187,7 @@ class PathologyBase(SQLModel):
 
 
 class Pathology(PathologyBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "pathology"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2128,6 +2209,7 @@ class PatientBase(SQLModel):
 
 
 class Patient(PatientBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "patient"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2145,7 +2227,7 @@ class PatientRead(PatientBase):
 class PatientAddressBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     data_source_id: int = Field(foreign_key="data_source.id")
-    country_id: str = Field(foreign_key="country.id")
+    country_id: int = Field(foreign_key="country.id")
     from_date: date
     to_date: date
     address1: str
@@ -2276,8 +2358,9 @@ class PatientDiagnosisBase(SQLModel):
     diagnosis_id: int = Field(foreign_key="diagnosis.id")
     diagnosis_text: str
     symptoms_date: date
-    from_date: date
-    to_date: date
+    from_date: Optional[date]
+    to_date: Optional[date]
+    snapshot_date: Optional[date]
     gene_test: bool
     biochemistry: bool
     assessment: bool
@@ -2340,7 +2423,7 @@ class PatientNationalityCreate(PatientNationalityBase):
     pass
 
 
-class patientNationalityRead(PatientNationalityBase):
+class PatientNationalityRead(PatientNationalityBase):
     id: int
 
 
@@ -2380,6 +2463,7 @@ class PlasmapheresisBase(SQLModel):
 
 
 class Plasmapheresis(PlasmapheresisBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "plasmapheresis"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2401,6 +2485,7 @@ class PostBase(SQLModel):
 
 
 class Post(PostBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "post"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2432,6 +2517,7 @@ class PregnancyBase(SQLModel):
 
 
 class Pregnancy(PregnancyBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "pregnancy"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2474,6 +2560,7 @@ class RelationBase(SQLModel):
 
 
 class Relation(RelationBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "relation"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2490,44 +2577,44 @@ class RelationRead(RelationBase):
 
 class RenalCancerGeneticsBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     bap1_test: bool
     bap1_variant: str
-    bap1_varient_status: str
+    bap1_variant_status: str
     fh_test: bool
     fh_variant: str
-    fh_varient_status: str
+    fh_variant_status: str
     flcn_test: bool
     flcn_variant: str
-    flcn_varient_status: str
+    flcn_variant_status: str
     met_test: bool
     met_variant: str
-    met_varient_status: str
+    met_variant_status: str
     mitf_test: bool
     mitf_variant: str
-    mitf_varient_status: str
+    mitf_variant_status: str
     pten_test: bool
     pten_variant: str
-    pten_varient_status: str
+    pten_variant_status: str
     sdha_test: bool
     sdha_variant: str
-    sdha_varient_status: str
+    sdha_variant_status: str
     sdhb_test: bool
     sdhb_variant: str
-    sdhb_varient_status: str
+    sdhb_variant_status: str
     sdhc_test: bool
     sdhc_variant: str
-    sdhc_varient_status: str
+    sdhc_variant_status: str
     sdhd_test: bool
     sdhd_variant: str
-    sdhd_varient_status: str
+    sdhd_variant_status: str
     vhl_test: bool
     vhl_variant: str
-    vhl_varient_status: str
+    vhl_variant_status: str
     other_test: bool
     other_test_name: str
     other_variant: str
-    other_varient_status: str
+    other_variant_status: str
 
 
 class RenalCancerGenetics(RenalCancerGeneticsBase, table=True):
@@ -2572,9 +2659,9 @@ class RenalCancerGeneticsOptionRead(RenalCancerGeneticsOptionBase):
 class RenalCancerTumourBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     tumor_type: str
-    date: date
+    assessment_date: date
     cns_imaging_method: str  #
-    progession_date: date
+    progression_date: date
     t_cat: str
     n_cat: str
     m_cat: str
@@ -2603,7 +2690,7 @@ class RenalImagingBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     hospital_id: int = Field(foreign_key="hospital.id")
     data_source_id: int = Field(foreign_key="data_source.id")
-    date: datetime
+    assessment_date: datetime
     imaging_type: str
     right_present: bool
     right_type: str
@@ -2680,6 +2767,7 @@ class ResultBase(SQLModel):
 
 
 class Result(ResultBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "result"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2779,7 +2867,7 @@ class RituximabBaselinePreviousTreatmentRead(RituximabBaselineAssessmentBase):
 
 class RituximabCriteriaBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     criteria1: bool
     criteria2: bool
     criteria3: bool
@@ -2822,7 +2910,7 @@ class RituximabCriteriaRead(RituximabCriteriaBase):
 
 class RituximabFollowUpAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    visit_date: date
     visit: str
     performance: str
     transplant: str
@@ -2885,7 +2973,7 @@ class RituximabFollowUpAssessmentOptionRead(RituximabFollowUpAssessmentOptionBas
 
 class RituximabToxicityBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     drug_name: str
     other_drug: str
     dose: Optional[float]
@@ -2971,7 +3059,7 @@ class SaltWastingClinicalFeatureRead(SaltWastingClinicalFeatureBase):
 
 class SampleInventoryBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    sample_date: date
     urine: bool
     urine_date: date
     urine_volume: str
@@ -3025,7 +3113,6 @@ class SampleTypeRead(SampleTypeBase):
 # --- sixCIT --- #
 
 
-# TODO: Rename q1 - q7 tp something more meaningful
 class SixCITBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     completed_date: date
@@ -3057,7 +3144,7 @@ class SixCITRead(SixCITBase):
 
 class SocioEconomicBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    assessment_date: date
     education: int
     employment_status: int
     first_language: str
@@ -3079,7 +3166,7 @@ class SocioEconomicBase(SQLModel):
 
 
 class SocioEconomic(SocioEconomicBase, table=True):
-    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "socio_economic"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "socioeconomic"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -3099,6 +3186,7 @@ class SpecialtyBase(SQLModel):
 
 
 class Specialty(SpecialtyBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "specialty"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -3118,7 +3206,7 @@ class TransplantBase(SQLModel):
     hospital_id: int = Field(foreign_key="hospital.id")
     transplant_hospital_id: int = Field(foreign_key="hospital.id")
     data_source_id: int = Field(foreign_key="data_source.id")
-    date: date
+    transplant_date: date
     modality: int
     date_of_recurrence: date
     date_of_failure: date
@@ -3130,6 +3218,7 @@ class TransplantBase(SQLModel):
 
 
 class Transplant(TransplantBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "transplant"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -3189,7 +3278,7 @@ class TransplantRejectionRead(TransplantRejectionBase):
 
 class TubeSampleBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
-    date: date
+    sample_date: date
     barcode: str
     ins_state: int
 
@@ -3205,59 +3294,3 @@ class TubeSampleCreate(TubeSampleBase):
 
 class TubeSampleRead(TubeSampleBase):
     id: int
-
-
-# --- Forms --- #
-
-
-# --- CystThree --- #
-
-
-# class CystThreeBase(SQLModel):
-#     patient_id: int = Field(foreign_key="patient.id")
-#     date: date
-#     tumor_type: str
-#     keratoplasty_date: date
-#     cns_imaging: str
-#     progession_date: date
-#     tcat: str
-#     ncat: str
-#     mcat: str
-#     rtsize: str
-#     ptsize: str
-#     tloc: str
-
-
-# class CystThree(CystThreeBase, table=True):
-#     __tablename__: ClassVar[Union[str, Callable[..., str]]] = "cyst_three"
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
-
-
-# class CystThreeCreate(CystThreeBase):
-#     pass
-
-
-# class CystThreeRead(CystThreeBase):
-#     id: int
-
-
-# --- RituximabVisit --- #
-
-
-# class RituximabVisitBase(SQLModel):
-#     patient_id: int = Field(foreign_key="patient.id")
-#     date: date
-#     visit: str
-
-
-# class RituximabVisit(RituximabVisitBase, table=True):
-#     __tablename__: ClassVar[Union[str, Callable[..., str]]] = "rituximab_visit"
-#     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
-
-
-# class RituximabVisitCreate(RituximabVisitBase):
-#     pass
-
-
-# class RituximabVisitRead(RituximabVisitBase):
-#     id: int
