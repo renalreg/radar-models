@@ -18,6 +18,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: Gr1N/setup-poetry@v8
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
