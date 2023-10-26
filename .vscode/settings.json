@@ -72,5 +72,8 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
-    "cSpell.dictionaryDefinitions": []
+    "cSpell.dictionaryDefinitions": [],
+    "conventionalCommits.scopes": [
+        "actions"
+    ]
 }
