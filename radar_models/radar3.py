@@ -1531,7 +1531,7 @@ class InsAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     date_of_picture: date
     oedema: Optional[bool]
-    hypovalaemia: Optional[bool]
+    hypovoloemia: Optional[bool]
     fever: Optional[bool]
     thrombosis: Optional[bool]
     peritonitis: Optional[bool]
