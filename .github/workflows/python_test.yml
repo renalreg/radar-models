@@ -18,7 +18,7 @@ jobs:
         python-version: ["3.11"]
 
     env:
-      DIRECTORY_TO_SCAN: ./nhsbt_import
+      DIRECTORY_TO_SCAN: ./radar_models
       TODO_REGEX: 'TODO:(?!\s*\[[A-Za-z0-9-]+\])'
 
     steps:
