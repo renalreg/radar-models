@@ -68,13 +68,11 @@ jobs:
           fi
 
           echo "pr_title=${SUPERIOR_COMMIT}" >> $GITHUB_OUTPUT
-          echo ${SUPERIOR_COMMIT}
 
       - name: PR Features
         id: pr_features
         run: |
           FEATURE_COMMITS=$(git log remotes/origin/main..${{ steps.extract_branch_name.outputs.branch_name }} --oneline --pretty=format:"%s" | grep -E '^(feat!(:|\([^)]*\))|feat(:|\([^)]*\))|fix(:|\([^)]*\))|docs(:|\([^)]*\)))' | awk '{printf "%s\\n", $0}')
-          echo "${FEATURE_COMMITS}"
           {
             echo 'pr_features<<EOF'
             echo "${FEATURE_COMMITS}"
@@ -85,7 +83,6 @@ jobs:
         id: pr_notes
         run: |
           COMMIT_BODIES=$(git log remotes/origin/main..${{ steps.extract_branch_name.outputs.branch_name }} --pretty=format:"%s%n%b" | awk '/^(feat!|feat|fix|docs)/ {inBody=1; next} inBody {print $0; next} {inBody=0}' | awk '{printf "%s\\n", $0}')
-          echo "${COMMIT_BODIES}"
           {
             echo 'pr_notes<<EOF'
             echo "${COMMIT_BODIES}"
@@ -97,7 +94,6 @@ jobs:
         run: |
           CURRENT_DATE=$(date +"%Y-%m-%d")
           echo "current_date=${CURRENT_DATE}" >> $GITHUB_OUTPUT
-          echo "${{ steps.pr_features.outputs.pr_features }}"
 
       - name: Render Template
         id: template
