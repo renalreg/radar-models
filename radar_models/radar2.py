@@ -2362,11 +2362,6 @@ class FamilyHistoryRelative(Base):
         ForeignKey("patients.id", ondelete="SET NULL", onupdate="CASCADE")
     )
 
-    # TODO: family_history column seems to cause a conflict with table familyhistory
-    # family_history = relationship('FamilyHistory')
-    # TODO: Same as above, naming conflict
-    # patient = relationship("Patient")
-
 
 class TransplantBiopsy(Base):
     __tablename__ = "transplant_biopsies"
