@@ -6,6 +6,7 @@ from sqlmodel import Field, SQLModel
 
 # --- AdultEQ5D5L --- #
 
+# comment
 
 class AdultEQ5D5LBase(SQLModel):
     patient_id: str = Field(foreign_key="patient.id")
