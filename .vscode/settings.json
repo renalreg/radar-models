@@ -74,6 +74,7 @@
     },
     "cSpell.dictionaryDefinitions": [],
     "conventionalCommits.scopes": [
-        "actions"
+        "actions",
+        "models"
     ]
 }
