@@ -8,7 +8,7 @@ from sqlmodel import Field, SQLModel
 
 
 class AdultEQ5D5LBase(SQLModel):
-    patient_id: str = Field(foreign_key="patient.id")
+    patient_id: int = Field(foreign_key="patient.id")
     assessment_date: date
     age: int
     gender: int
