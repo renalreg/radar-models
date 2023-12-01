@@ -23,8 +23,8 @@ jobs:
         uses: tibdex/github-app-token@v1
         id: generate-token
         with:
-          app_id: ${{ secrets.REG_APP_ID }}
-          private_key: ${{ secrets.REG_APP_KEY }}
+          app_id: ${{ secrets.REN_APP_ID }}
+          private_key: ${{ secrets.REN_APP_KEY }}
 
       - name: Run Python Test Workflow
         uses: convictional/trigger-workflow-and-wait@v1.6.1
