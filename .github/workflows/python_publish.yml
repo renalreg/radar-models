@@ -31,7 +31,7 @@ jobs:
         with:
           owner: renalreg
           repo: radar-models
-          github_token: ${{ steps.generate-token.outputs.token }}
+          github_token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
           workflow_file_name: python_test.yml
 
       - uses: actions/checkout@v4
