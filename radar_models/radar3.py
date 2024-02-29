@@ -1214,7 +1214,7 @@ class FrontPageStatBase(SQLModel):
 
 
 class FrontPageStat(FrontPageStatBase, table=True):
-    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "fetal_ultrasound"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "front_page_stats"
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
