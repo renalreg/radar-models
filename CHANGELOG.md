@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/renalreg/radar-models/compare/v1.0.1...v1.1.0) (2024-02-29)
+
+
+### Features
+
+* **models:** :sparkles: front page stats table ([#10](https://github.com/renalreg/radar-models/issues/10)) ([b0d48d6](https://github.com/renalreg/radar-models/commit/b0d48d64a7ff58dc38ed734d3d0ea7c2f0ad448d))
+
 ## [1.0.1](https://github.com/renalreg/radar-models/compare/v1.0.0...v1.0.1) (2023-12-01)
 
 
