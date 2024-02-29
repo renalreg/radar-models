@@ -255,9 +255,9 @@ class CalciphylaxisAssessmentOptionBase(SQLModel):
 
 
 class CalciphylaxisAssessmentOption(CalciphylaxisAssessmentOptionBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "calciphylaxis_assessment_option"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "calciphylaxis_assessment_option"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -761,9 +761,9 @@ class CystinosisPaedVisitOptionBase(SQLModel):
 
 
 class CystinosisPaedVisitOption(CystinosisPaedVisitOptionBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "cystinosis_paed_visit_option"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "cystinosis_paed_visit_option"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -852,9 +852,9 @@ class DentAndLoweAssessmentOptionBase(SQLModel):
 
 
 class DentAndLoweAssessmentOption(DentAndLoweAssessmentOptionBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "dent_and_lowe_assessment_option"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "dent_and_lowe_assessment_option"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1124,9 +1124,9 @@ class FamilyHistoryRelationPatientBase(SQLModel):
 
 
 class FamilyHistoryRelationPatient(FamilyHistoryRelationPatientBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "family_history_relation_patient"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "family_history_relation_patient"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -1202,6 +1202,27 @@ class FetalUltrasoundCreate(FetalUltrasoundBase):
 
 
 class FetalUltrasoundRead(FetalUltrasoundBase):
+    id: int
+
+
+# --- FrontPageStats --- #
+
+
+class FrontPageStatBase(SQLModel):
+    label: str
+    stat: str
+
+
+class FrontPageStat(FrontPageStatBase, table=True):
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = "fetal_ultrasound"
+    id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
+
+
+class FrontPageStatCreate(FrontPageStatBase):
+    pass
+
+
+class FrontPageStatRead(FrontPageStatBase):
     id: int
 
 
@@ -1752,9 +1773,9 @@ class LiverTransplantIndicatorBase(SQLModel):
 
 
 class LiverTransplantIndicator(LiverTransplantIndicatorBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "liver_transplant_indicator"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "liver_transplant_indicator"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2639,9 +2660,9 @@ class RenalCancerGeneticsOptionBase(SQLModel):
 
 
 class RenalCancerGeneticsOption(RenalCancerGeneticsOptionBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "renal_cancer_genetics_option"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "renal_cancer_genetics_option"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2796,9 +2817,9 @@ class RituximabBaselineAssessmentBase(SQLModel):
 
 
 class RituximabBaselineAssessment(RituximabBaselineAssessmentBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "rituximab_baseline_assessment"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "rituximab_baseline_assessment"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2823,9 +2844,9 @@ class RituximabBaselineAssessmentOptionBase(SQLModel):
 class RituximabBaselineAssessmentOption(
     RituximabBaselineAssessmentOptionBase, table=True
 ):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "rituximab_baseline_assessment_option"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "rituximab_baseline_assessment_option"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2848,9 +2869,9 @@ class RituximabBaselinePreviousTreatmentBase(SQLModel):
 
 
 class RituximabBaselinePreviousTreatment(RituximabBaselineAssessmentBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "rituximab_baseline_previous_treatment"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "rituximab_baseline_previous_treatment"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2927,9 +2948,9 @@ class RituximabFollowUpAssessmentBase(SQLModel):
 
 
 class RituximabFollowUpAssessment(RituximabFollowUpAssessmentBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "rituximab_follow_up_assessment"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "rituximab_follow_up_assessment"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -2954,9 +2975,9 @@ class RituximabFollowUpAssessmentOptionBase(SQLModel):
 class RituximabFollowUpAssessmentOption(
     RituximabFollowUpAssessmentOptionBase, table=True
 ):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "rituximab_follow_up_assessment_option"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "rituximab_follow_up_assessment_option"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -3004,9 +3025,9 @@ class RituximabToxicityOptionBase(SQLModel):
 
 
 class RituximabToxicityOption(RituximabToxicityOptionBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "rituximab_toxicity_option"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "rituximab_toxicity_option"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
@@ -3040,9 +3061,9 @@ class SaltWastingClinicalFeatureBase(SQLModel):
 
 
 class SaltWastingClinicalFeature(SaltWastingClinicalFeatureBase, table=True):
-    __tablename__: ClassVar[
-        Union[str, Callable[..., str]]
-    ] = "salt_wasting_clinical_feature"
+    __tablename__: ClassVar[Union[str, Callable[..., str]]] = (
+        "salt_wasting_clinical_feature"
+    )
     id: Optional[int] = Field(sa_column=Column(BigInteger(), primary_key=True))
 
 
