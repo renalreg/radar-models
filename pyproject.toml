@@ -9,17 +9,17 @@ packages = [{include = "radar_models"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-sqlmodel = "^0.0.8"
+sqlmodel = "^0.0.16"
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.1.0"
-pytest = "^7.2.2"
-faker = "^16.6.1"
-psycopg2 = "^2.9.5"
-tox = "^4.11.3"
-pylint = "^3.0.1"
-mypy = "^1.6.0"
-bandit = "^1.7.5"
+black = "^24.2.0"
+pytest = "^7.4.4"
+faker = "^16.9.0"
+psycopg2 = "^2.9.9"
+tox = "^4.14.1"
+pylint = "^3.1.0"
+mypy = "^1.8.0"
+bandit = "^1.7.7"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
