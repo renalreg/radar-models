@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "radar-models"
-version = "1.1.0"
+version = "1.1.2"
 description = "DB models for Radar"
 authors = ["Andrew Atterton"]
 license = "MIT"
@@ -15,7 +15,6 @@ sqlmodel = "^0.0.16"
 black = "^24.2.0"
 pytest = "^7.4.4"
 faker = "^16.9.0"
-psycopg2 = "^2.9.9"
 tox = "^4.14.1"
 pylint = "^3.1.0"
 mypy = "^1.8.0"
