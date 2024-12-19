@@ -2312,6 +2312,7 @@ class Transplant(Base):
     date_of_cmv_infection = Column(Date)
     donor_hla = Column(String)
     recipient_hla = Column(String)
+    mismatch_hla = Column(String)
     graft_loss_cause = Column(String)
 
     created_user = relationship(
