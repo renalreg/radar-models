@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/renalreg/radar-models/compare/v1.1.2...v1.2.0) (2026-01-14)
+
+
+### Features
+
+* **RDR-866:** HLA MISMATCH ([#13](https://github.com/renalreg/radar-models/issues/13)) ([fd9f051](https://github.com/renalreg/radar-models/commit/fd9f05184dd832ae569a7734ca4f07956dd8a61b))
+
 ## [1.1.0](https://github.com/renalreg/radar-models/compare/v1.0.1...v1.1.0) (2024-02-29)
 
 
