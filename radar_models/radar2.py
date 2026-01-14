@@ -604,7 +604,7 @@ class Group(Base):
 
     country = relationship("Country")
     parent_group = relationship("Group", remote_side=[id])
-
+    group_antibodies = relationship('GroupAntibody',back_populates='group',cascade='all, delete-orphan')
 
 class Patient(Base):
     __tablename__ = "patients"
@@ -1928,7 +1928,11 @@ class PatientDiagnose(Base):
     modified_user_id = Column(ForeignKey("users.id"), nullable=False)
     modified_date = Column(DateTime(True), nullable=False, server_default=text("now()"))
     prenatal = Column(Boolean)
-
+    antibody_id = Column(String, ForeignKey("antibodies.id"), nullable=True)
+    antibody = relationship(
+        "Antibody",
+        primaryjoin="PatientDiagnose.antibody_id == Antibody.id"
+    )
     created_user = relationship(
         "User", primaryjoin="PatientDiagnose.created_user_id == User.id"
     )
@@ -2418,3 +2422,43 @@ class BiomarkerResult(Base):
 
     bio = relationship("Biomarker")
     sample = relationship("BiomarkerSample")
+
+class GroupAntibody(Base):
+    __tablename__ = 'group_antibodies'
+
+    group_id = Column(
+        Integer,
+        ForeignKey('groups.id', ondelete='CASCADE'),
+        primary_key=True,
+    )
+
+    antibody_id = Column(
+        String,
+        ForeignKey('antibodies.id', ondelete='CASCADE'),
+        primary_key=True,
+    )
+
+    group = relationship(
+        'Group',
+        back_populates='group_antibodies',
+        passive_deletes=True,
+    )
+
+    antibody = relationship(
+        'Antibody',
+        back_populates='group_antibodies',
+        passive_deletes=True,
+    )
+
+
+class Antibody(db.Model):
+    __tablename__ = 'antibodies'
+
+    id = Column(String, primary_key=True, nullable=False)
+    is_official = Column(Boolean, nullable=False, default=False)
+
+    group_antibodies = relationship(
+        'GroupAntibody',
+        back_populates='antibody',
+        cascade='all, delete-orphan'
+    )
