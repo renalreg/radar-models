@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "radar-models"
-version = "1.1.2"
+version = "1.2.0"
 description = "DB models for Radar"
 authors = ["Andrew Atterton"]
 license = "MIT"
