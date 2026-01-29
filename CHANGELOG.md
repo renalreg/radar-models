@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/renalreg/radar-models/compare/v1.2.0...v1.3.0) (2026-01-29)
+
+
+### Features
+
+* **RDR-869:** antibody ([#19](https://github.com/renalreg/radar-models/issues/19)) ([c4c3e94](https://github.com/renalreg/radar-models/commit/c4c3e94c446ff65bee65352e59f25143abb25061))
+
 ## [1.2.0](https://github.com/renalreg/radar-models/compare/v1.1.2...v1.2.0) (2026-01-14)
 
 
