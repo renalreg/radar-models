@@ -1881,6 +1881,7 @@ class PatientDemographic(Base):
     work_number = Column(String)
     mobile_number = Column(String)
     email_address = Column(String)
+    email_reason = Column(String)
     created_user_id = Column(ForeignKey("users.id"), nullable=False)
     created_date = Column(DateTime(True), nullable=False, server_default=text("now()"))
     modified_user_id = Column(ForeignKey("users.id"), nullable=False)
