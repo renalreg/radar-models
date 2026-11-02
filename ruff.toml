@@ -1,0 +1,28 @@
+target-version = "py311"
+# Formatter matches black's default width; long lines are not linted (was pylint line-too-long).
+line-length = 88
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
+    "PL",  # pylint
+    "D1",  # missing docstrings
+]
+ignore = [
+    "E501", # line-too-long
+    "D100", # missing-module-docstring
+    "D101", # missing-class-docstring
+    "D104", # missing docstring in package (__init__.py)
+    "D105", # magic methods (pylint skipped these)
+    "D106", # nested classes
+    "D107", # __init__ (pylint skipped this)
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["D", "PLR2004"]
