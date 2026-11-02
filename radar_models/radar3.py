@@ -2,7 +2,8 @@ from datetime import date, datetime
 
 from sqlalchemy import BigInteger
 from sqlmodel import Field, SQLModel
-
+# TODO check that the bools are either true or false and how nulls are related
+# as is a null false or is a null a lack of answer so could be true - philospophical
 # --- Shared mixins --- #
 
 
@@ -82,8 +83,8 @@ class AlportAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_picture: date
     deafness_index: int
-    deafness_date: date | None
-    hearing_aid_date: date | None
+    deafness_date: date | None = None
+    hearing_aid_date: date | None = None
 
 
 class AlportAssessment(AlportAssessmentBase, BigIntPK, table=True):
@@ -133,7 +134,7 @@ class AnthropometricRead(AnthropometricBase, HasId):
 
 class BiomarkerBase(SQLModel):
     biomarker_name: str
-    biomarker_type: str
+    biomarker_type: str | None = None
 
 
 class Biomarker(BiomarkerBase, BigIntPK, table=True):
@@ -148,9 +149,11 @@ class BiomarkerRead(BiomarkerBase, HasId):
 
 
 class BiomarkerBarcodeBase(SQLModel):
-    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    barcode: str
-    sample_date: datetime
+    patient_id: int | None = Field(
+        default=None, foreign_key="patient.id", sa_type=BigInteger
+    )
+    barcode: str | None = None
+    sample_date: datetime | None = None
 
 
 class BiomarkerBarcode(BiomarkerBarcodeBase, BigIntPK, table=True):
@@ -165,12 +168,14 @@ class BiomarkerBarcodeRead(BiomarkerBarcodeBase, HasId):
 
 
 class BiomarkerResultBase(SQLModel):
-    biomarker_id: int = Field(foreign_key="biomarker.id", sa_type=BigInteger)
-    biomarker_sample_id: int = Field(
-        foreign_key="biomarker_sample.id", sa_type=BigInteger
+    biomarker_id: int | None = Field(
+        default=None, foreign_key="biomarker.id", sa_type=BigInteger
     )
-    biomarker_result_value: float
-    measure_unit: str
+    biomarker_sample_id: int | None = Field(
+        default=None, foreign_key="biomarker_sample.id", sa_type=BigInteger
+    )
+    biomarker_result_value: float | None = None
+    measure_unit: str | None = None
 
 
 class BiomarkerResult(BiomarkerResultBase, BigIntPK, table=True):
@@ -185,8 +190,8 @@ class BiomarkerResultRead(BiomarkerResultBase, HasId):
 
 
 class BiomarkerSampleBase(SQLModel):
-    biomarker_barcode_id: int = Field(
-        foreign_key="biomarker_barcode.id", sa_type=BigInteger
+    biomarker_barcode_id: int | None = Field(
+        default=None, foreign_key="biomarker_barcode.id", sa_type=BigInteger
     )
     biomarker_sample_label: str
 
@@ -327,7 +332,7 @@ class ClinicalLetterRead(ClinicalLetterBase, HasId):
 
 class CodeBase(SQLModel):
     coding_system: str
-    code_describes: str
+    code_describes: str | None = None
     code_value: str
     code_label: str
 
@@ -380,7 +385,7 @@ class CohortDiagnosisRead(CohortDiagnosisBase, HasId):
 class CohortObservationBase(SQLModel):
     cohort_id: int = Field(foreign_key="cohort.id", sa_type=BigInteger)
     observation_id: int = Field(foreign_key="observation.id", sa_type=BigInteger)
-    observation_weight: int
+    observation_weight: int | None = None
 
 
 class CohortObservation(CohortObservationBase, BigIntPK, table=True):
@@ -398,7 +403,7 @@ class CohortPatientBase(SQLModel):
     cohort_id: int = Field(foreign_key="cohort.id", sa_type=BigInteger)
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     recruited_date: date
-    removed_date: date | None
+    removed_date: date | None = None
 
 
 class CohortPatient(CohortPatientBase, BigIntPK, table=True):
@@ -414,10 +419,10 @@ class CohortPatientRead(CohortPatientBase, HasId):
 
 class ConsentBase(SQLModel):
     consent_code: str
-    consent_label: str | None
+    consent_label: str | None = None
     is_paediatric: bool = Field(default=False)
     release_date: date
-    consent_url: str
+    consent_url: str | None = None
     is_retired: bool = Field(default=False)
 
 
@@ -436,9 +441,9 @@ class ConsultantBase(SQLModel):
     specialty_id: int = Field(foreign_key="specialty.id", sa_type=BigInteger)
     first_name: str
     last_name: str
-    email: str | None
-    telephone_number: str | None
-    gmc_number: int | None
+    email: str | None = None
+    telephone_number: str | None = None
+    gmc_number: int | None = None
 
 
 class Consultant(ConsultantBase, BigIntPK, table=True):
@@ -469,8 +474,12 @@ class CountryRead(CountryBase, HasId):
 
 
 class CountryEthnicityBase(SQLModel):
-    ethnicity_id: int = Field(foreign_key="ethnicity.id", sa_type=BigInteger)
-    country_id: int = Field(foreign_key="country.id", sa_type=BigInteger)
+    ethnicity_id: int | None = Field(
+        default=None, foreign_key="ethnicity.id", sa_type=BigInteger
+    )
+    country_id: int | None = Field(
+        default=None, foreign_key="country.id", sa_type=BigInteger
+    )
 
 
 class CountryEthnicity(CountryEthnicityBase, BigIntPK, table=True):
@@ -485,8 +494,12 @@ class CountryEthnicityRead(CountryEthnicityBase, HasId):
 
 
 class CountryNationalityBase(SQLModel):
-    nationality_id: int = Field(foreign_key="nationality.id", sa_type=BigInteger)
-    country_id: int = Field(foreign_key="country.id", sa_type=BigInteger)
+    nationality_id: int | None = Field(
+        default=None, foreign_key="nationality.id", sa_type=BigInteger
+    )
+    country_id: int | None = Field(
+        default=None, foreign_key="country.id", sa_type=BigInteger
+    )
 
 
 class CountryNationality(CountryNationalityBase, BigIntPK, table=True):
@@ -681,7 +694,7 @@ class DataSourceRead(DataSourceBase, HasId):
 class DeathBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_death: date
-    cause_of_death: str | None
+    cause_of_death: str | None = None
 
 
 class Death(DeathBase, BigIntPK, table=True):
@@ -788,10 +801,14 @@ class DiagnosisCodeRead(DiagnosisCodeBase, HasId):
 
 class DialysisBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     timeline_start: date
-    timeline_end: date | None
+    timeline_end: date | None = None
     dialysis_modality_index: int
 
 
@@ -809,7 +826,7 @@ class DialysisRead(DialysisBase, HasId):
 class DrugBase(SQLModel):
     drug_name: str
     drug_group_id: int | None = Field(
-        foreign_key="drug_group.id", sa_type=BigInteger
+        default=None, foreign_key="drug_group.id", sa_type=BigInteger
     )
 
 
@@ -825,9 +842,9 @@ class DrugRead(DrugBase, HasId):
 
 
 class DrugGroupBase(SQLModel):
-    drug_group_name: str | None = Field(unique=True)
+    drug_group_name: str | None = Field(default=None, unique=True)
     parent_drug_group_id: int | None = Field(
-        foreign_key="drug_group.id", sa_type=BigInteger
+        default=None, foreign_key="drug_group.id", sa_type=BigInteger
     )
 
 
@@ -885,8 +902,8 @@ class EthnicOriginRead(EthnicOriginBase, HasId):
 
 
 class EthnicityBase(SQLModel):
-    ethnicity_code: str
-    ethnicity_label: str
+    ethnicity_code: str | None = None
+    ethnicity_label: str | None = None
 
 
 class Ethnicity(EthnicityBase, BigIntPK, table=True):
@@ -902,8 +919,12 @@ class EthnicityRead(EthnicityBase, HasId):
 
 class FamilyHistoryBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    diagnosis_id: int = Field(foreign_key="diagnosis.id", sa_type=BigInteger)
-    relation_patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    diagnosis_id: int | None = Field(
+        default=None, foreign_key="diagnosis.id", sa_type=BigInteger
+    )
+    relation_patient_id: int | None = Field(
+        default=None, foreign_key="patient.id", sa_type=BigInteger
+    )
     has_condition: bool
 
 
@@ -938,7 +959,9 @@ class FamilyHistoryRelationPatientBase(SQLModel):
     family_history_relation_id: int = Field(
         foreign_key="family_history_relation.id", sa_type=BigInteger
     )
-    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    patient_id: int | None = Field(
+        default=None, foreign_key="patient.id", sa_type=BigInteger
+    )
 
 
 class FamilyHistoryRelationPatient(
@@ -956,23 +979,27 @@ class FamilyHistoryRelationPatientRead(FamilyHistoryRelationPatientBase, HasId):
 
 class FetalAnomalyScanBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     date_of_scan: date
     gestational_age: int
     has_oligohydramnios: bool
-    right_anomaly_details: str | None
-    right_ultrasound_details: str | None
-    left_anomaly_details: str | None
-    left_ultrasound_details: str | None
-    has_hypoplasia: bool | None
-    has_echogenicity: bool | None
-    has_hepatic_abnormalities: bool | None
-    hepatic_abnormality_details: str | None
-    has_lung_abnormalities: bool | None
-    lung_abnormality_details: str | None
-    has_amnioinfusion: bool | None
-    amnioinfusion_count: int | None
+    right_anomaly_details: str | None = None
+    right_ultrasound_details: str | None = None
+    left_anomaly_details: str | None = None
+    left_ultrasound_details: str | None = None
+    has_hypoplasia: bool
+    has_echogenicity: bool
+    has_hepatic_abnormalities: bool
+    hepatic_abnormality_details: str | None = None
+    has_lung_abnormalities: bool
+    lung_abnormality_details: str | None = None
+    has_amnioinfusion: bool
+    amnioinfusion_count: int | None = None
 
 
 class FetalAnomalyScan(FetalAnomalyScanBase, BigIntPK, table=True):
@@ -988,16 +1015,20 @@ class FetalAnomalyScanRead(FetalAnomalyScanBase, HasId):
 
 class FetalUltrasoundBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     date_of_scan: date
-    fetal_identifier: str | None
-    gestational_age: int
-    head_centile: int | None
-    abdomen_centile: int | None
-    is_uterine_artery_notched: bool | None
-    liquor_volume: str | None
-    fetal_ultrasound_comment: str | None
+    fetal_identifier: str | None = None
+    gestational_age: int | None = None
+    head_centile: int | None = None
+    abdomen_centile: int | None = None
+    is_uterine_artery_notched: bool
+    liquor_volume: str | None = None
+    fetal_ultrasound_comment: str | None = None
 
 
 class FetalUltrasound(FetalUltrasoundBase, BigIntPK, table=True):
@@ -1031,11 +1062,11 @@ class FuanAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     picture_date: date
     has_gout: bool
-    gout_date: date | None
-    has_family_gout: bool | None
-    thp: str | None
-    has_uti: bool | None
-    fuan_comments: str | None
+    gout_date: date | None = None
+    has_family_gout: bool
+    thp: str | None = None
+    has_uti: bool
+    fuan_comments: str | None = None
 
 
 class FuanAssessment(FuanAssessmentBase, BigIntPK, table=True):
@@ -1053,11 +1084,11 @@ class GeneticsBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     cohort_id: int = Field(foreign_key="cohort.id", sa_type=BigInteger)
     date_sent: datetime
-    laboratory: str
-    reference_number: str | None
-    karyotype_index: int | None
-    results: str | None
-    summary: str | None
+    laboratory: str | None = None
+    reference_number: str | None = None
+    karyotype_index: int | None = None
+    results: str | None = None
+    summary: str | None = None
 
 
 class Genetics(GeneticsBase, BigIntPK, table=True):
@@ -1162,7 +1193,7 @@ class HospitalPatientBase(SQLModel):
     hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     first_seen_date: date
-    discharged_date: date | None
+    discharged_date: date | None = None
 
 
 class HospitalPatient(HospitalPatientBase, BigIntPK, table=True):
@@ -1178,11 +1209,15 @@ class HospitalPatientRead(HospitalPatientBase, HasId):
 
 class HospitalisationBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     date_of_admission: date
-    date_of_discharge: date | None
-    reason_of_admission: str | None
+    date_of_discharge: date | None = None
+    reason_of_admission: str | None = None
 
 
 class Hospitalisation(HospitalisationBase, BigIntPK, table=True):
@@ -1284,20 +1319,20 @@ class IndicatorRead(IndicatorBase, HasId):
 class InsAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_picture: date
-    has_oedema: bool | None
-    has_hypovoloemia: bool | None
-    has_fever: bool | None
-    has_thrombosis: bool | None
-    has_peritonitis: bool | None
-    has_pulmonary_oedema: bool | None
-    has_hypertension: bool | None
-    has_rash: bool | None
-    rash_details: str | None
-    has_infection: bool | None
-    infection_details: str | None
-    has_ophthalmoscopy: bool | None
-    ophthalmoscopy_details: str | None
-    ins_comments: str | None
+    has_oedema: bool
+    has_hypovoloemia: bool
+    has_fever: bool
+    has_thrombosis: bool
+    has_peritonitis: bool
+    has_pulmonary_oedema: bool
+    has_hypertension: bool
+    has_rash: bool
+    rash_details: str | None = None
+    has_infection: bool
+    infection_details: str | None = None
+    has_ophthalmoscopy: bool
+    ophthalmoscopy_details: str | None = None
+    ins_comments: str | None = None
 
 
 class InsAssessment(InsAssessmentBase, BigIntPK, table=True):
@@ -1314,21 +1349,21 @@ class InsAssessmentRead(InsAssessmentBase, HasId):
 class InsRelapseBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_relapse: date
-    kidney_type: str | None
-    viral_trigger: str | None
-    immunisation_trigger: str | None
-    other_trigger: str | None
-    has_high_dose_oral_prednisolone: bool | None
-    has_iv_methyl_prednisolone: bool | None
-    date_of_remission: date
-    remission_type: str | None
-    peak_acr: float | None
-    peak_pcr: float | None
-    remission_acr: float | None
-    remission_pcr: float | None
-    peak_protein_dipstick: str | None
-    remission_protein_dipstick: str | None
-    is_relapse_sample_taken: bool | None
+    kidney_type: str | None = None
+    viral_trigger: str | None = None
+    immunisation_trigger: str | None = None
+    other_trigger: str | None = None
+    has_high_dose_oral_prednisolone: bool
+    has_iv_methyl_prednisolone: bool
+    date_of_remission: date | None = None
+    remission_type: str | None = None
+    peak_acr: float | None = None
+    peak_pcr: float | None = None
+    remission_acr: float | None = None
+    remission_pcr: float | None = None
+    peak_protein_dipstick: str | None = None
+    remission_protein_dipstick: str | None = None
+    is_relapse_sample_taken: bool
 
 
 class InsRelapse(InsRelapseBase, BigIntPK, table=True):
@@ -1386,28 +1421,28 @@ class IPOSRead(IPOSBase, HasId):
 
 class LiverDiseaseBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    has_portal_hypertension: bool | None
-    portal_hypertension_date: date | None
-    has_ascites: bool | None
-    ascites_date: date | None
-    has_oesophageal: bool | None
-    oesophageal_date: date | None
-    has_oesophageal_bleeding: bool | None
-    oesophageal_bleeding_date: date | None
-    has_gastric: bool | None
-    gastric_date: date | None
-    has_gastric_bleeding: bool | None
-    gastric_bleeding_date: date | None
-    has_anorectal: bool | None
-    anorectal_date: date | None
-    has_anorectal_bleeding: bool | None
-    anorectal_bleeding_date: date | None
-    has_cholangitis_acute: bool | None
-    cholangitis_acute_date: date | None
-    has_cholangitis_recurrent: bool | None
-    cholangitis_recurrent_date: date | None
-    is_spleen_palpable: bool | None
-    spleen_palpable_date: date | None
+    has_portal_hypertension: bool
+    portal_hypertension_date: date | None = None
+    has_ascites: bool
+    ascites_date: date | None = None
+    has_oesophageal: bool
+    oesophageal_date: date | None = None
+    has_oesophageal_bleeding: bool
+    oesophageal_bleeding_date: date | None = None
+    has_gastric: bool
+    gastric_date: date | None = None
+    has_gastric_bleeding: bool
+    gastric_bleeding_date: date | None = None
+    has_anorectal: bool
+    anorectal_date: date | None = None
+    has_anorectal_bleeding: bool
+    anorectal_bleeding_date: date | None = None
+    has_cholangitis_acute: bool
+    cholangitis_acute_date: date | None = None
+    has_cholangitis_recurrent: bool
+    cholangitis_recurrent_date: date | None = None
+    is_spleen_palpable: bool
+    spleen_palpable_date: date | None = None
 
 
 class LiverDisease(LiverDiseaseBase, BigIntPK, table=True):
@@ -1423,16 +1458,20 @@ class LiverDiseaseRead(LiverDiseaseBase, HasId):
 
 class LiverImagingBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     imaging_date: date
     imaging_type: str
-    liver_size: float | None
-    has_hepatic_fibrosis: bool | None
-    has_hepatic_cysts: bool | None
-    has_bile_duct_cysts: bool | None
-    has_dilated_bile_ducts: bool | None
-    has_cholangitis: bool | None
+    liver_size: float | None = None
+    has_hepatic_fibrosis: bool
+    has_hepatic_cysts: bool
+    has_bile_duct_cysts: bool
+    has_dilated_bile_ducts: bool
+    has_cholangitis: bool
 
 
 class LiverImaging(LiverImagingBase, BigIntPK, table=True):
@@ -1448,15 +1487,21 @@ class LiverImagingRead(LiverImagingBase, HasId):
 
 class LiverTransplantBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
-    transplant_hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    registration_date: date
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
+    transplant_hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    registration_date: date | None = None
     transplant_date: date
-    other_indications: str
-    first_graft_source: str
-    loss_reason: str
-    other_loss_reason: str
+    other_indications: str | None = None
+    first_graft_source: str | None = None
+    loss_reason: str | None = None
+    other_loss_reason: str | None = None
 
 
 class LiverTransplant(LiverTransplantBase, BigIntPK, table=True):
@@ -1490,18 +1535,22 @@ class LiverTransplantIndicatorRead(LiverTransplantIndicatorBase, HasId):
 
 class MedicationBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
-    drug_id: int = Field(foreign_key="drug.id", sa_type=BigInteger)
-    snapshot_date: date | None
-    start_date: date | None
-    finish_date: date | None
-    dose_quantity: float | None
-    dose_unit: str
-    medication_frequency: str
-    medication_route: str
-    drug_text: str
-    dose_text: str
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
+    drug_id: int | None = Field(default=None, foreign_key="drug.id", sa_type=BigInteger)
+    snapshot_date: date | None = None
+    start_date: date | None = None
+    finish_date: date | None = None
+    dose_quantity: float | None = None
+    dose_unit: str | None = None
+    medication_frequency: str | None = None
+    medication_route: str | None = None
+    drug_text: str | None = None
+    dose_text: str | None = None
 
 
 class Medication(MedicationBase, BigIntPK, table=True):
@@ -1523,10 +1572,10 @@ class MpgnAssessmentBase(SQLModel):
     has_urticaria: bool
     has_partial_lipodystrophy: bool
     has_infection: bool
-    infection_details: str
+    infection_details: str | None = None
     has_ophthalmoscopy: bool
-    ophthalmoscopy_details: str
-    mpgn_comments: str
+    ophthalmoscopy_details: str | None = None
+    mpgn_comments: str | None = None
 
 
 class MpgnAssessment(MpgnAssessmentBase, BigIntPK, table=True):
@@ -1541,7 +1590,7 @@ class MpgnAssessmentRead(MpgnAssessmentBase, HasId):
 
 
 class NationalityBase(SQLModel):
-    nationality_label: str
+    nationality_label: str | None = None
 
 
 class Nationality(NationalityBase, BigIntPK, table=True):
@@ -1557,8 +1606,12 @@ class NationalityRead(NationalityBase, HasId):
 
 class NephrectomyBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     assessment_date: date
     kidney_side: str
     kidney_type: str
@@ -1604,13 +1657,15 @@ class NurtureFamilyHistoryRead(NurtureFamilyHistoryBase, HasId):
 
 
 class NurtureMetadataBase(SQLModel):
-    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    signed_off_state_index: int
-    follow_up_refused_date: date
+    patient_id: int | None = Field(
+        default=None, foreign_key="patient.id", sa_type=BigInteger
+    )
+    signed_off_state_index: int | None = None
+    follow_up_refused_date: date | None = None
     has_blood_tests: bool
-    blood_refused_date: date
+    blood_refused_date: date | None = None
     has_interviews: bool
-    interviews_refused_date: date
+    interviews_refused_date: date | None = None
 
 
 class NurtureMetadata(NurtureMetadataBase, BigIntPK, table=True):
@@ -1658,11 +1713,15 @@ class NurtureVisitRead(NurtureVisitBase, HasId):
 
 class NutritionBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     feeding_type: str
     from_date: date
-    to_date: date
+    to_date: date | None = None
 
 
 class Nutrition(NutritionBase, BigIntPK, table=True):
@@ -1680,9 +1739,9 @@ class ObservationBase(SQLModel):
     sample_type_id: int = Field(foreign_key="sample_type.id", sa_type=BigInteger)
     observation_name: str
     observation_short_name: str
-    min_value: int
-    max_value: int
-    observation_units: str
+    min_value: float | None = None
+    max_value: float | None = None
+    observation_units: str | None = None
 
 
 class Observation(ObservationBase, BigIntPK, table=True):
@@ -1802,7 +1861,7 @@ class PAMRead(PAMBase, HasId):
 class ParentalConsanguinityBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     has_consanguinity: bool
-    consanguinity_details: str
+    consanguinity_details: str | None = None
 
 
 class ParentalConsanguinity(ParentalConsanguinityBase, BigIntPK, table=True):
@@ -1818,16 +1877,20 @@ class ParentalConsanguinityRead(ParentalConsanguinityBase, HasId):
 
 class PathologyBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     report_date: date
-    kidney_type: str
-    kidney_side: str
-    reference_number: str
-    image_url: str
-    histological_summary: str
-    em_findings: str
-    report_cleaned_date: date
+    kidney_type: str | None = None
+    kidney_side: str | None = None
+    reference_number: str | None = None
+    image_url: str | None = None
+    histological_summary: str | None = None
+    em_findings: str | None = None
+    report_cleaned_date: date | None = None
 
 
 class Pathology(PathologyBase, BigIntPK, table=True):
@@ -1842,7 +1905,7 @@ class PathologyRead(PathologyBase, HasId):
 
 
 class PatientBase(SQLModel):
-    patient_comment: str | None
+    patient_comment: str | None = None
     is_test: bool = Field(default=False)
     is_control: bool = Field(default=False)
 
@@ -1860,15 +1923,19 @@ class PatientRead(PatientBase, HasId):
 
 class PatientAddressBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
-    country_id: int = Field(foreign_key="country.id", sa_type=BigInteger)
-    from_date: date
-    to_date: date
-    address1: str
-    address2: str
-    address3: str
-    address4: str
-    postcode: str
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
+    country_id: int | None = Field(
+        default=None, foreign_key="country.id", sa_type=BigInteger
+    )
+    from_date: date | None = None
+    to_date: date | None = None
+    address1: str | None = None
+    address2: str | None = None
+    address3: str | None = None
+    address4: str | None = None
+    postcode: str | None = None
 
 
 class PatientAddress(PatientAddressBase, BigIntPK, table=True):
@@ -1884,9 +1951,11 @@ class PatientAddressRead(PatientAddressBase, HasId):
 
 class PatientAliasBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
-    first_name: str
-    last_name: str
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 class PatientAlias(PatientAliasBase, BigIntPK, table=True):
@@ -1902,9 +1971,11 @@ class PatientAliasRead(PatientAliasBase, HasId):
 
 class PatientConsentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    consent_id: int = Field(foreign_key="consent.id", sa_type=BigInteger)
+    consent_id: int | None = Field(
+        default=None, foreign_key="consent.id", sa_type=BigInteger
+    )
     signed_on_date: date
-    withdrawn_on_date: date | None
+    withdrawn_on_date: date | None = None
 
 
 class PatientConsent(PatientConsentBase, BigIntPK, table=True):
@@ -1922,7 +1993,7 @@ class PatientConsultantBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     consultant_id: int = Field(foreign_key="consultant.id", sa_type=BigInteger)
     from_date: date
-    to_date: date | None
+    to_date: date | None = None
 
 
 class PatientConsultant(PatientConsultantBase, BigIntPK, table=True):
@@ -1938,15 +2009,21 @@ class PatientConsultantRead(PatientConsultantBase, HasId):
 
 class PatientDemographicBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
-    ethnicity_id: int = Field(foreign_key="ethnicity.id", sa_type=BigInteger)
-    country_id: int = Field(foreign_key="country.id", sa_type=BigInteger)
-    first_name: str
-    last_name: str
-    date_of_birth: date
-    gender_index: int
-    mobile_number: str
-    email_address: str
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
+    ethnicity_id: int | None = Field(
+        default=None, foreign_key="ethnicity.id", sa_type=BigInteger
+    )
+    country_id: int | None = Field(
+        default=None, foreign_key="country.id", sa_type=BigInteger
+    )
+    first_name: str | None = None
+    last_name: str | None = None
+    date_of_birth: date | None = None
+    gender_index: int | None = None
+    mobile_number: str | None = None
+    email_address: str | None = None
 
 
 class PatientDemographic(PatientDemographicBase, BigIntPK, table=True):
@@ -1962,20 +2039,26 @@ class PatientDemographicRead(PatientDemographicBase, HasId):
 
 class PatientDiagnosisBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
-    diagnosis_id: int = Field(foreign_key="diagnosis.id", sa_type=BigInteger)
-    diagnosis_text: str
-    symptoms_date: date
-    from_date: date | None
-    to_date: date | None
-    snapshot_date: date | None
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
+    diagnosis_id: int | None = Field(
+        default=None, foreign_key="diagnosis.id", sa_type=BigInteger
+    )
+    diagnosis_text: str | None = None
+    symptoms_date: date | None = None
+    from_date: date | None = None
+    to_date: date | None = None
+    snapshot_date: date | None = None
     has_gene_test: bool
     has_biochemistry: bool
     has_assessment: bool
     has_biopsy: bool
-    biopsy_diagnosis_index: int
-    diagnosis_comments: str
+    biopsy_diagnosis_index: int | None = None
+    diagnosis_comments: str | None = None
     is_prenatal: bool
 
 
@@ -1992,7 +2075,9 @@ class PatientDiagnosisRead(PatientDiagnosisBase, HasId):
 
 class PatientIdentifierBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     identifier_id: int = Field(foreign_key="identifier.id", sa_type=BigInteger)
     identifier_value: str
 
@@ -2026,20 +2111,20 @@ class PatientNationalityRead(PatientNationalityBase, HasId):
 
 class PatientReconsentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    sent_date: date
-    response_date: date
+    sent_date: date | None = None
+    response_date: date | None = None
 
 
 class PatientReconsent(PatientReconsentBase, BigIntPK, table=True):
     __tablename__ = "patient_reconsent"
 
 
-class PatientReconsentRead(PatientReconsentBase):
+class PatientReconsentRead(PatientReconsentBase, HasId):
     pass
 
 
 class PatientReconsentCreate(PatientReconsentBase):
-    id: int
+    pass
 
 
 # --- Plasmapheresis --- #
@@ -2047,12 +2132,16 @@ class PatientReconsentCreate(PatientReconsentBase):
 
 class PlasmapheresisBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     from_date: date
-    to_date: date
-    plasmapheresis_schedule: str
-    plasmapheresis_response: str
+    to_date: date | None = None
+    plasmapheresis_schedule: str | None = None
+    plasmapheresis_response: str | None = None
 
 
 class Plasmapheresis(PlasmapheresisBase, BigIntPK, table=True):
@@ -2087,16 +2176,16 @@ class PregnancyBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     pregnancy_number: int
     date_of_lmp: date
-    gravidity: int
-    parity1: int
-    parity2: int
-    pregnancy_outcome: str
-    birth_weight: int
-    centile_weight: int
-    gestational_age: int
-    delivery_method: str
+    gravidity: int | None = None
+    parity1: int | None = None
+    parity2: int | None = None
+    pregnancy_outcome: str | None = None
+    birth_weight: int | None = None
+    centile_weight: int | None = None
+    gestational_age: int | None = None
+    delivery_method: str | None = None
     has_neonatal_intensive_care: bool
-    pre_eclampsia: str
+    pre_eclampsia: str | None = None
 
 
 class Pregnancy(PregnancyBase, BigIntPK, table=True):
@@ -2241,30 +2330,34 @@ class RenalCancerTumourRead(RenalCancerTumourBase, HasId):
 
 class RenalImagingBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
-    assessment_date: datetime
-    imaging_type: str
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
+    assessment_date: datetime | None = None
+    imaging_type: str | None = None
     is_right_present: bool
-    right_type: str
-    right_length: int
-    right_volume: int
+    right_type: str | None = None
+    right_length: float | None = None
+    right_volume: float | None = None
     has_right_cysts: bool
     has_right_stones: bool
     has_right_calcification: bool
     has_right_nephrocalcinosis: bool
     has_right_nephrolithiasis: bool
-    right_other_malformation: str
+    right_other_malformation: str | None = None
     is_left_present: bool
-    left_type: str
-    left_length: int
-    left_volume: int
+    left_type: str | None = None
+    left_length: float | None = None
+    left_volume: float | None = None
     has_left_cysts: bool
     has_left_stones: bool
     has_left_calcification: bool
     has_left_nephrocalcinosis: bool
     has_left_nephrolithiasis: bool
-    left_other_malformation: str
+    left_other_malformation: str | None = None
 
 
 class RenalImaging(RenalImagingBase, BigIntPK, table=True):
@@ -2280,12 +2373,12 @@ class RenalImagingRead(RenalImagingBase, HasId):
 
 class RenalProgressionBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    onset_date: date
-    esrf_date: date
-    ckd5_date: date
-    ckd4_date: date
-    ckd3a_date: date
-    ckd3b_date: date
+    onset_date: date | None = None
+    esrf_date: date | None = None
+    ckd5_date: date | None = None
+    ckd4_date: date | None = None
+    ckd3a_date: date | None = None
+    ckd3b_date: date | None = None
 
 
 class RenalProgression(RenalProgressionBase, BigIntPK, table=True):
@@ -2301,11 +2394,16 @@ class RenalProgressionRead(RenalProgressionBase, HasId):
 
 class ResultBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    observation_id: int = Field(foreign_key="observation.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     result_date: datetime
-    qualifier: str
-    result_value: str
+    qualifier: str | None = None
+    result_value: str | None = None
     sent_value: str
 
 
@@ -2322,14 +2420,18 @@ class ResultRead(ResultBase, HasId):
 
 class RituximabBaselineAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     assessment_date: date
-    nephropathy: str
+    nephropathy: str | None = None
     has_steroids: bool
-    other_previous_treatment: str
+    other_previous_treatment: str | None = None
     has_past_remission: bool
-    performance_status_index: int
+    performance_status_index: int | None = None
     has_comorbidities: bool
 
 
@@ -2374,20 +2476,22 @@ class RituximabBaselinePreviousTreatmentBase(SQLModel):
     )
     option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
     treatment_start_date: date
-    treatment_end_date: date | None
+    treatment_end_date: date | None = None
 
 
 class RituximabBaselinePreviousTreatment(
-    RituximabBaselineAssessmentBase, BigIntPK, table=True
+    RituximabBaselinePreviousTreatmentBase, BigIntPK, table=True
 ):
     __tablename__ = "rituximab_baseline_previous_treatment"
 
 
-class RituximabBaselinePreviousTreatmentCreate(RituximabBaselineAssessmentBase):
+class RituximabBaselinePreviousTreatmentCreate(RituximabBaselinePreviousTreatmentBase):
     pass
 
 
-class RituximabBaselinePreviousTreatmentRead(RituximabBaselineAssessmentBase, HasId):
+class RituximabBaselinePreviousTreatmentRead(
+    RituximabBaselinePreviousTreatmentBase, HasId
+):
     pass
 
 
@@ -2490,10 +2594,10 @@ class RituximabToxicityBase(SQLModel):
     assessment_date: date
     drug_name: str
     other_drug: str
-    dose: float | None
+    dose: float | None = None
     retreatment: str
-    toxicity: str | None
-    other_toxicity: str | None
+    toxicity: str | None = None
+    other_toxicity: str | None = None
 
 
 class RituximabToxicity(RituximabToxicityBase, BigIntPK, table=True):
@@ -2528,19 +2632,19 @@ class RituximabToxicityOptionRead(RituximabToxicityOptionBase, HasId):
 class SaltWastingClinicalFeatureBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     is_normal_pregnancy: bool
-    abnormal_pregnancy_text: str
+    abnormal_pregnancy_text: str | None = None
     has_neurological_problems: bool
     has_seizures: bool
     has_abnormal_gait: bool
     has_deafness: bool
     has_other_neurological_problem: bool
-    other_neurological_problem_text: str
+    other_neurological_problem_text: str | None = None
     has_joint_problems: bool
-    joint_problems_age: int
+    joint_problems_age: int | None = None
     has_x_ray_abnormalities: bool
     has_chondrocalcinosis: bool
     has_other_x_ray_abnormality: bool
-    other_x_ray_abnormality_text: str
+    other_x_ray_abnormality_text: str | None = None
 
 
 class SaltWastingClinicalFeature(SaltWastingClinicalFeatureBase, BigIntPK, table=True):
@@ -2675,18 +2779,24 @@ class SpecialtyRead(SpecialtyBase, HasId):
 
 class TransplantBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    transplant_hospital_id: int = Field(foreign_key="hospital.id", sa_type=BigInteger)
-    data_source_id: int = Field(foreign_key="data_source.id", sa_type=BigInteger)
+    hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    transplant_hospital_id: int | None = Field(
+        default=None, foreign_key="hospital.id", sa_type=BigInteger
+    )
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     transplant_date: date
     transplant_modality_index: int
-    date_of_recurrence: date
-    date_of_failure: date
+    date_of_recurrence: date | None = None
+    date_of_failure: date | None = None
     has_recurrence: bool
-    date_of_cmv_infection: date
-    donor_hla: str
-    recipient_hla: str
-    graft_loss_cause: str
+    date_of_cmv_infection: date | None = None
+    donor_hla: str | None = None
+    recipient_hla: str | None = None
+    graft_loss_cause: str | None = None
 
 
 class Transplant(TransplantBase, BigIntPK, table=True):
@@ -2734,10 +2844,12 @@ class TransplantRejectionRead(TransplantRejectionBase, HasId):
 
 
 class TubeSampleBase(SQLModel):
-    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    patient_id: int | None = Field(
+        default=None, foreign_key="patient.id", sa_type=BigInteger
+    )
     sample_date: date
     barcode: str
-    ins_state_index: int
+    ins_state_index: int | None = None
 
 
 class TubeSample(TubeSampleBase, BigIntPK, table=True):
