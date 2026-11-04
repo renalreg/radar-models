@@ -930,7 +930,7 @@ class EQ5DYBase(SQLModel):
 
 
 class EQ5DY(EQ5DYBase, BigIntPK, table=True):
-    __tablename__ = "eq_5d_y"
+    __tablename__ = "eq5dy"
     __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
