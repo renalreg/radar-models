@@ -1,28 +1,9 @@
 from datetime import date, datetime
-from enum import StrEnum
 
 from sqlalchemy import BigInteger
 from sqlmodel import Field, SQLModel
 # TODO check that the bools are either true or false and how nulls are related
 # as is a null false or is a null a lack of answer so could be true - philospophical
-# --- Table groups --- #
-
-
-class Group(StrEnum):
-    """Which part of the schema a table belongs to: __table_args__ = {"info": {"group": ...}}.
-
-    Filter with: [t for t in SQLModel.metadata.tables.values() if t.info["group"] == Group.LOOKUP]
-    """
-
-    LOOKUP = "lookup"  # small reference lists other tables point at
-    GEOGRAPHY = "geography"  # countries, ethnicities, nationalities
-    ORGANISATION = "organisation"  # hospitals, cohorts, consultants, consents
-    CLINICAL_REFERENCE = "clinical_reference"  # codes, diagnoses, drugs, biomarkers, observations
-    PATIENT = "patient"  # the patient and what hangs directly off them
-    CLINICAL_RECORD = "clinical_record"  # treatments, diagnoses, results, imaging
-    ASSESSMENT = "assessment"  # disease-specific assessments
-    QUESTIONNAIRE = "questionnaire"  # patient questionnaires / forms
-    SAMPLE = "sample"  # biomarker samples and NURTuRE
 
 
 # --- Shared mixins --- #
@@ -58,7 +39,6 @@ class AdultEQ5D5LBase(SQLModel):
 
 class AdultEQ5D5L(AdultEQ5D5LBase, BigIntPK, table=True):
     __tablename__ = "adult_eq5d5l"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class AdultEQ5D5LRead(AdultEQ5D5LBase, HasId):
@@ -92,7 +72,6 @@ class AdverseEventBase(SQLModel):
 
 class AdverseEvent(AdverseEventBase, BigIntPK, table=True):
     __tablename__ = "adverse_event"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class AdverseEventRead(AdverseEventBase, HasId):
@@ -112,7 +91,6 @@ class AlportAssessmentBase(SQLModel):
 
 class AlportAssessment(AlportAssessmentBase, BigIntPK, table=True):
     __tablename__ = "alport_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class AlportAssessmentRead(AlportAssessmentBase, HasId):
@@ -147,7 +125,6 @@ class AnthropometricBase(SQLModel):
 
 class Anthropometric(AnthropometricBase, BigIntPK, table=True):
     __tablename__ = "anthropometric"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class AnthropometricRead(AnthropometricBase, HasId):
@@ -164,7 +141,6 @@ class BiomarkerBase(SQLModel):
 
 class Biomarker(BiomarkerBase, BigIntPK, table=True):
     __tablename__ = "biomarker"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class BiomarkerRead(BiomarkerBase, HasId):
@@ -184,7 +160,6 @@ class BiomarkerBarcodeBase(SQLModel):
 
 class BiomarkerBarcode(BiomarkerBarcodeBase, BigIntPK, table=True):
     __tablename__ = "biomarker_barcode"
-    __table_args__ = {"info": {"group": Group.SAMPLE}}
 
 
 class BiomarkerBarcodeRead(BiomarkerBarcodeBase, HasId):
@@ -207,7 +182,6 @@ class BiomarkerResultBase(SQLModel):
 
 class BiomarkerResult(BiomarkerResultBase, BigIntPK, table=True):
     __tablename__ = "biomarker_result"
-    __table_args__ = {"info": {"group": Group.SAMPLE}}
 
 
 class BiomarkerResultRead(BiomarkerResultBase, HasId):
@@ -226,7 +200,6 @@ class BiomarkerSampleBase(SQLModel):
 
 class BiomarkerSample(BiomarkerSampleBase, BigIntPK, table=True):
     __tablename__ = "biomarker_sample"
-    __table_args__ = {"info": {"group": Group.SAMPLE}}
 
 
 class BiomarkerSampleRead(BiomarkerSampleBase, HasId):
@@ -247,7 +220,6 @@ class CalciphylaxisAssessmentBase(SQLModel):
 
 class CalciphylaxisAssessment(CalciphylaxisAssessmentBase, BigIntPK, table=True):
     __tablename__ = "calciphylaxis_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class CalciphylaxisAssessmentRead(CalciphylaxisAssessmentBase, HasId):
@@ -268,7 +240,6 @@ class CalciphylaxisAssessmentOption(
     CalciphylaxisAssessmentOptionBase, BigIntPK, table=True
 ):
     __tablename__ = "calciphylaxis_assessment_option"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class CalciphylaxisAssessmentOptionRead(CalciphylaxisAssessmentOptionBase, HasId):
@@ -296,7 +267,6 @@ class CancerTumourBase(SQLModel):
 
 class CancerTumour(CancerTumourBase, BigIntPK, table=True):
     __tablename__ = "cancer_tumour"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class CancerTumourRead(CancerTumourBase, HasId):
@@ -316,7 +286,6 @@ class CKDAfricaGeneticBase(SQLModel):
 
 class CKDAfricaGenetic(CKDAfricaGeneticBase, BigIntPK, table=True):
     __tablename__ = "ckd_africa_genetic"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class CKDAfricaGeneticRead(CKDAfricaGeneticBase, HasId):
@@ -337,7 +306,6 @@ class CKDAfricaRiskFactorBase(SQLModel):
 
 class CKDAfricaRiskFactor(CKDAfricaRiskFactorBase, BigIntPK, table=True):
     __tablename__ = "ckd_africa_risk_factor"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class CKDAfricaRiskFactorRead(CKDAfricaRiskFactorBase, HasId):
@@ -355,7 +323,6 @@ class ClinicalLetterBase(SQLModel):
 
 class ClinicalLetter(ClinicalLetterBase, BigIntPK, table=True):
     __tablename__ = "clinical_letter"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class ClinicalLetterRead(ClinicalLetterBase, HasId):
@@ -374,7 +341,6 @@ class CodeBase(SQLModel):
 
 class Code(CodeBase, BigIntPK, table=True):
     __tablename__ = "code"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class CodeRead(CodeBase, HasId):
@@ -392,7 +358,6 @@ class CohortBase(SQLModel):
 
 class Cohort(CohortBase, BigIntPK, table=True):
     __tablename__ = "cohort"
-    __table_args__ = {"info": {"group": Group.ORGANISATION}}
 
 
 class CohortRead(CohortBase, HasId):
@@ -410,7 +375,6 @@ class CohortDiagnosisBase(SQLModel):
 
 class CohortDiagnosis(CohortDiagnosisBase, BigIntPK, table=True):
     __tablename__ = "cohort_diagnosis"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class CohortDiagnosisRead(CohortDiagnosisBase, HasId):
@@ -428,7 +392,6 @@ class CohortObservationBase(SQLModel):
 
 class CohortObservation(CohortObservationBase, BigIntPK, table=True):
     __tablename__ = "cohort_observation"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class CohortObservationRead(CohortObservationBase, HasId):
@@ -447,7 +410,6 @@ class CohortPatientBase(SQLModel):
 
 class CohortPatient(CohortPatientBase, BigIntPK, table=True):
     __tablename__ = "cohort_patient"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class CohortPatientRead(CohortPatientBase, HasId):
@@ -468,7 +430,6 @@ class ConsentBase(SQLModel):
 
 class Consent(ConsentBase, BigIntPK, table=True):
     __tablename__ = "consent"
-    __table_args__ = {"info": {"group": Group.ORGANISATION}}
 
 
 class ConsentRead(ConsentBase, HasId):
@@ -489,7 +450,6 @@ class ConsultantBase(SQLModel):
 
 class Consultant(ConsultantBase, BigIntPK, table=True):
     __tablename__ = "consultant"
-    __table_args__ = {"info": {"group": Group.ORGANISATION}}
 
 
 class ConsultantRead(ConsultantBase, HasId):
@@ -506,7 +466,6 @@ class CountryBase(SQLModel):
 
 class Country(CountryBase, BigIntPK, table=True):
     __tablename__ = "country"
-    __table_args__ = {"info": {"group": Group.GEOGRAPHY}}
 
 
 class CountryRead(CountryBase, HasId):
@@ -527,7 +486,6 @@ class CountryEthnicityBase(SQLModel):
 
 class CountryEthnicity(CountryEthnicityBase, BigIntPK, table=True):
     __tablename__ = "country_ethnicity"
-    __table_args__ = {"info": {"group": Group.GEOGRAPHY}}
 
 
 class CountryEthnicityRead(CountryEthnicityBase, HasId):
@@ -548,7 +506,6 @@ class CountryNationalityBase(SQLModel):
 
 class CountryNationality(CountryNationalityBase, BigIntPK, table=True):
     __tablename__ = "country_nationality"
-    __table_args__ = {"info": {"group": Group.GEOGRAPHY}}
 
 
 class CountryNationalityRead(CountryNationalityBase, HasId):
@@ -618,7 +575,6 @@ class CystinosisAdultVisitBase(SQLModel):
 
 class CystinosisAdultVisit(CystinosisAdultVisitBase, BigIntPK, table=True):
     __tablename__ = "cystinosis_adult_visit"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class CystinosisAdultVisitRead(CystinosisAdultVisitBase, HasId):
@@ -695,7 +651,6 @@ class CystinosisPaedVisitBase(SQLModel):
 
 class CystinosisPaedVisit(CystinosisPaedVisitBase, BigIntPK, table=True):
     __tablename__ = "cystinosis_paed_visit"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class CystinosisPaedVisitRead(CystinosisPaedVisitBase, HasId):
@@ -714,7 +669,6 @@ class CystinosisPaedVisitOptionBase(SQLModel):
 
 class CystinosisPaedVisitOption(CystinosisPaedVisitOptionBase, BigIntPK, table=True):
     __tablename__ = "cystinosis_paed_visit_option"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class CystinosisPaedVisitOptionRead(CystinosisPaedVisitOptionBase, HasId):
@@ -730,7 +684,6 @@ class DataSourceBase(SQLModel):
 
 class DataSource(DataSourceBase, BigIntPK, table=True):
     __tablename__ = "data_source"
-    __table_args__ = {"info": {"group": Group.LOOKUP}}
 
 
 class DataSourceRead(DataSourceBase, HasId):
@@ -748,7 +701,6 @@ class DeathBase(SQLModel):
 
 class Death(DeathBase, BigIntPK, table=True):
     __tablename__ = "death"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class DeathRead(DeathBase, HasId):
@@ -770,7 +722,6 @@ class DentAndLoweAssessmentBase(SQLModel):
 
 class DentAndLoweAssessment(DentAndLoweAssessmentBase, BigIntPK, table=True):
     __tablename__ = "dent_and_lowe_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class DentAndLoweAssessmentRead(DentAndLoweAssessmentBase, HasId):
@@ -791,7 +742,6 @@ class DentAndLoweAssessmentOption(
     DentAndLoweAssessmentOptionBase, BigIntPK, table=True
 ):
     __tablename__ = "dent_and_lowe_assessment_option"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class DentAndLoweAssessmentOptionRead(DentAndLoweAssessmentOptionBase, HasId):
@@ -811,7 +761,6 @@ class DiabeticComplicationBase(SQLModel):
 
 class DiabeticComplication(DiabeticComplicationBase, BigIntPK, table=True):
     __tablename__ = "diabetic_complication"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class DiabeticComplicationRead(DiabeticComplicationBase, HasId):
@@ -827,7 +776,6 @@ class DiagnosisBase(SQLModel):
 
 class Diagnosis(DiagnosisBase, BigIntPK, table=True):
     __tablename__ = "diagnosis"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class DiagnosisRead(DiagnosisBase, HasId):
@@ -844,7 +792,6 @@ class DiagnosisCodeBase(SQLModel):
 
 class DiagnosisCode(DiagnosisCodeBase, BigIntPK, table=True):
     __tablename__ = "diagnosis_code"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class DiagnosisCodeRead(DiagnosisCodeBase, HasId):
@@ -869,7 +816,6 @@ class DialysisBase(SQLModel):
 
 class Dialysis(DialysisBase, BigIntPK, table=True):
     __tablename__ = "dialysis"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class DialysisRead(DialysisBase, HasId):
@@ -888,7 +834,6 @@ class DrugBase(SQLModel):
 
 class Drug(DrugBase, BigIntPK, table=True):
     __tablename__ = "drug"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class DrugRead(DrugBase, HasId):
@@ -907,7 +852,6 @@ class DrugGroupBase(SQLModel):
 
 class DrugGroup(DrugGroupBase, BigIntPK, table=True):
     __tablename__ = "drug_group"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class DrugGroupRead(DrugGroupBase, HasId):
@@ -931,7 +875,6 @@ class EQ5DYBase(SQLModel):
 
 class EQ5DY(EQ5DYBase, BigIntPK, table=True):
     __tablename__ = "eq5dy"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class EQ5DYRead(EQ5DYBase, HasId):
@@ -951,7 +894,6 @@ class EthnicOriginBase(SQLModel):
 
 class EthnicOrigin(EthnicOriginBase, BigIntPK, table=True):
     __tablename__ = "ethnic_origin"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class EthnicOriginRead(EthnicOriginBase, HasId):
@@ -968,7 +910,6 @@ class EthnicityBase(SQLModel):
 
 class Ethnicity(EthnicityBase, BigIntPK, table=True):
     __tablename__ = "ethnicity"
-    __table_args__ = {"info": {"group": Group.GEOGRAPHY}}
 
 
 class EthnicityRead(EthnicityBase, HasId):
@@ -991,7 +932,6 @@ class FamilyHistoryBase(SQLModel):
 
 class FamilyHistory(FamilyHistoryBase, BigIntPK, table=True):
     __tablename__ = "family_history"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class FamilyHistoryRead(FamilyHistoryBase, HasId):
@@ -1008,7 +948,6 @@ class FamilyHistoryRelationBase(SQLModel):
 
 class FamilyHistoryRelation(FamilyHistoryRelationBase, BigIntPK, table=True):
     __tablename__ = "family_history_relation"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class FamilyHistoryRelationRead(FamilyHistoryRelationBase, HasId):
@@ -1031,7 +970,6 @@ class FamilyHistoryRelationPatient(
     FamilyHistoryRelationPatientBase, BigIntPK, table=True
 ):
     __tablename__ = "family_history_relation_patient"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class FamilyHistoryRelationPatientRead(FamilyHistoryRelationPatientBase, HasId):
@@ -1068,7 +1006,6 @@ class FetalAnomalyScanBase(SQLModel):
 
 class FetalAnomalyScan(FetalAnomalyScanBase, BigIntPK, table=True):
     __tablename__ = "fetal_anomaly_scan"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class FetalAnomalyScanRead(FetalAnomalyScanBase, HasId):
@@ -1098,7 +1035,6 @@ class FetalUltrasoundBase(SQLModel):
 
 class FetalUltrasound(FetalUltrasoundBase, BigIntPK, table=True):
     __tablename__ = "fetal_ultrasound"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class FetalUltrasoundRead(FetalUltrasoundBase, HasId):
@@ -1115,7 +1051,6 @@ class FrontPageStatBase(SQLModel):
 
 class FrontPageStat(FrontPageStatBase, BigIntPK, table=True):
     __tablename__ = "front_page_stat"
-    __table_args__ = {"info": {"group": Group.LOOKUP}}
 
 
 class FrontPageStatRead(FrontPageStatBase, HasId):
@@ -1138,7 +1073,6 @@ class FuanAssessmentBase(SQLModel):
 
 class FuanAssessment(FuanAssessmentBase, BigIntPK, table=True):
     __tablename__ = "fuan_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class FuanAssessmentRead(FuanAssessmentBase, HasId):
@@ -1161,7 +1095,6 @@ class GeneticsBase(SQLModel):
 
 class Genetics(GeneticsBase, BigIntPK, table=True):
     __tablename__ = "genetics"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class GeneticsRead(GeneticsBase, HasId):
@@ -1193,7 +1126,6 @@ class HADSBase(SQLModel):
 
 class HADS(HADSBase, BigIntPK, table=True):
     __tablename__ = "hads"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class HADSRead(HADSBase, HasId):
@@ -1216,7 +1148,6 @@ class Hnf1bAssessmentBase(SQLModel):
 
 class Hnf1bAssessment(Hnf1bAssessmentBase, BigIntPK, table=True):
     __tablename__ = "hnf1b_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class Hnf1bAssessmentRead(Hnf1bAssessmentBase, HasId):
@@ -1235,7 +1166,6 @@ class HospitalBase(SQLModel):
 
 class Hospital(HospitalBase, BigIntPK, table=True):
     __tablename__ = "hospital"
-    __table_args__ = {"info": {"group": Group.ORGANISATION}}
 
 
 class HospitalRead(HospitalBase, HasId):
@@ -1252,7 +1182,6 @@ class HospitalConsultantBase(SQLModel):
 
 class HospitalConsultant(HospitalConsultantBase, BigIntPK, table=True):
     __tablename__ = "hospital_consultant"
-    __table_args__ = {"info": {"group": Group.ORGANISATION}}
 
 
 class HospitalConsultantRead(HospitalConsultantBase, HasId):
@@ -1271,7 +1200,6 @@ class HospitalPatientBase(SQLModel):
 
 class HospitalPatient(HospitalPatientBase, BigIntPK, table=True):
     __tablename__ = "hospital_patient"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class HospitalPatientRead(HospitalPatientBase, HasId):
@@ -1296,7 +1224,6 @@ class HospitalisationBase(SQLModel):
 
 class Hospitalisation(HospitalisationBase, BigIntPK, table=True):
     __tablename__ = "hospitalisation"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class HospitalisationRead(HospitalisationBase, HasId):
@@ -1320,7 +1247,6 @@ class HSPAssessmentBase(SQLModel):
 
 class HSPAssessment(HSPAssessmentBase, BigIntPK, table=True):
     __tablename__ = "hsp_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class HSPAssessmentRead(HSPAssessmentBase, HasId):
@@ -1336,7 +1262,6 @@ class IdentifierBase(SQLModel):
 
 class Identifier(IdentifierBase, BigIntPK, table=True):
     __tablename__ = "identifier"
-    __table_args__ = {"info": {"group": Group.LOOKUP}}
 
 
 class IdentifierRead(IdentifierBase, HasId):
@@ -1353,7 +1278,6 @@ class IGAResearchBase(SQLModel):
 
 class IGAResearch(IGAResearchBase, BigIntPK, table=True):
     __tablename__ = "iga_research"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class IGAResearchRead(IGAResearchBase, HasId):
@@ -1370,7 +1294,6 @@ class IGAResearchOptionBase(SQLModel):
 
 class IGAResearchOption(IGAResearchOptionBase, BigIntPK, table=True):
     __tablename__ = "iga_research_option"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class IGAResearchOptionRead(IGAResearchOptionBase, HasId):
@@ -1386,7 +1309,6 @@ class IndicatorBase(SQLModel):
 
 class Indicator(IndicatorBase, BigIntPK, table=True):
     __tablename__ = "indicator"
-    __table_args__ = {"info": {"group": Group.LOOKUP}}
 
 
 class IndicatorRead(IndicatorBase, HasId):
@@ -1417,7 +1339,6 @@ class InsAssessmentBase(SQLModel):
 
 class InsAssessment(InsAssessmentBase, BigIntPK, table=True):
     __tablename__ = "ins_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class InsAssessmentRead(InsAssessmentBase, HasId):
@@ -1449,7 +1370,6 @@ class InsRelapseBase(SQLModel):
 
 class InsRelapse(InsRelapseBase, BigIntPK, table=True):
     __tablename__ = "ins_relapse"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class InsRelapseRead(InsRelapseBase, HasId):
@@ -1492,7 +1412,6 @@ class IPOSBase(SQLModel):
 
 class IPOS(IPOSBase, BigIntPK, table=True):
     __tablename__ = "ipos"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class IPOSRead(IPOSBase, HasId):
@@ -1530,7 +1449,6 @@ class LiverDiseaseBase(SQLModel):
 
 class LiverDisease(LiverDiseaseBase, BigIntPK, table=True):
     __tablename__ = "liver_disease"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class LiverDiseaseRead(LiverDiseaseBase, HasId):
@@ -1560,7 +1478,6 @@ class LiverImagingBase(SQLModel):
 
 class LiverImaging(LiverImagingBase, BigIntPK, table=True):
     __tablename__ = "liver_imaging"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class LiverImagingRead(LiverImagingBase, HasId):
@@ -1591,7 +1508,6 @@ class LiverTransplantBase(SQLModel):
 
 class LiverTransplant(LiverTransplantBase, BigIntPK, table=True):
     __tablename__ = "liver_transplant"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class LiverTransplantRead(LiverTransplantBase, HasId):
@@ -1610,7 +1526,6 @@ class LiverTransplantIndicatorBase(SQLModel):
 
 class LiverTransplantIndicator(LiverTransplantIndicatorBase, BigIntPK, table=True):
     __tablename__ = "liver_transplant_indicator"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class LiverTransplantIndicatorRead(LiverTransplantIndicatorBase, HasId):
@@ -1642,7 +1557,6 @@ class MedicationBase(SQLModel):
 
 class Medication(MedicationBase, BigIntPK, table=True):
     __tablename__ = "medication"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class MedicationRead(MedicationBase, HasId):
@@ -1668,7 +1582,6 @@ class MpgnAssessmentBase(SQLModel):
 
 class MpgnAssessment(MpgnAssessmentBase, BigIntPK, table=True):
     __tablename__ = "mpgn_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class MpgnAssessmentRead(MpgnAssessmentBase, HasId):
@@ -1684,7 +1597,6 @@ class NationalityBase(SQLModel):
 
 class Nationality(NationalityBase, BigIntPK, table=True):
     __tablename__ = "nationality"
-    __table_args__ = {"info": {"group": Group.GEOGRAPHY}}
 
 
 class NationalityRead(NationalityBase, HasId):
@@ -1710,7 +1622,6 @@ class NephrectomyBase(SQLModel):
 
 class Nephrectomy(NephrectomyBase, BigIntPK, table=True):
     __tablename__ = "nephrectomy"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class NephrectomyRead(NephrectomyBase, HasId):
@@ -1738,7 +1649,6 @@ class NurtureFamilyHistoryBase(SQLModel):
 
 class NurtureFamilyHistory(NurtureFamilyHistoryBase, BigIntPK, table=True):
     __tablename__ = "nurture_family_history"
-    __table_args__ = {"info": {"group": Group.SAMPLE}}
 
 
 class NurtureFamilyHistoryRead(NurtureFamilyHistoryBase, HasId):
@@ -1762,7 +1672,6 @@ class NurtureMetadataBase(SQLModel):
 
 class NurtureMetadata(NurtureMetadataBase, BigIntPK, table=True):
     __tablename__ = "nurture_metadata"
-    __table_args__ = {"info": {"group": Group.SAMPLE}}
 
 
 class NurtureMetadataRead(NurtureMetadataBase, HasId):
@@ -1795,7 +1704,6 @@ class NurtureVisitBase(SQLModel):
 
 class NurtureVisit(NurtureVisitBase, BigIntPK, table=True):
     __tablename__ = "nurture_visit"
-    __table_args__ = {"info": {"group": Group.SAMPLE}}
 
 
 class NurtureVisitRead(NurtureVisitBase, HasId):
@@ -1820,7 +1728,6 @@ class NutritionBase(SQLModel):
 
 class Nutrition(NutritionBase, BigIntPK, table=True):
     __tablename__ = "nutrition"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class NutritionRead(NutritionBase, HasId):
@@ -1841,7 +1748,6 @@ class ObservationBase(SQLModel):
 
 class Observation(ObservationBase, BigIntPK, table=True):
     __tablename__ = "observation"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class ObservationRead(ObservationBase, HasId):
@@ -1858,7 +1764,6 @@ class ObservationCodeBase(SQLModel):
 
 class ObservationCode(ObservationCodeBase, BigIntPK, table=True):
     __tablename__ = "observation_code"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class ObservationCodeRead(ObservationCodeBase, HasId):
@@ -1875,7 +1780,6 @@ class ObservationOptionsBase(SQLModel):
 
 class ObservationOption(ObservationOptionsBase, BigIntPK, table=True):
     __tablename__ = "observation_option"
-    __table_args__ = {"info": {"group": Group.CLINICAL_REFERENCE}}
 
 
 class ObservationOptionRead(ObservationOptionsBase, HasId):
@@ -1893,7 +1797,6 @@ class OptionBase(SQLModel):
 
 class Option(OptionBase, BigIntPK, table=True):
     __tablename__ = "option"
-    __table_args__ = {"info": {"group": Group.LOOKUP}}
 
 
 class OptionRead(OptionBase, HasId):
@@ -1919,7 +1822,6 @@ class PaedsCHU9DBase(SQLModel):
 
 class PaedsCHU9D(PaedsCHU9DBase, BigIntPK, table=True):
     __tablename__ = "paeds_chu9d"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class PaedsCHU9DRead(PaedsCHU9DBase, HasId):
@@ -1949,7 +1851,6 @@ class PAMBase(SQLModel):
 
 class PAM(PAMBase, BigIntPK, table=True):
     __tablename__ = "pam"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class PAMRead(PAMBase, HasId):
@@ -1967,7 +1868,6 @@ class ParentalConsanguinityBase(SQLModel):
 
 class ParentalConsanguinity(ParentalConsanguinityBase, BigIntPK, table=True):
     __tablename__ = "parental_consanguinity"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class ParentalConsanguinityRead(ParentalConsanguinityBase, HasId):
@@ -1997,7 +1897,6 @@ class PathologyBase(SQLModel):
 
 class Pathology(PathologyBase, BigIntPK, table=True):
     __tablename__ = "pathology"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class PathologyRead(PathologyBase, HasId):
@@ -2015,7 +1914,6 @@ class PatientBase(SQLModel):
 
 class Patient(PatientBase, BigIntPK, table=True):
     __tablename__ = "patient"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class PatientRead(PatientBase, HasId):
@@ -2044,7 +1942,6 @@ class PatientAddressBase(SQLModel):
 
 class PatientAddress(PatientAddressBase, BigIntPK, table=True):
     __tablename__ = "patient_address"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class PatientAddressRead(PatientAddressBase, HasId):
@@ -2065,7 +1962,6 @@ class PatientAliasBase(SQLModel):
 
 class PatientAlias(PatientAliasBase, BigIntPK, table=True):
     __tablename__ = "patient_alias"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class PatientAliasRead(PatientAliasBase, HasId):
@@ -2086,7 +1982,6 @@ class PatientConsentBase(SQLModel):
 
 class PatientConsent(PatientConsentBase, BigIntPK, table=True):
     __tablename__ = "patient_consent"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class PatientConsentRead(PatientConsentBase, HasId):
@@ -2105,7 +2000,6 @@ class PatientConsultantBase(SQLModel):
 
 class PatientConsultant(PatientConsultantBase, BigIntPK, table=True):
     __tablename__ = "patient_consultant"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class PatientConsultantRead(PatientConsultantBase, HasId):
@@ -2136,7 +2030,6 @@ class PatientDemographicBase(SQLModel):
 
 class PatientDemographic(PatientDemographicBase, BigIntPK, table=True):
     __tablename__ = "patient_demographic"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class PatientDemographicRead(PatientDemographicBase, HasId):
@@ -2173,7 +2066,6 @@ class PatientDiagnosisBase(SQLModel):
 
 class PatientDiagnosis(PatientDiagnosisBase, BigIntPK, table=True):
     __tablename__ = "patient_diagnosis"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class PatientDiagnosisRead(PatientDiagnosisBase, HasId):
@@ -2194,7 +2086,6 @@ class PatientIdentifierBase(SQLModel):
 
 class PatientIdentifier(PatientIdentifierBase, BigIntPK, table=True):
     __tablename__ = "patient_identifier"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class PatientIdentifierRead(PatientIdentifierBase, HasId):
@@ -2211,7 +2102,6 @@ class PatientNationalityBase(SQLModel):
 
 class PatientNationality(PatientNationalityBase, BigIntPK, table=True):
     __tablename__ = "patient_nationality"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class PatientNationalityRead(PatientNationalityBase, HasId):
@@ -2229,7 +2119,6 @@ class PatientReconsentBase(SQLModel):
 
 class PatientReconsent(PatientReconsentBase, BigIntPK, table=True):
     __tablename__ = "patient_reconsent"
-    __table_args__ = {"info": {"group": Group.PATIENT}}
 
 
 class PatientReconsentRead(PatientReconsentBase, HasId):
@@ -2259,7 +2148,6 @@ class PlasmapheresisBase(SQLModel):
 
 class Plasmapheresis(PlasmapheresisBase, BigIntPK, table=True):
     __tablename__ = "plasmapheresis"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class PlasmapheresisRead(PlasmapheresisBase, HasId):
@@ -2277,7 +2165,6 @@ class PostBase(SQLModel):
 
 class Post(PostBase, BigIntPK, table=True):
     __tablename__ = "post"
-    __table_args__ = {"info": {"group": Group.LOOKUP}}
 
 
 class PostRead(PostBase, HasId):
@@ -2305,7 +2192,6 @@ class PregnancyBase(SQLModel):
 
 class Pregnancy(PregnancyBase, BigIntPK, table=True):
     __tablename__ = "pregnancy"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class PregnancyRead(PregnancyBase, HasId):
@@ -2324,7 +2210,6 @@ class ProcedureBase(SQLModel):
 
 class Procedure(ProcedureBase, BigIntPK, table=True):
     __tablename__ = "procedure"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class ProcedureRead(ProcedureBase, HasId):
@@ -2340,7 +2225,6 @@ class RelationBase(SQLModel):
 
 class Relation(RelationBase, BigIntPK, table=True):
     __tablename__ = "relation"
-    __table_args__ = {"info": {"group": Group.LOOKUP}}
 
 
 class RelationRead(RelationBase, HasId):
@@ -2394,7 +2278,6 @@ class RenalCancerGeneticsBase(SQLModel):
 
 class RenalCancerGenetics(RenalCancerGeneticsBase, BigIntPK, table=True):
     __tablename__ = "renal_cancer_genetics"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RenalCancerGeneticsRead(RenalCancerGeneticsBase, HasId):
@@ -2413,7 +2296,6 @@ class RenalCancerGeneticsOptionBase(SQLModel):
 
 class RenalCancerGeneticsOption(RenalCancerGeneticsOptionBase, BigIntPK, table=True):
     __tablename__ = "renal_cancer_genetics_option"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RenalCancerGeneticsOptionRead(RenalCancerGeneticsOptionBase, HasId):
@@ -2439,7 +2321,6 @@ class RenalCancerTumourBase(SQLModel):
 
 class RenalCancerTumour(RenalCancerTumourBase, BigIntPK, table=True):
     __tablename__ = "renal_cancer_tumour"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RenalCancerTumourRead(RenalCancerTumourBase, HasId):
@@ -2483,7 +2364,6 @@ class RenalImagingBase(SQLModel):
 
 class RenalImaging(RenalImagingBase, BigIntPK, table=True):
     __tablename__ = "renal_imaging"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class RenalImagingRead(RenalImagingBase, HasId):
@@ -2505,7 +2385,6 @@ class RenalProgressionBase(SQLModel):
 
 class RenalProgression(RenalProgressionBase, BigIntPK, table=True):
     __tablename__ = "renal_progression"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class RenalProgressionRead(RenalProgressionBase, HasId):
@@ -2532,7 +2411,6 @@ class ResultBase(SQLModel):
 
 class Result(ResultBase, BigIntPK, table=True):
     __tablename__ = "result"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class ResultRead(ResultBase, HasId):
@@ -2563,7 +2441,6 @@ class RituximabBaselineAssessment(
     RituximabBaselineAssessmentBase, BigIntPK, table=True
 ):
     __tablename__ = "rituximab_baseline_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RituximabBaselineAssessmentRead(RituximabBaselineAssessmentBase, HasId):
@@ -2584,7 +2461,6 @@ class RituximabBaselineAssessmentOption(
     RituximabBaselineAssessmentOptionBase, BigIntPK, table=True
 ):
     __tablename__ = "rituximab_baseline_assessment_option"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RituximabBaselineAssessmentOptionRead(
@@ -2609,7 +2485,6 @@ class RituximabBaselinePreviousTreatment(
     RituximabBaselinePreviousTreatmentBase, BigIntPK, table=True
 ):
     __tablename__ = "rituximab_baseline_previous_treatment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RituximabBaselinePreviousTreatmentCreate(RituximabBaselinePreviousTreatmentBase):
@@ -2654,7 +2529,6 @@ class RituximabCriteriaBase(SQLModel):
 
 class RituximabCriteria(RituximabCriteriaBase, BigIntPK, table=True):
     __tablename__ = "rituximab_criteria"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RituximabCriteriaRead(RituximabCriteriaBase, HasId):
@@ -2686,7 +2560,6 @@ class RituximabFollowUpAssessment(
     RituximabFollowUpAssessmentBase, BigIntPK, table=True
 ):
     __tablename__ = "rituximab_follow_up_assessment"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RituximabFollowUpAssessmentRead(RituximabFollowUpAssessmentBase, HasId):
@@ -2707,7 +2580,6 @@ class RituximabFollowUpAssessmentOption(
     RituximabFollowUpAssessmentOptionBase, BigIntPK, table=True
 ):
     __tablename__ = "rituximab_follow_up_assessment_option"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RituximabFollowUpAssessmentOptionRead(
@@ -2732,7 +2604,6 @@ class RituximabToxicityBase(SQLModel):
 
 class RituximabToxicity(RituximabToxicityBase, BigIntPK, table=True):
     __tablename__ = "rituximab_toxicity"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RituximabToxicityRead(RituximabToxicityBase, HasId):
@@ -2751,7 +2622,6 @@ class RituximabToxicityOptionBase(SQLModel):
 
 class RituximabToxicityOption(RituximabToxicityOptionBase, BigIntPK, table=True):
     __tablename__ = "rituximab_toxicity_option"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class RituximabToxicityOptionRead(RituximabToxicityOptionBase, HasId):
@@ -2781,7 +2651,6 @@ class SaltWastingClinicalFeatureBase(SQLModel):
 
 class SaltWastingClinicalFeature(SaltWastingClinicalFeatureBase, BigIntPK, table=True):
     __tablename__ = "salt_wasting_clinical_feature"
-    __table_args__ = {"info": {"group": Group.ASSESSMENT}}
 
 
 class SaltWastingClinicalFeatureRead(SaltWastingClinicalFeatureBase, HasId):
@@ -2813,7 +2682,6 @@ class SampleInventoryBase(SQLModel):
 
 class SampleInventory(SampleInventoryBase, BigIntPK, table=True):
     __tablename__ = "sample_inventory"
-    __table_args__ = {"info": {"group": Group.SAMPLE}}
 
 
 class SampleInventoryRead(SampleInventoryBase, HasId):
@@ -2829,7 +2697,6 @@ class SampleTypeBase(SQLModel):
 
 class SampleType(SampleTypeBase, BigIntPK, table=True):
     __tablename__ = "sample_type"
-    __table_args__ = {"info": {"group": Group.LOOKUP}}
 
 
 class SampleTypeRead(SampleTypeBase, HasId):
@@ -2854,7 +2721,6 @@ class SixCITBase(SQLModel):
 
 class SixCIT(SixCITBase, BigIntPK, table=True):
     __tablename__ = "six_cit"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class SixCITRead(SixCITBase, HasId):
@@ -2889,7 +2755,6 @@ class SocioEconomicBase(SQLModel):
 
 class SocioEconomic(SocioEconomicBase, BigIntPK, table=True):
     __tablename__ = "socioeconomic"
-    __table_args__ = {"info": {"group": Group.QUESTIONNAIRE}}
 
 
 class SocioEconomicRead(SocioEconomicBase, HasId):
@@ -2905,7 +2770,6 @@ class SpecialtyBase(SQLModel):
 
 class Specialty(SpecialtyBase, BigIntPK, table=True):
     __tablename__ = "specialty"
-    __table_args__ = {"info": {"group": Group.ORGANISATION}}
 
 
 class SpecialtyRead(SpecialtyBase, HasId):
@@ -2939,7 +2803,6 @@ class TransplantBase(SQLModel):
 
 class Transplant(TransplantBase, BigIntPK, table=True):
     __tablename__ = "transplant"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class TransplantRead(TransplantBase, HasId):
@@ -2957,7 +2820,6 @@ class TransplantBiopsyBase(SQLModel):
 
 class TransplantBiopsy(TransplantBiopsyBase, BigIntPK, table=True):
     __tablename__ = "transplant_biopsy"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class TransplantBiopsyRead(TransplantBiopsyBase, HasId):
@@ -2974,7 +2836,6 @@ class TransplantRejectionBase(SQLModel):
 
 class TransplantRejection(TransplantRejectionBase, BigIntPK, table=True):
     __tablename__ = "transplant_rejection"
-    __table_args__ = {"info": {"group": Group.CLINICAL_RECORD}}
 
 
 class TransplantRejectionRead(TransplantRejectionBase, HasId):
@@ -2995,7 +2856,6 @@ class TubeSampleBase(SQLModel):
 
 class TubeSample(TubeSampleBase, BigIntPK, table=True):
     __tablename__ = "tube_sample"
-    __table_args__ = {"info": {"group": Group.SAMPLE}}
 
 
 class TubeSampleRead(TubeSampleBase, HasId):
