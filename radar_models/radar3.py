@@ -131,6 +131,43 @@ class AnthropometricRead(AnthropometricBase, HasId):
     pass
 
 
+# --- Antibody --- #
+
+
+class AntibodyBase(SQLModel):
+    # unique=True makes this 1-to-1: at most one antibody row per patient_diagnosis
+    patient_diagnosis_id: int = Field(
+        foreign_key="patient_diagnosis.id", unique=True, sa_type=BigInteger
+    )
+    antibody_option_id: int = Field(
+        foreign_key="antibody_option.id", sa_type=BigInteger
+    )
+
+
+class Antibody(AntibodyBase, BigIntPK, table=True):
+    __tablename__ = "antibody"
+
+
+class AntibodyRead(AntibodyBase, HasId):
+    pass
+
+
+# --- AntibodyOption --- #
+
+
+class AntibodyOptionBase(SQLModel):
+    antibody_label: str = Field(unique=True)
+    is_official: bool = Field(default=False)
+
+
+class AntibodyOption(AntibodyOptionBase, BigIntPK, table=True):
+    __tablename__ = "antibody_option"
+
+
+class AntibodyOptionRead(AntibodyOptionBase, HasId):
+    pass
+
+
 # --- Biomarker --- #
 
 
