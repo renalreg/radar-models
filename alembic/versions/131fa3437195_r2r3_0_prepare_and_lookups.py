@@ -13,6 +13,8 @@ from sqlalchemy import text
 from sqlmodel import Session
 
 from alembic import op
+
+import radar_models.radar2
 from radar_models.radar3 import (
     DataSource,
     FrontPageStat,
@@ -20,6 +22,8 @@ from radar_models.radar3 import (
     Indicator,
     Option,
     SampleType,
+    AntibodyOptionBase,
+    AntibodyOption,
 )
 
 # revision identifiers, used by Alembic.
@@ -158,6 +162,17 @@ def seed_samples(session: Session) -> None:
     session.flush()
 
 
+def seed_antibodies(session):
+    anti = radar_models.radar2.Antibody
+    antibodies = session.query(anti.id, anti.is_official).order_by(anti.id).all()
+    session.add_all(
+        [
+            AntibodyOption(antibody_label=a.id, is_official=a.is_official)
+            for a in antibodies
+        ]
+    )
+
+
 def upgrade() -> None:
     # drop views
     bind = op.get_bind()
@@ -168,6 +183,7 @@ def upgrade() -> None:
     Indicator.__table__.create(bind)
     Option.__table__.create(bind)
     SampleType.__table__.create(bind)
+    AntibodyOption.__table__.create(bind)
 
     with Session(bind=bind) as session:
         seed_data_sources(session)
@@ -175,6 +191,7 @@ def upgrade() -> None:
         seed_indicators(session)
         seed_options(session)
         seed_samples(session)
+        seed_antibodies(session)
 
     pass
 
