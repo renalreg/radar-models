@@ -9,10 +9,9 @@ Create Date: 2026-11-03
 from collections.abc import Sequence
 
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy import text
 from sqlmodel import Session
-
-from alembic import op
 
 import radar_models.radar2
 from radar_models.radar3 import (
@@ -22,7 +21,6 @@ from radar_models.radar3 import (
     Indicator,
     Option,
     SampleType,
-    AntibodyOptionBase,
     AntibodyOption,
 )
 
