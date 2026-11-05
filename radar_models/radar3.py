@@ -2835,6 +2835,7 @@ class TransplantBase(SQLModel):
     date_of_cmv_infection: date | None = None
     donor_hla: str | None = None
     recipient_hla: str | None = None
+    mismatch_hla: str | None = None
     graft_loss_cause: str | None = None
 
 

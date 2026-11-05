@@ -1,66 +1,183 @@
-"""RaDaR3: organisation tables
+"""radar 2 -> radar 3, step 1: geography tables
 
-Moves the RaDaR2 organisation tables onto the RaDaR3 schema, keeping every row
-and every id so foreign keys from tables not yet migrated stay valid.
+Creates the radar 3 geography tables in the radar3 schema from their models and
+copies radar 2's rows into them. Rows are read from radar 2 with SQL, checked
+against the model with model_validate, then added with the session. Radar 2's
+tables are left as they are.
 
-    specialties        -> specialty            (renamed in place)
-    consultants        -> consultant           (renamed in place)
-    consents           -> consent              (renamed in place)
-    groups (HOSPITAL)  -> hospital             (new table, rows copied with ids)
-    groups (COHORT)    -> cohort               (new table, rows copied with ids)
-    group_consultants  -> hospital_consultant  (renamed in place)
+    countries             -> country              new ids; code -> country_code
+    ethnicities           -> ethnicity            ids kept
+    nationalities         -> nationality          ids kept
+    country_ethnicities   -> country_ethnicity    ids kept; country_code -> country_id
+    country_nationalities -> country_nationality  ids kept; country_code -> country_id
 
-`groups` is NOT dropped here. ~40 RaDaR2 tables (group_patients, patient_numbers,
-every source_group_id, ...) still point at it, and its OTHER / SYSTEM rows have no
-RaDaR3 home. Drop it in the migration that repoints those tables.
+radar 2 keys countries by their 2-letter code. Later steps that point at a country
+join radar3.country on country_code to get its new id.
 
-Columns RaDaR3 does not have are dropped:
-    consents.consent_type, consents.weight
-Constraints RaDaR3 does not declare are dropped:
-    consultants.gmc_number UNIQUE, group_consultants (group_id, consultant_id) UNIQUE,
-    group_consultants.consultant_id ON DELETE/UPDATE CASCADE
+One-way migration.
 
-Upgrade only.
-
-Revision ID: radar3_organisation
-Revises: <set to your current head>
+Revision ID: 9aaa2a094682
+Revises: 131fa3437195
 Create Date: 2026-11-03
 """
 
 from alembic import op
-import sqlalchemy as sa
+from sqlalchemy import text
+from sqlmodel import Session
 
-from radar_models.radar3 import Country, Ethnicity
-import radar_models.radar2 as radar_2
+from radar_models.radar3 import (
+    Country,
+    CountryEthnicity,
+    CountryNationality,
+    Ethnicity,
+    Nationality,
+)
+
 revision = "9aaa2a094682"
 down_revision = "131fa3437195"
 branch_labels = None
 depends_on = None
 
 
-# --------------------------------------------------------------------------- #
-def update_country():
+def copy_country(session: Session) -> None:
+    rows = session.execute(
+        text("""
+        SELECT code AS country_code, label AS country_name
+        FROM public.countries
+        ORDER BY code
+    """)
+    ).mappings()
 
-    op.rename_table(
-        radar_2.Country,Country.__tablename__,
+    session.add_all([Country.model_validate(dict(row)) for row in rows])
+    session.flush()
+
+
+def copy_ethnicity(session: Session) -> None:
+    rows = session.execute(
+        text("""
+        SELECT id, code AS ethnicity_code, label AS ethnicity_label
+        FROM public.ethnicities
+        ORDER BY id
+    """)
+    ).mappings()
+
+    session.add_all([Ethnicity.model_validate(dict(row)) for row in rows])
+    session.flush()
+
+    # ids were copied, so move the sequence past them
+    session.execute(
+        text("""
+        SELECT setval(
+            pg_get_serial_sequence('radar3.ethnicity', 'id'),
+            (SELECT COALESCE(MAX(id), 0) + 1 FROM radar3.ethnicity),
+            false
+        )
+    """)
     )
-    op.alter_column(Country.__tablename__,column_name='label',new_column_name="country_name")
-    op.alter_column(Country.__tablename__,column_name='code',new_column_name="id")
 
-def update_ethnicities():
 
-    op.rename_table(
-        radar_2.Ethnicity,Ethnicity.__tablename__,
+def copy_nationality(session: Session) -> None:
+    rows = session.execute(
+        text("""
+        SELECT id, label AS nationality_label
+        FROM public.nationalities
+        ORDER BY id
+    """)
+    ).mappings()
+
+    session.add_all([Nationality.model_validate(dict(row)) for row in rows])
+    session.flush()
+
+    # ids were copied, so move the sequence past them
+    session.execute(
+        text("""
+        SELECT setval(
+            pg_get_serial_sequence('radar3.nationality', 'id'),
+            (SELECT COALESCE(MAX(id), 0) + 1 FROM radar3.nationality),
+            false
+        )
+    """)
     )
-    op.alter_column(
-        Ethnicity.__tablename__,column_name='label',new_column_name="ethnicity_label"
+
+
+def copy_country_ethnicity(session: Session) -> None:
+    # country_id comes from the radar3.country rows copied above
+    rows = session.execute(
+        text("""
+        SELECT ce.id, ce.ethnicity_id, c.id AS country_id
+        FROM public.country_ethnicities AS ce
+        LEFT JOIN radar3.country AS c ON c.country_code = ce.country_code
+        ORDER BY ce.id
+    """)
+    ).mappings()
+
+    session.add_all([CountryEthnicity.model_validate(dict(row)) for row in rows])
+    session.flush()
+
+    # ids were copied, so move the sequence past them
+    session.execute(
+        text("""
+        SELECT setval(
+            pg_get_serial_sequence('radar3.country_ethnicity', 'id'),
+            (SELECT COALESCE(MAX(id), 0) + 1 FROM radar3.country_ethnicity),
+            false
+        )
+    """)
     )
 
 
+def copy_country_nationality(session: Session) -> None:
+    # country_id comes from the radar3.country rows copied above
+    rows = session.execute(
+        text("""
+        SELECT cn.id, cn.nationality_id, c.id AS country_id
+        FROM public.country_nationalities AS cn
+        LEFT JOIN radar3.country AS c ON c.country_code = cn.country_code
+        ORDER BY cn.id
+    """)
+    ).mappings()
 
-def upgrade():
+    session.add_all([CountryNationality.model_validate(dict(row)) for row in rows])
+    session.flush()
+
+    # ids were copied, so move the sequence past them
+    session.execute(
+        text("""
+        SELECT setval(
+            pg_get_serial_sequence('radar3.country_nationality', 'id'),
+            (SELECT COALESCE(MAX(id), 0) + 1 FROM radar3.country_nationality),
+            false
+        )
+    """)
+    )
 
 
+def upgrade() -> None:
+    bind = op.get_bind()
 
-def downgrade():
-    raise NotImplementedError("Upgrade-only migration.")
+    # From here on every model table on this connection lives in radar3: creates,
+    # inserts, and foreign keys. Raw text() SQL is not affected, so radar 2 is read
+    # with explicit public.<table> names.
+    bind.execution_options(schema_translate_map={None: "radar3"})
+    try:
+        # parents before children: the link tables point at country,
+        # ethnicity and nationality
+        Country.__table__.create(bind)
+        Ethnicity.__table__.create(bind)
+        Nationality.__table__.create(bind)
+        CountryEthnicity.__table__.create(bind)
+        CountryNationality.__table__.create(bind)
+
+        with Session(bind=bind) as session:
+            copy_country(session)
+            copy_ethnicity(session)
+            copy_nationality(session)
+            copy_country_ethnicity(session)
+            copy_country_nationality(session)
+    finally:
+        # Alembic records the version on this same connection, in public
+        bind.execution_options(schema_translate_map=None)
+
+
+def downgrade() -> None:
+    raise NotImplementedError("One-way migration: RaDaR2 -> RaDaR3.")
