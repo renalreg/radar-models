@@ -1,7 +1,8 @@
 from datetime import date, datetime
+from typing import Optional
 
 from sqlalchemy import BigInteger
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 # TODO check that the bools are either true or false and how nulls are related
 # as is a null false or is a null a lack of answer so could be true - philospophical
 
@@ -744,27 +745,6 @@ class DeathRead(DeathBase, HasId):
     pass
 
 
-# --- DentAndLoweAssessment --- #
-
-
-class DentAndLoweAssessmentBase(SQLModel):
-    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    assessment_date: date
-    aetiology: str
-    causative_agent: str
-    other_agent: str
-    extra_involvement: str
-    other_extra_involvement: str
-
-
-class DentAndLoweAssessment(DentAndLoweAssessmentBase, BigIntPK, table=True):
-    __tablename__ = "dent_and_lowe_assessment"
-
-
-class DentAndLoweAssessmentRead(DentAndLoweAssessmentBase, HasId):
-    pass
-
-
 # --- DentAndLoweAssessmentOption --- #
 
 
@@ -924,9 +904,11 @@ class EQ5DYRead(EQ5DYBase, HasId):
 class EthnicOriginBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    country_of_birth: str
-    year_of_emigration: int
-    ethnic_origin: str
+    country_of_birth: int
+    year_of_emigration: int | None = Field(default=None, nullable=True)
+    ethnic_origin: int| None = None
+    ethnic_origin_father: int | None = None
+    ethnic_origin_mother: int | None = None
 
 
 class EthnicOrigin(EthnicOriginBase, BigIntPK, table=True):
@@ -1159,6 +1141,7 @@ class HADSBase(SQLModel):
     a7_index: int
     d7_index: int
     anxiety_score: int
+    depression_score: int
 
 
 class HADS(HADSBase, BigIntPK, table=True):
