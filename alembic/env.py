@@ -18,7 +18,6 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 from sqlmodel import SQLModel
 import radar_models.radar3  # noqa: F401 — registers the table models
-from radar_models.radar3 import Group  # adjust if Group lives elsewhere
 
 target_metadata = SQLModel.metadata
 
@@ -28,46 +27,6 @@ target_metadata = SQLModel.metadata
 # ... etc.
 
 
-def _include_object_factory():
-    """Optionally restrict autogenerate to tables in one group.
-
-    Usage:
-        alembic revision --autogenerate -m "lookup tables" -x group=lookup
-
-    The group is read from each table's __table_args__ info dict:
-        __table_args__ = {"info": {"group": Group.LOOKUP}}
-
-    With no -x group=..., autogenerate behaves normally.
-    """
-    x_args = context.get_x_argument(as_dictionary=True)
-    group_arg = x_args.get("group")
-    if not group_arg:
-        return None
-
-    try:
-        wanted = Group[group_arg.upper()]
-    except KeyError:
-        valid = ", ".join(g.name.lower() for g in Group)
-        raise SystemExit(f"Unknown group {group_arg!r}. Valid groups: {valid}")
-
-    # Resolve names from the models: tables reflected from the database
-    # don't carry the info dict, so filtering is done by table name.
-    selected = {
-        t.name
-        for t in target_metadata.tables.values()
-        if t.info.get("group") == wanted
-    }
-    if not selected:
-        raise SystemExit(f"No tables found in group {wanted.name}")
-
-    def include_object(obj, name, type_, reflected, compare_to):
-        if type_ == "table":
-            return name in selected
-        # columns, indexes, constraints, FKs: keep only if their table is selected
-        table = getattr(obj, "table", None)
-        return table is None or table.name in selected
-
-    return include_object
 
 
 def run_migrations_offline() -> None:
@@ -88,7 +47,6 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        include_object=_include_object_factory(),
     )
 
     with context.begin_transaction():
@@ -112,7 +70,6 @@ def run_migrations_online() -> None:
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            include_object=_include_object_factory(),
         )
 
         with context.begin_transaction():
