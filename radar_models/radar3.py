@@ -2748,11 +2748,10 @@ class SixCITBase(SQLModel):
     completed_date: date
     six_cit_q1_index: int
     six_cit_q2_index: int
-    six_cit_q3_index: int
     six_cit_q4_index: int
     six_cit_q5_index: int
     six_cit_q6_index: int
-    six_cit_q7_index: int
+    six_cit_q7_index: int #q3 is the question q7 is the answer to q3 hence the sixcit
     six_cit_score: int
 
 
