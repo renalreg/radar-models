@@ -504,7 +504,7 @@ class CountryEthnicityBase(SQLModel):
         default=None, foreign_key="country.id", sa_type=BigInteger
     )
 
-
+# TODO do we need a bigintpk if we say a composite key of ethnicity id and country id
 class CountryEthnicity(CountryEthnicityBase, BigIntPK, table=True):
     __tablename__ = "country_ethnicity"
 
@@ -515,7 +515,7 @@ class CountryEthnicityRead(CountryEthnicityBase, HasId):
 
 # --- CountryNationality --- #
 
-
+# TODO do we need a bigintpk if we say a composite key of nationality id and country id
 class CountryNationalityBase(SQLModel):
     nationality_id: int | None = Field(
         default=None, foreign_key="nationality.id", sa_type=BigInteger
@@ -2693,7 +2693,7 @@ class SampleInventoryRead(SampleInventoryBase, HasId):
 
 # --- SampleType --- #
 
-
+# TODO could move into the option table?
 class SampleTypeBase(SQLModel):
     sample_type_label: str = Field(unique=True)
 
