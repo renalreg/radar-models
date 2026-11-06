@@ -1,12 +1,16 @@
 """radar 2 -> radar 3, step 0: radar3 schema and lookup tables
 
 Creates the radar3 schema, then creates and fills the lookup tables later steps
-point at: data_source, front_page_stat, identifier, indicator, option, sample_type,
-antibody_option.
+point at: data_source, front_page_stat, identifier, indicator, option, sample_type.
 
 Radar 2 is left untouched in the public schema. Every radar 3 table is created
 from its radar_models.radar3 model in the radar3 schema. Rows are read from radar 2
 with SQL, checked against the model with model_validate, then added with the session.
+
+option holds every radar 2 enum value, plus every {label, value} from the "options"
+arrays in the radar 2 form definitions (public.forms.data), grouped by form and
+field: <form slug>.<field name>, e.g. ddls.extraInvolvement, plus radar 2's
+antibodies under the group "antibody".
 
 One-way migration.
 
@@ -23,7 +27,6 @@ from sqlalchemy import text
 from sqlmodel import Session
 
 from radar_models.radar3 import (
-    AntibodyOption,
     DataSource,
     FrontPageStat,
     Identifier,
@@ -65,6 +68,7 @@ SOURCE_TYPE_TABLES = [
 ]
 APP_SOURCE_TYPES = ("RADAR", "UKRDC", "BATCH")  # radar.models.source_types
 SAMPLE_TYPE_ENUM = "observation_sample_type"  # seeds sample_type, not option
+ANTIBODY_OPTION_GROUP = "antibody"  # radar 2's antibodies, in option
 
 
 def seed_data_sources(session: Session) -> None:
@@ -148,12 +152,93 @@ def seed_options(session: Session) -> None:
     seen: set[tuple[str, str]] = set()
     for enum_name, value in rows:
         key = (enum_to_option_group(enum_name), value)
-        if (key in seen) or (enum_name == SAMPLE_TYPE_ENUM):
+        if (key in seen) or (enum_name in [SAMPLE_TYPE_ENUM,"antibody_type_enum"]):
             continue
         seen.add(key)
         session.add(
             Option.model_validate(
                 {"option_group": key[0], "display_label": value, "store_value": value}
+            )
+        )
+    session.flush()
+
+
+def form_option_group(slug: str, field_name: str | None) -> str:
+    """ddls + extraInvolvement -> ddls.extraInvolvement, as named in radar 2"""
+    return f"{slug}.{field_name}" if field_name else slug
+
+
+def seed_form_options(session: Session) -> None:
+    """option rows: every {label, value} in every "options" array of every form.
+
+    One query over all of public.forms. The recursive node query walks every
+    value in forms.data, at any depth (object members and array elements). Every
+    node that is an object with an "options" array (normally a field, so its
+    "name" gives the group) has its options unpacked with jsonb_array_elements.
+
+    Uses only jsonb_each, jsonb_array_elements and jsonb_typeof, so it runs on
+    PostgreSQL 9.4+ (jsonb_path_query would need 12+).
+    """
+    rows = session.execute(
+        text("""
+        WITH RECURSIVE node (slug, value) AS (
+            SELECT f.slug, f.data
+            FROM public.forms AS f
+          UNION ALL
+            SELECT n.slug, child.value
+            FROM node AS n
+            CROSS JOIN LATERAL (
+                SELECT member.value
+                FROM jsonb_each(
+                    CASE WHEN jsonb_typeof(n.value) = 'object'
+                         THEN n.value ELSE '{}'::jsonb END
+                ) AS member
+              UNION ALL
+                SELECT element.value
+                FROM jsonb_array_elements(
+                    CASE WHEN jsonb_typeof(n.value) = 'array'
+                         THEN n.value ELSE '[]'::jsonb END
+                ) AS element (value)
+            ) AS child
+        )
+        SELECT
+            n.slug,
+            n.value ->> 'name' AS field_name,
+            o.option ->> 'value' AS store_value,
+            o.option ->> 'label' AS display_label
+        FROM node AS n
+        CROSS JOIN LATERAL jsonb_array_elements(
+            CASE WHEN jsonb_typeof(n.value -> 'options') = 'array'
+                 THEN n.value -> 'options' ELSE '[]'::jsonb END
+        ) WITH ORDINALITY AS o (option, position)
+        WHERE jsonb_typeof(n.value) = 'object'
+        ORDER BY n.slug, field_name, o.position
+    """)
+    ).all()
+
+    missing = [
+        f"{slug}.{field_name}: {store_value!r} / {display_label!r}"
+        for slug, field_name, store_value, display_label in rows
+        if store_value is None or display_label is None
+    ]
+    if missing:
+        raise ValueError(
+            "form options without a value or label:\n" + "\n".join(missing)
+        )
+
+    seen: set[tuple[str, str]] = set()
+    for slug, field_name, store_value, display_label in rows:
+        key = (form_option_group(slug, field_name), store_value)
+        if key in seen:
+            continue
+        seen.add(key)
+        session.add(
+            Option.model_validate(
+                {
+                    "option_group": key[0],
+                    "display_label": display_label,
+                    "store_value": store_value,
+                }
             )
         )
     session.flush()
@@ -178,16 +263,27 @@ def seed_samples(session: Session) -> None:
 
 
 def seed_antibodies(session: Session) -> None:
-    """antibody_option rows: radar 2's antibodies (string id becomes the label)."""
-    rows = session.execute(
-        text("""
-        SELECT id AS antibody_label, is_official
-        FROM public.antibodies
-        ORDER BY id
-    """)
-    ).mappings()
+    """option rows in group "antibody": radar 2's antibodies.
 
-    session.add_all([AntibodyOption.model_validate(dict(row)) for row in rows])
+    The string id is both the label and the stored value. radar 2's is_official
+    flag is not kept: option has no column for it.
+    """
+    antibody_ids = session.execute(
+        text("SELECT id FROM public.antibodies ORDER BY id")
+    ).scalars()
+
+    session.add_all(
+        [
+            Option.model_validate(
+                {
+                    "option_group": ANTIBODY_OPTION_GROUP,
+                    "display_label": antibody_id,
+                    "store_value": antibody_id,
+                }
+            )
+            for antibody_id in antibody_ids
+        ]
+    )
     session.flush()
 
 
@@ -206,13 +302,13 @@ def upgrade() -> None:
         Indicator.__table__.create(bind)
         Option.__table__.create(bind)
         SampleType.__table__.create(bind)
-        AntibodyOption.__table__.create(bind)
 
         with Session(bind=bind) as session:
             seed_data_sources(session)
             seed_identifiers(session)
             seed_indicators(session)
             seed_options(session)
+            seed_form_options(session)
             seed_samples(session)
             seed_antibodies(session)
     finally:
