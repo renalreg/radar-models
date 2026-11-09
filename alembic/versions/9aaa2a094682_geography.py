@@ -5,14 +5,14 @@ copies radar 2's rows into them. Rows are read from radar 2 with SQL, checked
 against the model with model_validate, then added with the session. Radar 2's
 tables are left as they are.
 
-    countries             -> country              new ids; code -> country_code
+    countries             -> country              code -> country_code (primary key)
     ethnicities           -> ethnicity            ids kept
     nationalities         -> nationality          ids kept
-    country_ethnicities   -> country_ethnicity    ids kept; country_code -> country_id
-    country_nationalities -> country_nationality  ids kept; country_code -> country_id
+    country_ethnicities   -> country_ethnicity    ids kept; country_code kept
+    country_nationalities -> country_nationality  ids kept; country_code kept
 
-radar 2 keys countries by their 2-letter code. Later steps that point at a country
-join radar3.country on country_code to get its new id.
+radar 3 keys countries by their 2-letter code, as radar 2 does, so later steps that
+point at a country copy the code straight across.
 
 One-way migration.
 
@@ -101,10 +101,10 @@ def copy_nationality(session: Session) -> None:
 
 
 def copy_country_ethnicity(session: Session) -> None:
-    # country_id comes from the radar3.country rows copied above
+    # joined to radar3.country so a code with no matching country becomes NULL
     rows = session.execute(
         text("""
-        SELECT ce.id, ce.ethnicity_id, c.id AS country_id
+        SELECT ce.id, ce.ethnicity_id, c.country_code
         FROM public.country_ethnicities AS ce
         LEFT JOIN radar3.country AS c ON c.country_code = ce.country_code
         ORDER BY ce.id
@@ -127,10 +127,10 @@ def copy_country_ethnicity(session: Session) -> None:
 
 
 def copy_country_nationality(session: Session) -> None:
-    # country_id comes from the radar3.country rows copied above
+    # joined to radar3.country so a code with no matching country becomes NULL
     rows = session.execute(
         text("""
-        SELECT cn.id, cn.nationality_id, c.id AS country_id
+        SELECT cn.id, cn.nationality_id, c.country_code
         FROM public.country_nationalities AS cn
         LEFT JOIN radar3.country AS c ON c.country_code = cn.country_code
         ORDER BY cn.id
