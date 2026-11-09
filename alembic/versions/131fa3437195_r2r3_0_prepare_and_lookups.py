@@ -33,6 +33,7 @@ from radar_models.radar3 import (
     Indicator,
     Option,
     SampleType,
+    Relation,
 )
 
 # revision identifiers, used by Alembic.
@@ -286,6 +287,39 @@ def seed_antibodies(session: Session) -> None:
     )
     session.flush()
 
+def seed_relation(session: Session) -> None:
+    RELATIONSHIPS=[
+        (1, "Mother"),
+        (2, "Father"),
+        (3, "Sister"),
+        (4, "Brother"),
+        (5, "Grandmother - Maternal"),
+        (6, "Grandmother - Paternal"),
+        (15, "Grandfather - Maternal"),
+        (16, "Grandfather - Paternal"),
+        (7, "Aunt - Maternal"),
+        (8, "Aunt - Paternal"),
+        (9, "Uncle - Maternal"),
+        (10, "Uncle - Paternal"),
+        (11, "Cousin - Maternal"),
+        (12, "Cousin - Paternal"),
+        (13, "Half Sister"),
+        (14, "Half Brother"),
+        (17, "Daughter"),
+        (18, "Son"),
+        (19, "Granddaughter"),
+        (20, "Grandson"),
+    ]
+
+
+    rows = [
+        {"id": code, "relation_label": label} for code, label in RELATIONSHIPS
+    ]
+
+    session.add_all([Relation.model_validate(dict(row)) for row in rows])
+    session.flush()
+
+
 
 def upgrade() -> None:
     bind = op.get_bind()
@@ -302,6 +336,7 @@ def upgrade() -> None:
         Indicator.__table__.create(bind)
         Option.__table__.create(bind)
         SampleType.__table__.create(bind)
+        Relation.__table__.create(bind)
 
         with Session(bind=bind) as session:
             seed_data_sources(session)
@@ -311,6 +346,7 @@ def upgrade() -> None:
             seed_form_options(session)
             seed_samples(session)
             seed_antibodies(session)
+            seed_relation(session)
     finally:
         # Alembic records the version on this same connection, in public
         bind.execution_options(schema_translate_map=None)
