@@ -34,6 +34,7 @@ from radar_models.radar3 import (
     Option,
     SampleType,
     Relation,
+    Diagnosis,
 )
 
 # revision identifiers, used by Alembic.
@@ -120,10 +121,10 @@ def seed_indicators(session: Session) -> None:
     """indicator rows: every indication used in radar 2."""
     rows = session.execute(
         text("""
-        SELECT DISTINCT indications AS indicator_label
-        FROM public.liver_transplants
-        WHERE indications IS NOT NULL
-        ORDER BY indicator_label
+        SELECT DISTINCT i AS indicator_label
+        FROM public.liver_transplants lt
+        CROSS JOIN LATERAL unnest(lt.indications) AS i
+        ORDER BY indicator_label;
     """)
     ).mappings()
 
@@ -319,7 +320,25 @@ def seed_relation(session: Session) -> None:
     session.add_all([Relation.model_validate(dict(row)) for row in rows])
     session.flush()
 
+def seed_diagnosis(session: Session) -> None:
+    radar2_rows = session.execute(
+        text("""
+        SELECT id, name
+        FROM public.diagnoses
+        ORDER BY id
+    """)
+    ).mappings()
 
+    rows = [
+        {
+            "id": row["id"],
+            "diagnosis_name": row["name"],
+        }
+        for row in radar2_rows
+    ]
+
+    session.add_all([Diagnosis.model_validate(dict(row)) for row in rows])
+    session.flush()
 
 def upgrade() -> None:
     bind = op.get_bind()
@@ -337,6 +356,7 @@ def upgrade() -> None:
         Option.__table__.create(bind)
         SampleType.__table__.create(bind)
         Relation.__table__.create(bind)
+        Diagnosis.__table__.create(bind)
 
         with Session(bind=bind) as session:
             seed_data_sources(session)
@@ -347,6 +367,8 @@ def upgrade() -> None:
             seed_samples(session)
             seed_antibodies(session)
             seed_relation(session)
+            seed_diagnosis(session)
+
     finally:
         # Alembic records the version on this same connection, in public
         bind.execution_options(schema_translate_map=None)
