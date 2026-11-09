@@ -97,8 +97,6 @@ def seed_identifiers(session: Session) -> None:
         text("""
         SELECT id, code AS identifier_label
         FROM public.groups
-        WHERE type = 'OTHER'
-        ORDER BY id
     """)
     ).mappings()
 

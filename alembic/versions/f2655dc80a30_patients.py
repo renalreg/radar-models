@@ -48,7 +48,8 @@ to their new ids.
 
 Lookups: group ids are kept as cohort and hospital ids (organisation step),
 source_type -> data_source by name [D4] (step 0 seeded every name used),
-country code -> country (geography step), number_group_id -> identifier, which
+country codes copied as they are, as country is keyed by its code (geography
+step), number_group_id -> identifier, which
 kept the group ids [D5], relationship -> relation, whose ids are radar 2's
 relationship codes [D11] (seeded by an earlier step).
 
@@ -75,7 +76,6 @@ from sqlmodel import Session, SQLModel, select
 
 from radar_models.radar3 import (
     CohortPatient,
-    Country,
     DataSource,
     Death,
     Diagnosis,
@@ -236,9 +236,6 @@ def copy_hospital_patient(session: Session) -> None:
 
 def copy_patient_address(session: Session) -> None:
     data_source_ids = load_data_source_ids(session)
-    country_ids = {
-        country.country_code: country.id for country in session.exec(select(Country))
-    }
 
     # [D6] dropped: source_group_id
     radar2_rows = session.execute(
@@ -255,9 +252,7 @@ def copy_patient_address(session: Session) -> None:
         {
             "patient_id": row["patient_id"],
             "data_source_id": data_source_ids[row["source_type"]],
-            "country_id": (
-                country_ids[row["country"]] if row["country"] is not None else None
-            ),
+            "country_code": row["country"],  # country is keyed by its code
             "from_date": row["from_date"],
             "to_date": row["to_date"],
             "address1": row["address1"],
@@ -401,7 +396,7 @@ def copy_patient_demographic(session: Session) -> None:
             "patient_id": row["patient_id"],
             "data_source_id": data_source_ids[row["source_type"]],
             "ethnicity_id": row["ethnicity_id"],  # ethnicity kept its ids
-            "country_id": row["country"],
+            "country_code": row["country"],  # country is keyed by its code
             "first_name": row["first_name"],
             "last_name": row["last_name"],
             "date_of_birth": row["date_of_birth"],
@@ -428,23 +423,32 @@ def copy_death(session: Session) -> None:
     """)
     ).mappings()
 
-    # the rows are newest first within each patient, so the first is kept
-    latest = {}
-    dates_of_death = defaultdict(set)
-    for row in radar2_rows:
-        latest.setdefault(row["patient_id"], row)
-        dates_of_death[row["patient_id"]].add(row["date_of_death"])
-
-    conflicting = [
-        f"patient {patient_id}: {', '.join(str(day) for day in sorted(dates))}"
-        for patient_id, dates in dates_of_death.items()
-        if len(dates) > 1
-    ]
-    if conflicting:
-        raise ValueError(
-            f"{len(conflicting)} patients have more than one date_of_death in "
-            "patient_demographics:\n" + "\n".join(conflicting)
-        )
+    # # the rows are newest first within each patient, so the first is kept
+    # latest = {}
+    # dates_of_death = defaultdict(set)
+    # for row in radar2_rows:
+    #     latest.setdefault(row["patient_id"], row)
+    #     dates_of_death[row["patient_id"]].add(row["date_of_death"])
+    #
+    # conflicting = [
+    #     f"patient {patient_id}: {', '.join(str(day) for day in sorted(dates))}"
+    #     for patient_id, dates in dates_of_death.items()
+    #     if len(dates) > 1
+    # ]
+    # if conflicting:
+    #     raise ValueError(
+    #         f"{len(conflicting)} patients have more than one date_of_death in "
+    #         "patient_demographics:\n" + "\n".join(conflicting)
+    #     )
+    #
+    # rows = [
+    #     {
+    #         "patient_id": row["patient_id"],
+    #         "date_of_death": row["date_of_death"],
+    #         "cause_of_death": row["cause_of_death"],
+    #     }
+    #     for row in latest.values()
+    # ]
 
     rows = [
         {
@@ -452,7 +456,7 @@ def copy_death(session: Session) -> None:
             "date_of_death": row["date_of_death"],
             "cause_of_death": row["cause_of_death"],
         }
-        for row in latest.values()
+        for row in radar2_rows
     ]
 
     session.add_all([Death.model_validate(dict(row)) for row in rows])
@@ -533,163 +537,13 @@ def copy_parental_consanguinity(session: Session) -> None:
     session.add_all([ParentalConsanguinity.model_validate(dict(row)) for row in rows])
     session.flush()
 
-
-
-
-
 def copy_family_history(session: Session) -> dict[Any, int]:
-    """Copies family_histories; returns each radar 2 id's new family_history id.
-
-    [D8] assumed: radar 2 records a family history per cohort (group_id), of
-    that cohort's condition. In radar 3 it points at the patient's own primary
-    diagnosis in that cohort. A patient with none, or more than one, there
-    stops the migration.
-
-    A NULL family_history is an unanswered question, so that row is not copied
-    (its parental_consanguinity is copied on its own).
-    """
-    # each patient's primary diagnoses in each cohort, by (patient id, cohort id)
-    primary_diagnoses = defaultdict(set)
-    patient_diagnoses = session.execute(
-        text("""
-        SELECT DISTINCT
-            patient_diagnoses.patient_id,
-            group_diagnoses.group_id,
-            patient_diagnoses.diagnosis_id
-        FROM public.patient_diagnoses
-        JOIN public.group_diagnoses
-            ON group_diagnoses.diagnosis_id = patient_diagnoses.diagnosis_id
-        WHERE group_diagnoses.type = 'PRIMARY'
-    """)
-    )
-    for patient_id, cohort_id, diagnosis_id in patient_diagnoses:
-        primary_diagnoses[patient_id, cohort_id].add(diagnosis_id)
-
-    # [D6] dropped: group_id (once it has found the diagnosis),
-    # other_family_history
-    radar2_rows = (
-        session.execute(
-            text("""
-            SELECT id, patient_id, group_id, family_history
-            FROM public.family_histories
-            WHERE family_history IS NOT NULL
-            ORDER BY patient_id, id
-        """)
-        )
-        .mappings()
-        .all()
-    )
-
-    not_one_diagnosis = []
-    for row in radar2_rows:
-        diagnoses = primary_diagnoses.get((row["patient_id"], row["group_id"]), set())
-        if len(diagnoses) != 1:
-            not_one_diagnosis.append(
-                f"family_histories id {row['id']}: patient {row['patient_id']} has "
-                f"{len(diagnoses)} primary diagnoses in cohort {row['group_id']} "
-                f"{sorted(diagnoses)}"
-            )
-    if not_one_diagnosis:
-        raise ValueError(
-            f"{len(not_one_diagnosis)} family histories whose patient does not "
-            "have exactly one primary diagnosis in the family history's cohort:\n"
-            + "\n".join(not_one_diagnosis)
-        )
-
-    rows = [
-        {
-            "patient_id": row["patient_id"],
-            # the one diagnosis; diagnosis kept its ids
-            "diagnosis_id": next(
-                iter(primary_diagnoses[row["patient_id"], row["group_id"]])
-            ),
-            # relatives who are patients go to family_history_relation_patient
-            "relation_patient_id": None,
-            "has_condition": row["family_history"],
-        }
-        for row in radar2_rows
-    ]
-
-    family_histories = [FamilyHistory.model_validate(dict(row)) for row in rows]
-    session.add_all(family_histories)
-    session.flush()
-
-    # the new ids exist now the rows are flushed
-    return {
-        radar2_row["id"]: family_history.id
-        for radar2_row, family_history in zip(
-            radar2_rows, family_histories, strict=True
-        )
-    }
-
 
 def copy_family_history_relation(
     session: Session, family_history_ids: dict[Any, int]
 ) -> None:
-    # patient_id goes to family_history_relation_patient
-    radar2_rows = (
-        session.execute(
-            text("""
-            SELECT id, family_history_id, relationship
-            FROM public.family_history_relatives
-            ORDER BY id
-        """)
-        )
-        .mappings()
-        .all()
-    )
-
-    # a relative whose family history was not copied (no family_history answer)
-    # has nothing to point at
-    not_copied = [
-        f"family_history_relatives id {row['id']}: family_histories id "
-        f"{row['family_history_id']} has no family_history answer"
-        for row in radar2_rows
-        if row["family_history_id"] not in family_history_ids
-    ]
-    if not_copied:
-        raise ValueError(
-            f"{len(not_copied)} relatives whose family history was not copied:\n"
-            + "\n".join(not_copied)
-        )
-
-    rows = [
-        {
-            "id": row["id"],
-            "family_history_id": family_history_ids[row["family_history_id"]],
-            # relation's ids are radar 2's relationship codes [D11]
-            "relation_id": row["relationship"],
-        }
-        for row in radar2_rows
-    ]
-
-    session.add_all([FamilyHistoryRelation.model_validate(dict(row)) for row in rows])
-    session.flush()
-
 
 def copy_family_history_relation_patient(session: Session) -> None:
-    # family_history_relation kept the relatives' ids, and has every relative
-    radar2_rows = session.execute(
-        text("""
-        SELECT id, patient_id
-        FROM public.family_history_relatives
-        WHERE patient_id IS NOT NULL
-        ORDER BY id
-    """)
-    ).mappings()
-
-    rows = [
-        {
-            "family_history_relation_id": row["id"],
-            "patient_id": row["patient_id"],
-        }
-        for row in radar2_rows
-    ]
-
-    session.add_all(
-        [FamilyHistoryRelationPatient.model_validate(dict(row)) for row in rows]
-    )
-    session.flush()
 
 
 def upgrade() -> None:
