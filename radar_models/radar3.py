@@ -481,15 +481,15 @@ class ConsultantRead(ConsultantBase, HasId):
 
 
 class CountryBase(SQLModel):
+    country_code: str = Field(primary_key=True)
     country_name: str
-    country_code: str
 
 
-class Country(CountryBase, BigIntPK, table=True):
+class Country(CountryBase, table=True):
     __tablename__ = "country"
 
 
-class CountryRead(CountryBase, HasId):
+class CountryRead(CountryBase):
     pass
 
 
@@ -500,11 +500,9 @@ class CountryEthnicityBase(SQLModel):
     ethnicity_id: int | None = Field(
         default=None, foreign_key="ethnicity.id", sa_type=BigInteger
     )
-    country_id: int | None = Field(
-        default=None, foreign_key="country.id", sa_type=BigInteger
-    )
+    country_code: str | None = Field(default=None, foreign_key="country.country_code")
 
-# TODO do we need a bigintpk if we say a composite key of ethnicity id and country id
+# TODO do we need a bigintpk if we say a composite key of ethnicity id and country code
 class CountryEthnicity(CountryEthnicityBase, BigIntPK, table=True):
     __tablename__ = "country_ethnicity"
 
@@ -515,14 +513,12 @@ class CountryEthnicityRead(CountryEthnicityBase, HasId):
 
 # --- CountryNationality --- #
 
-# TODO do we need a bigintpk if we say a composite key of nationality id and country id
+# TODO do we need a bigintpk if we say a composite key of nationality id and country code
 class CountryNationalityBase(SQLModel):
     nationality_id: int | None = Field(
         default=None, foreign_key="nationality.id", sa_type=BigInteger
     )
-    country_id: int | None = Field(
-        default=None, foreign_key="country.id", sa_type=BigInteger
-    )
+    country_code: str | None = Field(default=None, foreign_key="country.country_code")
 
 
 class CountryNationality(CountryNationalityBase, BigIntPK, table=True):
@@ -1931,9 +1927,7 @@ class PatientAddressBase(SQLModel):
     data_source_id: int | None = Field(
         default=None, foreign_key="data_source.id", sa_type=BigInteger
     )
-    country_id: int | None = Field(
-        default=None, foreign_key="country.id", sa_type=BigInteger
-    )
+    country_code: str | None = Field(default=None, foreign_key="country.country_code")
     from_date: date | None = None
     to_date: date | None = None
     address1: str | None = None
@@ -2020,9 +2014,7 @@ class PatientDemographicBase(SQLModel):
     ethnicity_id: int | None = Field(
         default=None, foreign_key="ethnicity.id", sa_type=BigInteger
     )
-    country_id: int | None = Field(
-        default=None, foreign_key="country.id", sa_type=BigInteger
-    )
+    country_code: str | None = Field(default=None, foreign_key="country.country_code")
     first_name: str | None = None
     last_name: str | None = None
     date_of_birth: date | None = None
