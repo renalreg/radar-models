@@ -68,26 +68,21 @@ SOURCE_TYPE_TABLES = [
     "rituximab_baseline_assessment",
     "transplants",
 ]
-APP_SOURCE_TYPES = ("RADAR", "UKRDC", "BATCH")  # radar.models.source_types
+
 SAMPLE_TYPE_ENUM = "observation_sample_type"  # seeds sample_type, not option
 ANTIBODY_OPTION_GROUP = "antibody"  # radar 2's antibodies, in option
 
 
 def seed_data_sources(session: Session) -> None:
     """data_source rows: every source_type radar 2 used, plus the app's constants."""
-    used = "\nUNION ".join(
-        f"SELECT source_type FROM public.{t}" for t in SOURCE_TYPE_TABLES
-    )
-    names = set(session.execute(text(used)).scalars())
-    names.update(APP_SOURCE_TYPES)
-    names.discard(None)
+    rows = session.execute(
+        text("""
+             SELECT id, code AS data_source_name
+             FROM public.groups WHERE code in ('RADAR', 'UKRDC', 'UKRR', 'NURTURE')
+             """)
+    ).mappings()
 
-    session.add_all(
-        [
-            DataSource.model_validate({"data_source_name": name})
-            for name in sorted(names)
-        ]
-    )
+    session.add_all([DataSource.model_validate(dict(row)) for row in rows])
     session.flush()
 
 
@@ -152,7 +147,7 @@ def seed_options(session: Session) -> None:
     seen: set[tuple[str, str]] = set()
     for enum_name, value in rows:
         key = (enum_to_option_group(enum_name), value)
-        if (key in seen) or (enum_name in [SAMPLE_TYPE_ENUM,"antibody_type_enum"]):
+        if (key in seen) or (enum_name in [SAMPLE_TYPE_ENUM,"antibody_type_enum","group_type"]):
             continue
         seen.add(key)
         session.add(
