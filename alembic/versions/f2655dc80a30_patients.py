@@ -16,12 +16,10 @@ copies radar 2's rows into them. Radar 2's tables are left as they are.
     patient_demographics (nationality_id set) -> patient_nationality    new ids
     patient_numbers                           -> patient_identifier     new ids
     family_histories (consanguinity set)      -> parental_consanguinity new ids
-    diagnoses                                 -> diagnosis              ids kept
-    family_histories (family_history set)     -> family_history         new ids
+    family_histories (family_history true)    -> family_history         new ids
+    family_history_relatives (patient_id set) -> patient_relation       new ids
     family_history_relatives                  -> family_history_relation
                                                                         ids kept
-    family_history_relatives (patient_id set) -> family_history_relation_patient
-                                                                        new ids
 
 Each radar 3 table has one copy_<table> function, which:
   1. reads radar 2's rows with SQL, under their radar 2 column names;
@@ -47,15 +45,30 @@ family_histories' (by family_history_relatives), which copy_family_history maps
 to their new ids.
 
 Lookups: group ids are kept as cohort and hospital ids (organisation step),
-source_type -> data_source by name [D4] (step 0 seeded every name used),
-country codes copied as they are, as country is keyed by its code (geography
-step), number_group_id -> identifier, which
-kept the group ids [D5], relationship -> relation, whose ids are radar 2's
-relationship codes [D11] (seeded by an earlier step).
+source_group_id copied as data_source_id, as data_source kept radar 2's group
+ids (step 0; source_type is dropped), country codes copied as they are, as
+country is keyed by its code (geography step), number_group_id -> identifier,
+which kept the group ids [D5] (step 0), relationship -> relation, whose ids are
+radar 2's relationship codes [D11] (step 0).
 
-family_history points at diagnosis [D8], which no earlier step creates, so this
-step creates it first. A later diagnosis step adds to diagnosis and must not
-create it again.
+A family_history records a condition the patient's relatives have, and whether
+the patient has it too. Radar 2's family_history flag says whether the family
+has a history, so a radar 2 row is copied when the flag is true (in radar 2's
+data, the only rows that list relatives); has_condition is whether the patient
+has the diagnosis in patient_diagnoses. diagnosis_id is the cohort's PRIMARY
+diagnosis in group_diagnoses [D8], as diagnosis kept radar 2's ids (step 0). A
+cohort with none, or several, gives NULL: a radar 2 data quality issue, not
+checked here.
+
+patient_relation links two patients on Radar who are family, stated from the
+first patient's side. A radar 2 relative who is a patient gives one row per
+patient and relative, however many of the patient's family histories list them,
+and their family_history_relation points at it. A relative listed with
+different relationships, or a patient listed as their own relative, cannot be
+mapped without guessing and stops the migration.
+
+Comments marked "could change:" are where open decisions or model changes would
+change the copy.
 
 One-way migration.
 
@@ -72,16 +85,13 @@ from zoneinfo import ZoneInfo
 
 from alembic import op
 from sqlalchemy import text
-from sqlmodel import Session, SQLModel, select
+from sqlmodel import Session, SQLModel
 
 from radar_models.radar3 import (
     CohortPatient,
-    DataSource,
     Death,
-    Diagnosis,
     FamilyHistory,
     FamilyHistoryRelation,
-    FamilyHistoryRelationPatient,
     HospitalPatient,
     ParentalConsanguinity,
     Patient,
@@ -93,6 +103,7 @@ from radar_models.radar3 import (
     PatientIdentifier,
     PatientNationality,
     PatientReconsent,
+    PatientRelation,
 )
 
 # revision identifiers, used by Alembic.
@@ -109,8 +120,7 @@ depends_on: str | Sequence[str] | None = None
 UK = ZoneInfo("Europe/London")
 
 # created in this order, parents before children: every table points at patient,
-# family_history at diagnosis, and the family_history_relation tables at
-# family_history
+# and family_history_relation at family_history and patient_relation
 TABLES: list[type[SQLModel]] = [
     Patient,
     CohortPatient,
@@ -126,22 +136,14 @@ TABLES: list[type[SQLModel]] = [
     PatientIdentifier,
     ParentalConsanguinity,
     FamilyHistory,
+    PatientRelation,
     FamilyHistoryRelation,
-    FamilyHistoryRelationPatient,
 ]
 
 
 def uk_date(timestamp: datetime | None) -> date | None:
     """The day a radar 2 timestamp falls on in the UK."""
     return timestamp.astimezone(UK).date() if timestamp is not None else None
-
-
-def load_data_source_ids(session: Session) -> dict[str, int]:
-    """data_source ids by name, for radar 2's source_type [D4]."""
-    return {
-        data_source.data_source_name: data_source.id
-        for data_source in session.exec(select(DataSource))
-    }
 
 
 def copy_patient(session: Session) -> None:
@@ -222,6 +224,7 @@ def copy_hospital_patient(session: Session) -> None:
 
     rows = [
         {
+            "id": row["id"],
             "hospital_id": row["group_id"],  # hospital kept the group ids
             "patient_id": row["patient_id"],
             "first_seen_date": uk_date(row["from_date"]),
@@ -235,13 +238,11 @@ def copy_hospital_patient(session: Session) -> None:
 
 
 def copy_patient_address(session: Session) -> None:
-    data_source_ids = load_data_source_ids(session)
-
-    # [D6] dropped: source_group_id
+    # dropped: source_type
     radar2_rows = session.execute(
         text("""
         SELECT
-            id, patient_id, source_type, country, from_date, to_date,
+            id, patient_id, source_group_id, country, from_date, to_date,
             address1, address2, address3, address4, postcode
         FROM public.patient_addresses
         ORDER BY patient_id, id
@@ -251,7 +252,7 @@ def copy_patient_address(session: Session) -> None:
     rows = [
         {
             "patient_id": row["patient_id"],
-            "data_source_id": data_source_ids[row["source_type"]],
+            "data_source_id": row["source_group_id"],  # data_source kept group ids
             "country_code": row["country"],  # country is keyed by its code
             "from_date": row["from_date"],
             "to_date": row["to_date"],
@@ -269,12 +270,10 @@ def copy_patient_address(session: Session) -> None:
 
 
 def copy_patient_alias(session: Session) -> None:
-    data_source_ids = load_data_source_ids(session)
-
-    # [D6] dropped: source_group_id
+    # dropped: source_type
     radar2_rows = session.execute(
         text("""
-        SELECT id, patient_id, source_type, first_name, last_name
+        SELECT id, patient_id, source_group_id, first_name, last_name
         FROM public.patient_aliases
         ORDER BY patient_id, id
     """)
@@ -283,7 +282,7 @@ def copy_patient_alias(session: Session) -> None:
     rows = [
         {
             "patient_id": row["patient_id"],
-            "data_source_id": data_source_ids[row["source_type"]],
+            "data_source_id": row["source_group_id"],  # data_source kept group ids
             "first_name": row["first_name"],
             "last_name": row["last_name"],
         }
@@ -306,6 +305,7 @@ def copy_patient_consent(session: Session) -> None:
 
     rows = [
         {
+            "id": row["id"],
             "patient_id": row["patient_id"],
             "consent_id": row["consent_id"],  # consent kept its ids
             "signed_on_date": row["signed_on_date"],
@@ -369,13 +369,13 @@ def copy_patient_consultant(session: Session) -> None:
 
 
 def copy_patient_demographic(session: Session) -> None:
-    data_source_ids = load_data_source_ids(session)
+    # dropped: source_type
     radar2_rows = session.execute(
         text("""
         SELECT DISTINCT ON (d.patient_id, d.id)
             d.id,
             d.patient_id,
-            d.source_type,
+            d.source_group_id,
             d.ethnicity_id,
             d.first_name,
             d.last_name,
@@ -394,7 +394,7 @@ def copy_patient_demographic(session: Session) -> None:
     rows = [
         {
             "patient_id": row["patient_id"],
-            "data_source_id": data_source_ids[row["source_type"]],
+            "data_source_id": row["source_group_id"],  # data_source kept group ids
             "ethnicity_id": row["ethnicity_id"],  # ethnicity kept its ids
             "country_code": row["country"],  # country is keyed by its code
             "first_name": row["first_name"],
@@ -410,13 +410,14 @@ def copy_patient_demographic(session: Session) -> None:
     session.add_all([PatientDemographic.model_validate(dict(row)) for row in rows])
     session.flush()
 
+
 def copy_death(session: Session) -> None:
     # [D9] assumed: one death per patient. A patient whose demographics rows give
     # different dates of death stops the migration. When they agree, the
     # cause_of_death comes from the most recently modified row.
     radar2_rows = session.execute(
         text("""
-        SELECT id, patient_id, date_of_death, cause_of_death
+        SELECT id, patient_id, source_group_id, date_of_death, cause_of_death
         FROM public.patient_demographics
         WHERE date_of_death IS NOT NULL
         ORDER BY patient_id, modified_date DESC NULLS LAST, id
@@ -453,6 +454,7 @@ def copy_death(session: Session) -> None:
     rows = [
         {
             "patient_id": row["patient_id"],
+            "data_source_id": row["source_group_id"],  # data_source kept group ids
             "date_of_death": row["date_of_death"],
             "cause_of_death": row["cause_of_death"],
         }
@@ -488,12 +490,10 @@ def copy_patient_nationality(session: Session) -> None:
 
 
 def copy_patient_identifier(session: Session) -> None:
-    data_source_ids = load_data_source_ids(session)
-
-    # [D6] dropped: source_group_id
+    # dropped: source_type
     radar2_rows = session.execute(
         text("""
-        SELECT id, patient_id, source_type, number_group_id, number
+        SELECT id, patient_id, source_group_id, number_group_id, number
         FROM public.patient_numbers
         ORDER BY patient_id, id
     """)
@@ -502,7 +502,7 @@ def copy_patient_identifier(session: Session) -> None:
     rows = [
         {
             "patient_id": row["patient_id"],
-            "data_source_id": data_source_ids[row["source_type"]],
+            "data_source_id": row["source_group_id"],  # data_source kept group ids
             # [D5] identifier kept the ids of radar 2's OTHER groups (step 0); a
             # number on any other kind of group fails the foreign key
             "identifier_id": row["number_group_id"],
@@ -537,13 +537,202 @@ def copy_parental_consanguinity(session: Session) -> None:
     session.add_all([ParentalConsanguinity.model_validate(dict(row)) for row in rows])
     session.flush()
 
+
 def copy_family_history(session: Session) -> dict[Any, int]:
+    """Copies family_histories and returns their new ids by radar 2 UUID, for
+    family_history_relation.
+
+    A radar 3 family_history records a condition the patient's relatives have
+    (diagnosis_id) and whether the patient has it too (has_condition). Radar 2's
+    family_history flag says whether the family has a history, not the patient,
+    so it decides which rows are copied rather than filling has_condition.
+    """
+    # Rows copied: family_history is true. A false or NULL [D1] one records no
+    # condition in the family, so there is nothing to copy; in radar 2's data
+    # none of them lists a relative (copy_family_history_relation relies on it)
+    # could change: a true family_history with no relatives is copied as a
+    # family_history with no relations, so radar 2's "yes" is kept
+    #
+    # diagnosis_id [D8]: the cohort's PRIMARY diagnosis, NULL when the cohort
+    # has none or several (a radar 2 data quality issue, not checked here).
+    # could change: the design links every family_history to a diagnosis; if
+    # the model makes diagnosis_id required, those rows need a rule
+    #
+    # has_condition: whether the patient has that diagnosis in patient_diagnoses.
+    # could change: a NULL diagnosis_id gives false, as nothing can match it
+    #
+    # parental_consanguinity went to parental_consanguinity
+    # [D6] dropped: other_family_history
+    radar2_rows = (
+        session.execute(
+            text("""
+            SELECT
+                family_histories.id,
+                family_histories.patient_id,
+                primary_diagnosis.diagnosis_id,
+                EXISTS (
+                    SELECT 1
+                    FROM public.patient_diagnoses
+                    WHERE patient_diagnoses.patient_id = family_histories.patient_id
+                      AND patient_diagnoses.diagnosis_id
+                          = primary_diagnosis.diagnosis_id
+                ) AS has_condition
+            FROM public.family_histories
+            LEFT JOIN (
+                SELECT group_id, min(diagnosis_id) AS diagnosis_id
+                FROM public.group_diagnoses
+                WHERE type = 'PRIMARY'
+                GROUP BY group_id
+                HAVING count(*) = 1
+            ) AS primary_diagnosis
+                ON primary_diagnosis.group_id = family_histories.group_id
+            WHERE family_histories.family_history
+            ORDER BY family_histories.patient_id, family_histories.group_id
+        """)
+        )
+        .mappings()
+        .all()
+    )
+
+    rows = [
+        {
+            "patient_id": row["patient_id"],
+            "diagnosis_id": row["diagnosis_id"],
+            "has_condition": row["has_condition"],
+        }
+        for row in radar2_rows
+    ]
+
+    family_histories = [FamilyHistory.model_validate(dict(row)) for row in rows]
+    session.add_all(family_histories)
+    session.flush()
+
+    # the flush gave each row its new id
+    return {
+        row["id"]: family_history.id
+        for row, family_history in zip(radar2_rows, family_histories, strict=True)
+    }
+
+
+def copy_patient_relation(session: Session) -> dict[tuple[int, int], int]:
+    """Copies the relatives who are patients on Radar to patient_relation, and
+    returns their new ids by (patient_id, related_patient_id), for
+    family_history_relation."""
+    # one row per patient and relative, however many of the patient's family
+    # histories list them; stated from the patient's side, as radar 2 recorded it
+    # could change: the reverse row (the relative's relation to the patient) is
+    # not made up here; it exists only if the relative's own family history
+    # lists the patient
+    radar2_rows = (
+        session.execute(
+            text("""
+            SELECT DISTINCT
+                family_histories.patient_id,
+                family_history_relatives.patient_id AS related_patient_id,
+                family_history_relatives.relationship
+            FROM public.family_history_relatives
+            JOIN public.family_histories
+                ON family_histories.id = family_history_relatives.family_history_id
+            WHERE family_history_relatives.patient_id IS NOT NULL
+            ORDER BY patient_id, related_patient_id, relationship
+        """)
+        )
+        .mappings()
+        .all()
+    )
+
+    # checked before any row is added: a pair with more than one relationship
+    # (one per pair and direction) or a patient listed as their own relative
+    # could change: if this fires and should not stop the migration, decide which
+    # relationship wins, or skip the pair
+    relationships = defaultdict(set)
+    for row in radar2_rows:
+        pair = (row["patient_id"], row["related_patient_id"])
+        relationships[pair].add(row["relationship"])
+    unmappable = [
+        f"patient {patient_id} -> patient {related_patient_id}: "
+        + (
+            "listed as their own relative"
+            if patient_id == related_patient_id
+            else "relationships " + ", ".join(str(code) for code in sorted(codes))
+        )
+        for (patient_id, related_patient_id), codes in relationships.items()
+        if patient_id == related_patient_id or len(codes) > 1
+    ]
+    if unmappable:
+        raise ValueError(
+            f"{len(unmappable)} relatives in family_history_relatives cannot be "
+            "copied to patient_relation:\n" + "\n".join(unmappable)
+        )
+
+    rows = [
+        {
+            "patient_id": row["patient_id"],
+            "related_patient_id": row["related_patient_id"],
+            # [D11] relation kept radar 2's relationship codes as ids (step 0)
+            "relation_id": row["relationship"],
+        }
+        for row in radar2_rows
+    ]
+
+    patient_relations = [PatientRelation.model_validate(dict(row)) for row in rows]
+    session.add_all(patient_relations)
+    session.flush()
+
+    # the flush gave each row its new id
+    return {
+        (patient_relation.patient_id, patient_relation.related_patient_id): (
+            patient_relation.id
+        )
+        for patient_relation in patient_relations
+    }
+
 
 def copy_family_history_relation(
-    session: Session, family_history_ids: dict[Any, int]
+    session: Session,
+    family_history_ids: dict[Any, int],
+    patient_relation_ids: dict[tuple[int, int], int],
 ) -> None:
+    radar2_rows = session.execute(
+        text("""
+        SELECT
+            family_history_relatives.id,
+            family_history_relatives.family_history_id,
+            family_history_relatives.relationship,
+            family_histories.patient_id,
+            family_history_relatives.patient_id AS related_patient_id
+        FROM public.family_history_relatives
+        JOIN public.family_histories
+            ON family_histories.id = family_history_relatives.family_history_id
+        ORDER BY family_history_relatives.id
+    """)
+    ).mappings()
 
-def copy_family_history_relation_patient(session: Session) -> None:
+    rows = [
+        {
+            "id": row["id"],
+            # only true family_histories were copied, and in radar 2's data only
+            # those list relatives, so each UUID here has a new id
+            # could change: a relative of a false or NULL family_history would
+            # have no new id, and this lookup would stop the migration
+            # (KeyError); skip those relatives here if that ever happens
+            "family_history_id": family_history_ids[row["family_history_id"]],
+            # [D11] relation kept radar 2's relationship codes as ids (step 0)
+            # could change: if relation gets new ids, look them up by label
+            "relation_id": row["relationship"],
+            # a relative who is a patient on Radar: the patient_relation copied
+            # for this patient and relative, which has the same relation_id
+            "patient_relation_id": (
+                patient_relation_ids[(row["patient_id"], row["related_patient_id"])]
+                if row["related_patient_id"] is not None
+                else None
+            ),
+        }
+        for row in radar2_rows
+    ]
+
+    session.add_all([FamilyHistoryRelation.model_validate(dict(row)) for row in rows])
+    session.flush()
 
 
 def upgrade() -> None:
@@ -575,8 +764,10 @@ def upgrade() -> None:
             copy_patient_identifier(session)
             copy_parental_consanguinity(session)
             family_history_ids = copy_family_history(session)
-            copy_family_history_relation(session, family_history_ids)
-            copy_family_history_relation_patient(session)
+            patient_relation_ids = copy_patient_relation(session)
+            copy_family_history_relation(
+                session, family_history_ids, patient_relation_ids
+            )
     finally:
         # Alembic records the version on this same connection, in public
         bind.execution_options(schema_translate_map=None)

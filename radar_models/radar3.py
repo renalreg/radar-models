@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import Optional
 
-from sqlalchemy import BigInteger
+from sqlalchemy import BigInteger, UniqueConstraint, CheckConstraint
 from sqlmodel import Field, Relationship, SQLModel
 # TODO check that the bools are either true or false and how nulls are related
 # as is a null false or is a null a lack of answer so could be true - philospophical
@@ -888,7 +888,7 @@ class EthnicOriginBase(SQLModel):
     assessment_date: date
     country_of_birth: int
     year_of_emigration: int | None = Field(default=None, nullable=True)
-    ethnic_origin: int| None = None
+    ethnic_origin: int | None = None
     ethnic_origin_father: int | None = None
     ethnic_origin_mother: int | None = None
 
@@ -925,9 +925,6 @@ class FamilyHistoryBase(SQLModel):
     diagnosis_id: int | None = Field(
         default=None, foreign_key="diagnosis.id", sa_type=BigInteger
     )
-    relation_patient_id: int | None = Field(
-        default=None, foreign_key="patient.id", sa_type=BigInteger
-    )
     has_condition: bool
 
 
@@ -945,6 +942,12 @@ class FamilyHistoryRead(FamilyHistoryBase, HasId):
 class FamilyHistoryRelationBase(SQLModel):
     family_history_id: int = Field(foreign_key="family_history.id", sa_type=BigInteger)
     relation_id: int = Field(foreign_key="relation.id", sa_type=BigInteger)
+    # set when the relative is a patient on Radar: the patient_relation from the
+    # family history's patient to them. Its relation_id should match this one;
+    # the database does not check that.
+    patient_relation_id: int | None = Field(
+        default=None, foreign_key="patient_relation.id", sa_type=BigInteger
+    )
 
 
 class FamilyHistoryRelation(FamilyHistoryRelationBase, BigIntPK, table=True):
@@ -955,27 +958,33 @@ class FamilyHistoryRelationRead(FamilyHistoryRelationBase, HasId):
     pass
 
 
-# --- FamilyHistoryRelationPatient --- #
+# --- PatientRelation --- #
 
 
-class FamilyHistoryRelationPatientBase(SQLModel):
-    family_history_relation_id: int = Field(
-        foreign_key="family_history_relation.id", sa_type=BigInteger
+# Two patients on Radar who are family: related_patient_id is patient_id's
+# relation_id, e.g. patient 12 is patient 1's Aunt. Each row is stated from
+# patient_id's side, and a patient's relatives on Radar are the rows with their
+# id in either column. The reverse row (patient 1 is patient 12's niece) is its
+# own row, stored only when it is recorded: it cannot be worked out, as relation
+# has no reverse for every relation (Aunt -> Niece or Nephew) and a cousin's side
+# depends on the other patient's parents.
+class PatientRelationBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    related_patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    relation_id: int = Field(foreign_key="relation.id", sa_type=BigInteger)
+
+
+class PatientRelation(PatientRelationBase, BigIntPK, table=True):
+    __tablename__ = "patient_relation"
+    __table_args__ = (
+        # one relation per pair and direction; the reverse direction is its own row
+        UniqueConstraint("patient_id", "related_patient_id"),
+        CheckConstraint("patient_id <> related_patient_id"),
     )
-    patient_id: int | None = Field(
-        default=None, foreign_key="patient.id", sa_type=BigInteger
-    )
 
 
-class FamilyHistoryRelationPatient(
-    FamilyHistoryRelationPatientBase, BigIntPK, table=True
-):
-    __tablename__ = "family_history_relation_patient"
-
-
-class FamilyHistoryRelationPatientRead(FamilyHistoryRelationPatientBase, HasId):
+class PatientRelationRead(PatientRelationBase, HasId):
     pass
-
 
 # --- FetalAnomalyScan --- #
 
