@@ -712,6 +712,9 @@ class DataSourceRead(DataSourceBase, HasId):
 
 class DeathBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    data_source_id: int | None = Field(
+        default=None, foreign_key="data_source.id", sa_type=BigInteger
+    )
     date_of_death: date
     cause_of_death: str | None = None
 
