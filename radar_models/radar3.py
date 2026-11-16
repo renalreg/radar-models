@@ -850,7 +850,7 @@ class DrugGroupRead(DrugGroupBase, HasId):
 
 # --- Drug <-> DrugGroup link --- #
 class DrugToGroupLink(SQLModel, table=True):
-    __tablename__ = "drug_drug_group"
+    __tablename__ = "drug_to_group"
 
     drug_id: int = Field(
         foreign_key="drug.id",
