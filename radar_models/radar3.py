@@ -823,12 +823,8 @@ class DialysisRead(DialysisBase, HasId):
 
 # --- Drug --- #
 
-
 class DrugBase(SQLModel):
     drug_name: str
-    drug_group_id: int | None = Field(
-        default=None, foreign_key="drug_group.id", sa_type=BigInteger
-    )
 
 
 class Drug(DrugBase, BigIntPK, table=True):
@@ -840,13 +836,9 @@ class DrugRead(DrugBase, HasId):
 
 
 # --- DrugGroup --- #
-
-
+# a drug can belong to many drug groups, and a group can contain many drugs
 class DrugGroupBase(SQLModel):
     drug_group_name: str | None = Field(default=None, unique=True)
-    parent_drug_group_id: int | None = Field(
-        default=None, foreign_key="drug_group.id", sa_type=BigInteger
-    )
 
 
 class DrugGroup(DrugGroupBase, BigIntPK, table=True):
@@ -856,6 +848,22 @@ class DrugGroup(DrugGroupBase, BigIntPK, table=True):
 class DrugGroupRead(DrugGroupBase, HasId):
     pass
 
+# --- Drug <-> DrugGroup link --- #
+class DrugDrugGroupLink(SQLModel, table=True):
+    __tablename__ = "drug_drug_group"
+
+    drug_id: int = Field(
+        foreign_key="drug.id",
+        primary_key=True,
+        sa_type=BigInteger,
+        ondelete="CASCADE",
+    )
+    drug_group_id: int = Field(
+        foreign_key="drug_group.id",
+        primary_key=True,
+        sa_type=BigInteger,
+        ondelete="CASCADE",
+    )
 
 # --- EQ5DY --- #
 
