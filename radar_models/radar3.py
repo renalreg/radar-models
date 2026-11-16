@@ -849,7 +849,7 @@ class DrugGroupRead(DrugGroupBase, HasId):
     pass
 
 # --- Drug <-> DrugGroup link --- #
-class DrugDrugGroupLink(SQLModel, table=True):
+class DrugToGroupLink(SQLModel, table=True):
     __tablename__ = "drug_drug_group"
 
     drug_id: int = Field(
