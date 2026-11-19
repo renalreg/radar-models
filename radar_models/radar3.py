@@ -2192,7 +2192,7 @@ class PostRead(PostBase, HasId):
 class PregnancyBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     pregnancy_number: int
-    date_of_lmp: date
+    date_of_lmp: date | None = None
     gravidity: int | None = None
     parity1: int | None = None
     parity2: int | None = None
