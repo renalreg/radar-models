@@ -74,7 +74,7 @@ class AdverseEventBase(SQLModel):
     other_toxicity: str | None = None
     caused_other_index: int | None = Field(default=None, foreign_key="option.id")
     date_of_death: date | None = None
-    date_of_death: str | None = None
+    cause_of_death: str | None = None
 
 class AdverseEvent(AdverseEventBase, BigIntPK, table=True):
     __tablename__ = "adverse_event"
@@ -109,24 +109,24 @@ class AlportAssessmentRead(AlportAssessmentBase, HasId):
 class AnthropometricBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    height: int
-    weight: float
-    bmi: float
-    hip: float
-    waist: float
-    arm: float
-    up_and_go: float
-    grip_dominant: float
-    grip_non_dominant: float
-    karnofsky_index: int
-    systolic_one: int
-    diastolic_one: int
-    systolic_two: int
-    diastolic_two: int
-    systolic_three: int
-    diastolic_three: int
-    systolic_mean: int
-    diastolic_mean: int
+    height: int|None = None
+    weight: float|None = None
+    bmi: float|None = None
+    hip: float|None = None
+    waist: float|None = None
+    arm: float|None = None
+    up_and_go: float|None = None
+    grip_dominant: float|None = None
+    grip_non_dominant: float|None = None
+    karnofsky_index: int|None = None
+    systolic_one: int|None = None
+    diastolic_one: int|None = None
+    systolic_two: int|None = None
+    diastolic_two: int|None = None
+    systolic_three: int|None = None
+    diastolic_three: int|None = None
+    systolic_mean: int|None = None
+    diastolic_mean: int|None = None
 
 
 class Anthropometric(AnthropometricBase, BigIntPK, table=True):
@@ -758,9 +758,9 @@ class DentAndLoweAssessmentOptionRead(DentAndLoweAssessmentOptionBase, HasId):
 class DiabeticComplicationBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     retinopathy_index: int
-    has_laser_treatment: bool
-    has_peripheral_neuropathy: bool
-    has_foot_ulcer: bool
+    has_laser_treatment: bool|None = None
+    has_peripheral_neuropathy: bool|None = None
+    has_foot_ulcer: bool|None = None
 
 
 class DiabeticComplication(DiabeticComplicationBase, BigIntPK, table=True):
@@ -875,6 +875,7 @@ class DrugToGroupLink(SQLModel, table=True):
 
 class EQ5DYBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    assessment_date: date
     age: int
     gender_index: int
     mobility_index: int
@@ -1130,20 +1131,20 @@ class GeneticsRead(GeneticsBase, HasId):
 class HADSBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    a1_index: int
-    d1_index: int
-    a2_index: int
-    d2_index: int
-    a3_index: int
-    d3_index: int
-    a4_index: int
-    d4_index: int
-    a5_index: int
-    d5_index: int
-    a6_index: int
-    d6_index: int
-    a7_index: int
-    d7_index: int
+    a1_index: int|None = None
+    d1_index: int|None = None
+    a2_index: int|None = None
+    d2_index: int|None = None
+    a3_index: int|None = None
+    d3_index: int|None = None
+    a4_index: int|None = None
+    d4_index: int|None = None
+    a5_index: int|None = None
+    d5_index: int|None = None
+    a6_index: int|None = None
+    d6_index: int|None = None
+    a7_index: int|None = None
+    d7_index: int|None = None
     anxiety_score: int
     depression_score: int
 
@@ -1406,32 +1407,32 @@ class InsRelapseRead(InsRelapseBase, HasId):
 class IPOSBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    score_1_index: int
-    score_2_index: int
-    score_3_index: int
-    score_4_index: int
-    score_5_index: int
-    score_6_index: int
-    score_7_index: int
-    score_8_index: int
-    score_9_index: int
-    score_10_index: int
-    score_11_index: int
-    score_12_index: int
-    score_13_index: int
-    score_14_index: int
-    score_15_index: int
-    score_16_index: int
-    score_17_index: int
-    question_1: str
-    score_18_index: int
-    question_2: str
-    score_19_index: int
-    question_3: str
-    score_20_index: int
-    question_4: str
-    question_5: str
-    ipos_score: int
+    score_1_index: int | None = None
+    score_2_index: int | None = None
+    score_3_index: int | None = None
+    score_4_index: int | None = None
+    score_5_index: int | None = None
+    score_6_index: int | None = None
+    score_7_index: int | None = None
+    score_8_index: int | None = None
+    score_9_index: int | None = None
+    score_10_index: int | None = None
+    score_11_index: int | None = None
+    score_12_index: int | None = None
+    score_13_index: int | None = None
+    score_14_index: int | None = None
+    score_15_index: int | None = None
+    score_16_index: int | None = None
+    score_17_index: int | None = None
+    question_1: str | None = None
+    score_18_index: int | None = None
+    question_2: str | None = None
+    score_19_index: int | None = None
+    question_3: str | None = None
+    score_20_index: int | None = None
+    question_4: str | None = None
+    question_5: str | None = None
+    ipos_score: int | None = None
 
 
 class IPOS(IPOSBase, BigIntPK, table=True):
@@ -1657,18 +1658,18 @@ class NephrectomyRead(NephrectomyBase, HasId):
 
 class NurtureFamilyHistoryBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    has_eskd: bool
-    eskd_relative_1_index: int
-    eskd_relative_2_index: int
-    eskd_relative_3_index: int
-    has_chd: bool
-    chd_relative_1_index: int
-    chd_relative_2_index: int
-    chd_relative_3_index: int
-    has_diabetes: bool
-    diabetes_relative_1_index: int
-    diabetes_relative_2_index: int
-    diabetes_relative_3_index: int
+    has_eskd: bool| None = None
+    eskd_relative_1_index: int| None = None
+    eskd_relative_2_index: int| None = None
+    eskd_relative_3_index: int| None = None
+    has_chd: bool| None = None
+    chd_relative_1_index: int| None = None
+    chd_relative_2_index: int| None = None
+    chd_relative_3_index: int| None = None
+    has_diabetes: bool| None = None
+    diabetes_relative_1_index: int| None = None
+    diabetes_relative_2_index: int| None = None
+    diabetes_relative_3_index: int| None = None
 
 
 class NurtureFamilyHistory(NurtureFamilyHistoryBase, BigIntPK, table=True):
@@ -2757,7 +2758,7 @@ class SocioEconomicBase(SQLModel):
     first_language: str
     martial_status: str
     smoking_index: int
-    cigarettes_per_day: int
+    cigarettes_per_day: int | None = None
     has_alcohol_intake: bool
     beer_pints: int
     cider_pints: int
@@ -2769,7 +2770,7 @@ class SocioEconomicBase(SQLModel):
     literacy_index: int
     literacy_help: str
     diet_index: int
-    other_diet: str
+    other_diet: str | None = None
 
 
 class SocioEconomic(SocioEconomicBase, BigIntPK, table=True):

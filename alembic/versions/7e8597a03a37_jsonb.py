@@ -4,13 +4,15 @@ Creates radar 3 tables for the radar 2 forms whose answers are kept in
 entries.data, a JSONB column, and copies each entry into its own row, with each
 of the form's fields in its own column. Radar 2's tables are left as they are.
 
-    entries (form 18)               -> adverse_event               new ids
-
-FORMS says where each form's entries go, which key in entries.data goes to
-which of the model's fields, and which keys' values are cast before they go to
-the model. Each entry is read with SQL, joined to public.forms for its form's
-slug, its data cast and spread into those fields in a dict, checked with the
-model and added with the session.
+FORMS, in form_fields/jsonb_form_fields.py, says where each form's entries go:
+the model, which key in entries.data goes to which of its fields or to which
+option table, and which keys' values are cast before they go to the model. It
+covers the 30 forms that have a radar 3 model. It is imported like any module,
+as prepend_sys_path in alembic.ini puts versions/ on the import path, for every
+Alembic command, before any revision is loaded. Each entry is read with SQL,
+joined to public.forms for its form's slug, its data cast and spread into those
+fields in a dict, checked with the model and added with the session; then its
+option table rows are added.
 
 An entry whose data has a key that is not mapped stops the migration, naming
 the entry and the key, so no answer is dropped without anyone deciding to drop
@@ -19,23 +21,29 @@ answered, gives NULL.
 
 A key mapped to a field its form's model does not have stops the migration
 before any table is made, naming the form, the key and the field, as the model
-would otherwise drop that answer without a word. So does a cast for a key that
-is not mapped, as it would never be used.
+would otherwise drop that answer without a word. So does a key mapped to an
+option table with no key to the form's table or no option_id, and a cast for a
+key that is not mapped, as it would never be used.
 
 Values go to the model as radar 2 stored them, unless FORMS gives a cast for
-the key or the field is an option index: dates as text, which the model parses;
-yes / no / Unknown answers as that text. otherTox, a list of text, is joined
-into one string, its items split by ", ". A cast is not given a missing or null
+the key or the field holds an option: dates as text, which the model parses;
+yes / no / Unknown answers as that text. A cast is not given a missing or null
 value; that stays NULL. A value a cast or the model rejects stops the
-migration, naming the entry.
+migration with the cast's or the model's own error.
 
-A field whose name ends in _index holds the id of a radar 3 option. Its radar 2
-value, after any cast, is looked up in the option table by the value and the
-option group, which is the entry's form slug and the key joined by a dot
-(rituximab-adverse-events.causedOther), as seed_form_options made them, and
-the option's id goes to the model. A value
-with no option stops the migration, naming the entry, the key, the value and
-the group. A missing or null value is not looked up; it stays NULL.
+A field with a foreign key to option.id holds the id of a radar 3 option. Its
+radar 2 value, after any cast, is looked up in the option table by the value
+and the option group, which is the entry's form slug and the key joined by a
+dot (rituximab-adverse-events.causedOther), as seed_form_options made them, and
+the option's id goes to the model. Other _index fields, such as HADS's, PAM's
+and EQ-5D's, have no such key, so they keep radar 2's value. A key mapped to an
+option table has each of its answers looked up the same way, and each becomes a
+row in that table, pointing at the copied entry and the option. An answer with
+no option stops the migration with a KeyError naming the group and the value.
+A missing or null value is not looked up; it stays NULL.
+
+Forms with no radar 3 model are not copied; each is logged with its count of
+entries.
 
 Entries get new ids, in patient and date order; no UUID -> new id map is kept,
 as no radar 2 table points at entries.
@@ -54,15 +62,15 @@ Create Date: 2026-11-19 13:05:00.000000
 
 import json
 import logging
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
 from alembic import op
-from pydantic import ValidationError
 from sqlalchemy import select, text
 from sqlmodel import Session, SQLModel
 
-from radar_models.radar3 import AdverseEvent, Option
+from form_fields.jsonb_form_fields import FORMS
+from radar_models.radar3 import Option
 
 revision: str = "7e8597a03a37"
 down_revision: str | Sequence[str] | None = "b1fc3e475c02"
@@ -71,49 +79,34 @@ depends_on: str | Sequence[str] | None = None
 
 log = logging.getLogger("alembic.runtime.migration")
 
-ADVERSE_EVENT_FIELDS = {
-    "date": "review_date",
-    "hospitalisation": "has_hospitalisation",
-    "adverseEvents": "has_adverse_event",
-    "newOnsetCancer": "new_onset_cancer",
-    "causedCancer": "caused_cancer_index",
-    "thromboembolism": "thromboembolism",
-    "causedVenousThromboEmbolism": "caused_venous_thrombo_embolism_index",
-    "myocardialInfarction": "myocardial_infarction",
-    "causedAcuteMyocardialInfarction": "caused_acute_myocardial_infarction_index",
-    "stroke": "stroke",
-    "causedStroke": "caused_stroke_index",
-    "ischaemicAttack": "ischaemic_attack",
-    "causedIschaemicAttack": "caused_ischaemic_attack_index",
-    "otherAdverseEvent": "other_adverse_event",
-    "otherTox": "other_toxicity",
-    "causedOther": "caused_other_index",
-    "dod": "date_of_death",
-    "dodCause": "date_of_death",
-}
+FormFields = dict[str, str | type[SQLModel]]
+FormCasts = dict[str, Callable[[Any], Any]]
+OPTION_ID = f"{Option.__tablename__}.id"
 
-def join_text(value: Any) -> str:
-    """Joins a list of text into one string, its items split by ", "."""
-    if isinstance(value, str):
-        return value
-    if not isinstance(value, list):
-        raise TypeError(f"expected a list, got {type(value).__name__}")
-    return ", ".join(str(item) for item in value)
+TABLES = list(
+    dict.fromkeys(
+        table
+        for model, fields, _ in FORMS.values()
+        for table in (model, *(f for f in fields.values() if not isinstance(f, str)))
+    )
+)
 
 
-ADVERSE_EVENT_FIELDS_CAST: dict[str, Callable[[Any], Any]] = {
-    "otherTox": join_text,
-}
+def option_fields(model: type[SQLModel]) -> set[str]:
+    """The model's fields with a foreign key to option.id."""
+    return {
+        column.name
+        for column in model.__table__.columns
+        if any(key.target_fullname == OPTION_ID for key in column.foreign_keys)
+    }
 
-TABLES = [
-    AdverseEvent,
-]
 
-FORMS = {
-    18: (AdverseEvent, ADVERSE_EVENT_FIELDS, ADVERSE_EVENT_FIELDS_CAST),
-}
-
-OPTION_INDEX_SUFFIX = "_index"
+def parent_field(option_table: type[SQLModel], model: type[SQLModel]) -> str | None:
+    """The option table's field pointing at the model's table."""
+    for key in option_table.__table__.foreign_keys:
+        if key.target_fullname == f"{model.__tablename__}.id":
+            return key.parent.name
+    return None
 
 
 def load_options(session: Session) -> dict[tuple[str, str], int]:
@@ -136,19 +129,36 @@ def as_store_value(value: Any) -> str:
 
 def check_forms() -> None:
     """Checks that every field FORMS maps a key to is a field of that form's
-    model, as model_validate ignores a field the model does not have, and that
-    every key FORMS gives a cast for is a key it maps."""
+    model, as model_validate ignores a field the model does not have; that
+    every option table it maps a key to points at the form's table and has an
+    option_id; and that every key FORMS gives a cast for is a key it maps."""
     for form_id, (model, fields, casts) in FORMS.items():
         unknown = {
             key: field
             for key, field in fields.items()
-            if field not in model.model_fields
+            if isinstance(field, str) and field not in model.model_fields
         }
         if unknown:
             raise ValueError(
                 f"form {form_id} maps keys to fields {model.__name__} does not "
                 "have: "
                 + ", ".join(f"{key} -> {field}" for key, field in unknown.items())
+            )
+
+        unlinked = {
+            key: table.__name__
+            for key, table in fields.items()
+            if not isinstance(table, str)
+            and (
+                parent_field(table, model) is None
+                or "option_id" not in table.model_fields
+            )
+        }
+        if unlinked:
+            raise ValueError(
+                f"form {form_id} maps keys to option tables with no key to "
+                f"{model.__tablename__} or no option_id: "
+                + ", ".join(f"{key} -> {table}" for key, table in unlinked.items())
             )
 
         unused = casts.keys() - fields.keys()
@@ -159,18 +169,29 @@ def check_forms() -> None:
             )
 
 
+def option_id(
+    entry: Mapping[str, Any],
+    key: str,
+    value: Any,
+    options: dict[tuple[str, str], int],
+) -> int:
+    """The id of the option value is in key's option group."""
+    return options[f"{entry['slug']}.{key}", as_store_value(value)]
+
+
 def copy_form(
     session: Session,
     form_id: int,
     model: type[SQLModel],
-    fields: dict[str, str],
-    casts: dict[str, Callable[[Any], Any]],
+    fields: FormFields,
+    casts: FormCasts,
     options: dict[tuple[str, str], int],
 ) -> int:
     """Copies form form_id's entries into model's table, one row per entry,
     with each key in the entry's data in the model field fields maps it to,
     cast first if casts has a cast for the key, and looked up in options if
-    the field is an option index. Returns how many rows it copied."""
+    the field holds an option; then adds a row to the option table a key is
+    mapped to for each of its answers. Returns how many entries it copied."""
     entries = session.execute(
         text("""
         SELECT
@@ -186,7 +207,8 @@ def copy_form(
         {"form_id": form_id},
     ).mappings()
 
-    rows = []
+    holds_option = option_fields(model)
+    rows: list[tuple[SQLModel, list[tuple[type[SQLModel], int]]]] = []
     for entry in entries:
         data = entry["data"] or {}
 
@@ -198,40 +220,63 @@ def copy_form(
                 f"{', '.join(sorted(unmapped))}"
             )
 
-        row = {"patient_id": entry["patient_id"]}
+        row: dict[str, Any] = {"patient_id": entry["patient_id"]}
+        answers: list[tuple[type[SQLModel], int]] = []
         for key, field in fields.items():
             value = data.get(key)
             if value is not None and key in casts:
-                try:
-                    value = casts[key](value)
-                except Exception as e:
-                    raise ValueError(
-                        f"radar 2 entry {entry['id']} ({entry['slug']}, form "
-                        f"{form_id}): {key} could not be cast: {e}"
-                    ) from e
-            if value is not None and field.endswith(OPTION_INDEX_SUFFIX):
-                option_group = f"{entry['slug']}.{key}"
-                try:
-                    value = options[option_group, as_store_value(value)]
-                except KeyError:
-                    raise ValueError(
-                        f"radar 2 entry {entry['id']} ({entry['slug']}, form "
-                        f"{form_id}): {key} is {value!r}, which is not an option "
-                        f"in group {option_group!r}"
-                    ) from None
+                value = casts[key](value)
+            if not isinstance(field, str):
+                answers += [
+                    (field, option_id(entry, key, answer, options))
+                    for answer in (value if isinstance(value, list) else [value])
+                    if answer is not None
+                ]
+                continue
+            if value is not None and field in holds_option:
+                value = option_id(entry, key, value, options)
             row[field] = value
 
-        try:
-            rows.append(model.model_validate(row))
-        except ValidationError as e:
-            raise ValueError(
-                f"radar 2 entry {entry['id']} ({entry['slug']}, form {form_id}) "
-                f"was rejected by {model.__name__}: {e}"
-            ) from e
+        rows.append((model.model_validate(row), answers))
 
-    session.add_all(rows)
+    session.add_all([copy for copy, _ in rows])
+    session.flush()
+
+    session.add_all(
+        [
+            table.model_validate(
+                {parent_field(table, model): copy.id, "option_id": answer_id}
+            )
+            for copy, answers in rows
+            for table, answer_id in answers
+        ]
+    )
     session.flush()
     return len(rows)
+
+
+def log_forms_not_copied(session: Session) -> None:
+    """Logs each radar 2 form FORMS does not cover, with its count of
+    entries."""
+    rows = session.execute(
+        text("""
+        SELECT forms.id, forms.slug, count(entries.id)
+        FROM public.forms
+        LEFT JOIN public.entries ON entries.form_id = forms.id
+        WHERE NOT forms.id = ANY(:copied)
+        GROUP BY forms.id, forms.slug
+        ORDER BY forms.id
+    """),
+        {"copied": list(FORMS)},
+    ).all()
+    for form_id, slug, count in rows:
+        log.info(
+            "form %d (%s): %s %s not copied, no radar 3 model",
+            form_id,
+            slug,
+            f"{count:,}",
+            "entry" if count == 1 else "entries",
+        )
 
 
 def upgrade() -> None:
@@ -241,7 +286,8 @@ def upgrade() -> None:
     bind.execution_options(schema_translate_map={None: "radar3"})
     try:
         for model in TABLES:
-            model.__table__.create(bind)
+            if model.__table__.name != "clinical_letter":
+                model.__table__.create(bind)
 
         with Session(bind=bind) as session:
             options = load_options(session)
@@ -253,6 +299,7 @@ def upgrade() -> None:
                     f"{count:,}",
                     form_id,
                 )
+            log_forms_not_copied(session)
     finally:
         bind.execution_options(schema_translate_map=None)
 
