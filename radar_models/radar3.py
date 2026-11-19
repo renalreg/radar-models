@@ -52,24 +52,29 @@ class AdultEQ5D5LRead(AdultEQ5D5LBase, HasId):
 class AdverseEventBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     review_date: date
-    has_hospitalisation: bool
-    has_adverse_event: bool
-    new_onset_cancer: date
-    is_cancer_cause: bool
-    thromboembolism: date
-    caused_venous_thrombo_embolism_index: int
-    myocardial_infarction: date
-    caused_acute_myocardial_infarction_index: int
-    stroke: date
-    caused_stroke_index: int
-    ischaemic_attack: date
-    caused_ischaemic_attack_index: int
-    other_adverse_event: date
-    other_toxicity: str
-    caused_other_index: int
-    date_of_death: date
-    cause_of_death: str
-
+    has_hospitalisation: bool | None = None
+    has_adverse_event: bool | None = None
+    new_onset_cancer: date | None = None
+    caused_cancer_index: int | None = Field(default=None, foreign_key="option.id")
+    thromboembolism: date | None = None
+    caused_venous_thrombo_embolism_index: int | None = Field(
+        default=None, foreign_key="option.id"
+    )
+    myocardial_infarction: date | None = None
+    caused_acute_myocardial_infarction_index: int | None = Field(
+        default=None, foreign_key="option.id"
+    )
+    stroke: date | None = None
+    caused_stroke_index: int | None = Field(default=None, foreign_key="option.id")
+    ischaemic_attack: date | None = None
+    caused_ischaemic_attack_index: int | None = Field(
+        default=None, foreign_key="option.id"
+    )
+    other_adverse_event: date | None = None
+    other_toxicity: str | None = None
+    caused_other_index: int | None = Field(default=None, foreign_key="option.id")
+    date_of_death: date | None = None
+    date_of_death: str | None = None
 
 class AdverseEvent(AdverseEventBase, BigIntPK, table=True):
     __tablename__ = "adverse_event"
