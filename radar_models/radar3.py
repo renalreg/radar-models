@@ -1,11 +1,24 @@
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, Any
 
 from sqlalchemy import BigInteger, UniqueConstraint, CheckConstraint
 from sqlmodel import Field, Relationship, SQLModel
 # TODO check that the bools are either true or false and how nulls are related
 # as is a null false or is a null a lack of answer so could be true - philospophical
 
+#helpers
+
+def options_in_group(option_table: str, group: str) -> Any:
+    """Read-only relationship to the options in group that option_table holds
+    for the row."""
+    return Relationship(
+        sa_relationship_kwargs={
+            "secondary": option_table,
+            "secondaryjoin": f"and_(Option.id == {option_table}.c.option_id,"
+            f" Option.option_group == '{group}')",
+            "viewonly": True,
+        }
+    )
 
 # --- Shared mixins --- #
 
@@ -324,9 +337,9 @@ class CancerTumourRead(CancerTumourBase, HasId):
 class CKDAfricaGeneticBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    sickle_cell: str
-    other_sickle_cell: str
-    apol_1: str
+    sickle_cell_index: int | None = Field(foreign_key="option.id", sa_type=BigInteger)
+    other_sickle_cell_index: int | None = Field(foreign_key="option.id", sa_type=BigInteger)
+    apol_1_index: int | None = Field(foreign_key="option.id", sa_type=BigInteger)
 
 
 class CKDAfricaGenetic(CKDAfricaGeneticBase, BigIntPK, table=True):
@@ -919,7 +932,7 @@ class EQ5DYRead(EQ5DYBase, HasId):
 class EthnicOriginBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    country_of_birth: int
+    country_of_birth: int | None = None
     year_of_emigration: int | None = Field(default=None, nullable=True)
     ethnic_origin: int | None = None
     ethnic_origin_father: int | None = None
@@ -2277,47 +2290,109 @@ class RelationRead(RelationBase, HasId):
 class RenalCancerGeneticsBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    has_bap1_test: bool
-    bap1_variant: str
-    bap1_variant_status: str
-    has_fh_test: bool
-    fh_variant: str
-    fh_variant_status: str
-    has_flcn_test: bool
-    flcn_variant: str
-    flcn_variant_status: str
-    has_met_test: bool
-    met_variant: str
-    met_variant_status: str
-    has_mitf_test: bool
-    mitf_variant: str
-    mitf_variant_status: str
-    has_pten_test: bool
-    pten_variant: str
-    pten_variant_status: str
-    has_sdha_test: bool
-    sdha_variant: str
-    sdha_variant_status: str
-    has_sdhb_test: bool
-    sdhb_variant: str
-    sdhb_variant_status: str
-    has_sdhc_test: bool
-    sdhc_variant: str
-    sdhc_variant_status: str
-    has_sdhd_test: bool
-    sdhd_variant: str
-    sdhd_variant_status: str
-    has_vhl_test: bool
-    vhl_variant: str
-    vhl_variant_status: str
-    has_other_test: bool
-    other_test_name: str
-    other_variant: str
-    other_variant_status: str
+    has_bap1_test: bool | None = None
+    bap1_variant: str | None = None
+    bap1_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_fh_test: bool | None = None
+    fh_variant: str | None = None
+    fh_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_flcn_test: bool | None = None
+    flcn_variant: str | None = None
+    flcn_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_met_test: bool | None = None
+    met_variant: str | None = None
+    met_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_mitf_test: bool | None = None
+    mitf_variant: str | None = None
+    mitf_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_pten_test: bool | None = None
+    pten_variant: str | None = None
+    pten_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_sdha_test: bool | None = None
+    sdha_variant: str | None = None
+    sdha_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_sdhb_test: bool | None = None
+    sdhb_variant: str | None = None
+    sdhb_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_sdhc_test: bool | None = None
+    sdhc_variant: str | None = None
+    sdhc_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_sdhd_test: bool | None = None
+    sdhd_variant: str | None = None
+    sdhd_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_vhl_test: bool | None = None
+    vhl_variant: str | None = None
+    vhl_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    has_other_test: bool | None = None
+    other_test_name: str | None = None
+    other_variant: str | None = None
+    other_variant_status_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
 
 
 class RenalCancerGenetics(RenalCancerGeneticsBase, BigIntPK, table=True):
     __tablename__ = "renal_cancer_genetics"
+
+
+    bap1_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.bap1action"
+    )
+    fh_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.fhaction"
+    )
+    flcn_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.flcnaction"
+    )
+    met_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.metaction"
+    )
+    mitf_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.mitfaction"
+    )
+    pten_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.ptenaction"
+    )
+    sdha_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.sdhaaction"
+    )
+    sdhb_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.sdhbaction"
+    )
+    sdhc_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.sdhcaction"
+    )
+    sdhd_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.sdhdaction"
+    )
+    vhl_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.vhlaction"
+    )
+    other_actions: list["Option"] = options_in_group(
+        "renal_cancer_genetics_option", "renalgenetics.otheraction"
+    )
 
 
 class RenalCancerGeneticsRead(RenalCancerGeneticsBase, HasId):
@@ -2581,19 +2656,43 @@ class RituximabCriteriaRead(RituximabCriteriaBase, HasId):
 class RituximabFollowUpAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     visit_date: date
-    rituximab_follow_up_visit: str
-    performance: str
-    transplant: str
-    haemodialysis: str
-    peritoneal_dialysis: str
-    immunosuppression: str
-    ciclosporin_administered: date
-    tacrolimus_administered: date
-    cyclophosphamide_administered: date
-    chlorambucil_administered: date
-    prednisolone_administered: date
-    rituximab_administered: date
-    immunosuppression_comments: str
+    visit_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    performance_status_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    transplant_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    haemodialysis_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    peritoneal_dialysis_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    immunosuppression_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    ciclosporin_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    ciclosporin_administered: date | None = None
+    tacrolimus_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    tacrolimus_administered: date | None = None
+    cyclophosphamide_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cyclophosphamide_administered: date | None = None
+    chlorambucil_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    chlorambucil_administered: date | None = None
+    prednisolone_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    prednisolone_administered: date | None = None
+    rituximab_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    rituximab_administered: date | None = None
+    met_retreatment_criteria_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    immunosuppression_comments: str | None = None
+
 
 
 class RituximabFollowUpAssessment(
@@ -2601,6 +2700,17 @@ class RituximabFollowUpAssessment(
 ):
     __tablename__ = "rituximab_follow_up_assessment"
 
+    medications: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "rituximab_follow_up_assessment_option",
+            "primaryjoin": "RituximabFollowUpAssessment.id"
+            " == RituximabFollowUpAssessmentOption.rituximab_follow_up_assessment_id",
+            "secondaryjoin": "and_("
+            "Option.id == RituximabFollowUpAssessmentOption.option_id,"
+            " Option.option_group == 'rituximab-assessment.medication')",
+            "viewonly": True,
+        }
+    )
 
 class RituximabFollowUpAssessmentRead(RituximabFollowUpAssessmentBase, HasId):
     pass
@@ -2716,21 +2826,21 @@ class SaltWastingClinicalFeatureRead(SaltWastingClinicalFeatureBase, HasId):
 class SampleInventoryBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     sample_date: date
-    has_urine_sample: bool
-    urine_date: date
-    urine_volume: str
-    has_serum_sample: bool
-    serum_date: date
-    serum_volume: str
-    has_plasma_sample: bool
-    plasma_date: date
-    plasma_volume: str
-    has_dna_sample: bool
-    dna_date: date
-    has_sputum_sample: bool
-    sputum_date: date
-    has_faeces_sample: bool
-    faeces_date: date
+    has_urine_sample: bool |None = None
+    urine_date: date |None = None
+    urine_volume: str |None = None
+    has_serum_sample: bool |None = None
+    serum_date: date |None = None
+    serum_volume: str |None = None
+    has_plasma_sample: bool |None = None
+    plasma_date: date |None = None
+    plasma_volume: str |None = None
+    has_dna_sample: bool |None = None
+    dna_date: date |None = None
+    has_sputum_sample: bool |None = None
+    sputum_date: date |None = None
+    has_faeces_sample: bool |None = None
+    faeces_date: date |None = None
 
 
 class SampleInventory(SampleInventoryBase, BigIntPK, table=True):

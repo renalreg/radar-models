@@ -102,6 +102,28 @@ class Skip:
 
 SKIP = Skip()
 
+def is_ticked(value: Any) -> bool:
+    """Whether a checkbox list with one box is ticked: ["x"] is True, [] is
+    False. A missing box is not given to a cast, so its field takes the model's
+    default, False."""
+    if isinstance(value, str):
+        return True
+    if not isinstance(value, list):
+        raise TypeError(f"expected a list, got {type(value).__name__}")
+    if len(value) > 1:
+        raise ValueError(f"expected at most one answer, got {value!r}")
+    return bool(value)
+
+def single_answer(value: Any) -> Any:
+    """The answer of a checkbox list with one box, so it can be looked up as a
+    single option: ["x"] is "x", [] is None (not ticked)."""
+    if isinstance(value, str):
+        return value
+    if not isinstance(value, list):
+        raise TypeError(f"expected a list, got {type(value).__name__}")
+    if len(value) > 1:
+        raise ValueError(f"expected at most one answer, got {value!r}")
+    return value[0] if value else None
 
 def join_text(value: Any) -> str:
     """Joins a list of text into one string, its items split by ", "."""
@@ -118,6 +140,13 @@ def to_text(value: Any) -> str:
         raise TypeError(f"expected a number, got {type(value).__name__}")
     return str(value)
 
+def year_of_emigration(value: Any) -> Any:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        if value=='NOT DISCLOSED':
+            return None
+    return int(value)
 
 SIX_CIT_FIELDS = {
     "date": "completed_date",
@@ -396,30 +425,36 @@ ADVERSE_EVENT_FIELDS_CAST: dict[str, Callable[[Any], Any]] = {
 
 RITUXIMAB_FOLLOW_UP_ASSESSMENT_FIELDS = {
     "date": "visit_date",
-    "visit": "rituximab_follow_up_visit",
-    "performance": "performance",
-    "transplant": "transplant",
-    "haemodialysis": "haemodialysis",
-    "peritonealDialysis": "peritoneal_dialysis",
+    "visit": "visit_index",
+    "performance": "performance_status_index",
+    "transplant": "transplant_index",
+    "haemodialysis": "haemodialysis_index",
+    "peritonealDialysis": "peritoneal_dialysis_index",
     "medication": RituximabFollowUpAssessmentOption,
-    "immunos": "immunosuppression",
-    "immunosCicl": RituximabFollowUpAssessmentOption,
+    "immunos": "immunosuppression_index",
+    "immunosCicl": "ciclosporin_index",
     "ciclDate": "ciclosporin_administered",
-    "immunosTacr": RituximabFollowUpAssessmentOption,
+    "immunosTacr": "tacrolimus_index",
     "TacrDate": "tacrolimus_administered",
-    "immunosCyclo": RituximabFollowUpAssessmentOption,
+    "immunosCyclo": "cyclophosphamide_index",
     "cycloDate": "cyclophosphamide_administered",
-    "immunosChlor": RituximabFollowUpAssessmentOption,
+    "immunosChlor": "chlorambucil_index",
     "chlorDate": "chlorambucil_administered",
-    "immunosPred": RituximabFollowUpAssessmentOption,
+    "immunosPred": "prednisolone_index",
     "predDate": "prednisolone_administered",
-    "immunosRitux": RituximabFollowUpAssessmentOption,
+    "immunosRitux": "rituximab_index",
     "rituxDate": "rituximab_administered",
+    "rituxRetreat": "met_retreatment_criteria_index",
     "immunosComment": "immunosuppression_comments",
 }
 
 RITUXIMAB_FOLLOW_UP_ASSESSMENT_FIELDS_CAST: dict[str, Callable[[Any], Any]] = {
-    "performance": to_text,
+    "immunosCicl": single_answer,
+    "immunosTacr": single_answer,
+    "immunosCyclo": single_answer,
+    "immunosChlor": single_answer,
+    "immunosPred": single_answer,
+    "immunosRitux": single_answer,
     "immunosComment": join_text,
 }
 
@@ -455,12 +490,15 @@ ETHNIC_ORIGIN_FIELDS = {
     "ethnicoriginmother": "ethnic_origin_mother",
     "ethnicoriginfather": "ethnic_origin_father",
 }
+ETHNIC_ORIGIN_CASTS={
+    "patientyearuk": year_of_emigration,
+}
 
 CKD_AFRICA_GENETIC_FIELDS = {
     "date": "assessment_date",
-    "sickle": "sickle_cell",
-    "sickleother": "other_sickle_cell",
-    "apol": "apol_1",
+    "sickle": "sickle_cell_index",
+    "sickleother": "other_sickle_cell_index",
+    "apol": "apol_1_index",
 }
 
 RENAL_CANCER_GENETICS_FIELDS = {
@@ -468,52 +506,52 @@ RENAL_CANCER_GENETICS_FIELDS = {
     "bap1test": "has_bap1_test",
     "bap1action": RenalCancerGeneticsOption,
     "bap1variant": "bap1_variant",
-    "bap1variantstatus": "bap1_variant_status",
+    "bap1variantstatus": "bap1_variant_status_index",
     "fhtest": "has_fh_test",
     "fhaction": RenalCancerGeneticsOption,
     "fhvariant": "fh_variant",
-    "fhvariantstatus": "fh_variant_status",
+    "fhvariantstatus": "fh_variant_status_index",
     "flcntest": "has_flcn_test",
     "flcnaction": RenalCancerGeneticsOption,
     "flcnvariant": "flcn_variant",
-    "flcnvariantstatus": "flcn_variant_status",
+    "flcnvariantstatus": "flcn_variant_status_index",
     "mettest": "has_met_test",
     "metaction": RenalCancerGeneticsOption,
     "metvariant": "met_variant",
-    "metvariantstatus": "met_variant_status",
+    "metvariantstatus": "met_variant_status_index",
     "mitftest": "has_mitf_test",
     "mitfaction": RenalCancerGeneticsOption,
     "mitfvariant": "mitf_variant",
-    "mitfvariantstatus": "mitf_variant_status",
+    "mitfvariantstatus": "mitf_variant_status_index",
     "ptentest": "has_pten_test",
     "ptenaction": RenalCancerGeneticsOption,
     "ptenvariant": "pten_variant",
-    "ptenvariantstatus": "pten_variant_status",
+    "ptenvariantstatus": "pten_variant_status_index",
     "sdhatest": "has_sdha_test",
     "sdhaaction": RenalCancerGeneticsOption,
     "sdhavariant": "sdha_variant",
-    "sdhavariantstatus": "sdha_variant_status",
+    "sdhavariantstatus": "sdha_variant_status_index",
     "sdhbtest": "has_sdhb_test",
     "sdhbaction": RenalCancerGeneticsOption,
     "sdhbvariant": "sdhb_variant",
-    "sdhbvariantstatus": "sdhb_variant_status",
+    "sdhbvariantstatus": "sdhb_variant_status_index",
     "sdhctest": "has_sdhc_test",
     "sdhcaction": RenalCancerGeneticsOption,
     "sdhcvariant": "sdhc_variant",
-    "sdhcvariantstatus": "sdhc_variant_status",
+    "sdhcvariantstatus": "sdhc_variant_status_index",
     "sdhdtest": "has_sdhd_test",
     "sdhdaction": RenalCancerGeneticsOption,
     "sdhdvariant": "sdhd_variant",
-    "sdhdvariantstatus": "sdhd_variant_status",
+    "sdhdvariantstatus": "sdhd_variant_status_index",
     "vhltest": "has_vhl_test",
     "vhlaction": RenalCancerGeneticsOption,
     "vhlvariant": "vhl_variant",
-    "vhlvariantstatus": "vhl_variant_status",
+    "vhlvariantstatus": "vhl_variant_status_index",
     "othertest": "has_other_test",
     "othertestname": "other_test_name",
     "otheraction": RenalCancerGeneticsOption,
     "othervariant": "other_variant",
-    "othervariantstatus": "other_variant_status",
+    "othervariantstatus": "other_variant_status_index",
 }
 
 RENAL_CANCER_TUMOUR_FIELDS = {
@@ -714,7 +752,7 @@ FORMS = {
     ),
     22: (SampleInventory, SAMPLE_INVENTORY_FIELDS, {}),
     23: (IGAResearch, IGA_RESEARCH_FIELDS, {}),
-    24: (EthnicOrigin, ETHNIC_ORIGIN_FIELDS, {}),
+    24: (EthnicOrigin, ETHNIC_ORIGIN_FIELDS, ETHNIC_ORIGIN_CASTS),
     25: (CKDAfricaGenetic, CKD_AFRICA_GENETIC_FIELDS, {}),
     26: (RenalCancerGenetics, RENAL_CANCER_GENETICS_FIELDS, {}),
     27: (RenalCancerTumour, RENAL_CANCER_TUMOUR_FIELDS, {}),
