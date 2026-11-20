@@ -239,14 +239,33 @@ class CalciphylaxisAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
     has_lesion: bool
-    lesion_location: str
     has_infection: bool
-    infection_location: str
+
 
 
 class CalciphylaxisAssessment(CalciphylaxisAssessmentBase, BigIntPK, table=True):
     __tablename__ = "calciphylaxis_assessment"
 
+    lesion_locations: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "calciphylaxis_assessment_option",
+            "primaryjoin": "CalciphylaxisAssessment.id"
+            " == CalciphylaxisAssessmentOption.calciphylaxis_assessment_id",
+            "secondaryjoin": "and_(Option.id == CalciphylaxisAssessmentOption.option_id,"
+            " Option.option_group == 'calciphylaxis.lesionIn')",
+            "viewonly": True,
+        }
+    )
+    infection_locations: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "calciphylaxis_assessment_option",
+            "primaryjoin": "CalciphylaxisAssessment.id"
+            " == CalciphylaxisAssessmentOption.calciphylaxis_assessment_id",
+            "secondaryjoin": "and_(Option.id == CalciphylaxisAssessmentOption.option_id,"
+            " Option.option_group == 'calciphylaxis.infectionIn')",
+            "viewonly": True,
+        }
+    )
 
 class CalciphylaxisAssessmentRead(CalciphylaxisAssessmentBase, HasId):
     pass
@@ -1263,11 +1282,11 @@ class HSPAssessmentBase(SQLModel):
     assessment_date: date
     has_haematuria: bool
     is_nephrotic: bool
-    mest_c_m: str
-    mest_c_e: str
-    mest_c_s: str
-    mest_c_t: str
-    mest_c_c: str
+    mest_c_m: str | None = None
+    mest_c_e: str | None = None
+    mest_c_s: str | None = None
+    mest_c_t: str | None = None
+    mest_c_c: str | None = None
 
 
 class HSPAssessment(HSPAssessmentBase, BigIntPK, table=True):
@@ -1709,22 +1728,22 @@ class NurtureMetadataRead(NurtureMetadataBase, HasId):
 class NurtureVisitBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     visit_date: date
-    nurture_visit_number: int
-    comorbidities: int
+    nurture_visit_number: int|None = None
+    comorbidities: int|None = None
     has_flu_vaccination: bool
     has_pneumococcal_vaccination: bool
-    has_admission: bool
-    admission_number: int
-    admission_emergency: int
-    admission_planned: int
-    admission_days: int
-    admission_antibiotics: int
-    paracetamol_tablets: int
-    paracetamol_years: int
-    cocodamol_tablets: int
-    cocodamol_years: int
-    ibuprofen_tablets: int
-    ibuprofen_years: int
+    has_admission: bool|None = None
+    admission_number: int|None = None
+    admission_emergency: int|None = None
+    admission_planned: int|None = None
+    admission_days: int|None = None
+    admission_antibiotics: int|None = None
+    paracetamol_tablets: int|None = None
+    paracetamol_years: int|None = None
+    cocodamol_tablets: int|None = None
+    cocodamol_years: int|None = None
+    ibuprofen_tablets: int|None = None
+    ibuprofen_years: int|None = None
 
 
 class NurtureVisit(NurtureVisitBase, BigIntPK, table=True):
@@ -2615,16 +2634,29 @@ class RituximabFollowUpAssessmentOptionRead(
 class RituximabToxicityBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    drug_name: str
-    other_drug: str
-    dose: float | None = None
-    retreatment: str
-    toxicity: str | None = None
+    # option in group rituximab-administration.drugName: truxima, rixathon, other
+    drug_name_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    # only filled in when drug_name_index is the "other" option
+    other_drug: str | None = None
+    dose: float | None = None  # mg
+    is_retreatment: bool
     other_toxicity: str | None = None
 
 
 class RituximabToxicity(RituximabToxicityBase, BigIntPK, table=True):
     __tablename__ = "rituximab_toxicity"
+
+    # every toxicity ticked, one rituximab_toxicity_option row each
+    toxicities: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "rituximab_toxicity_option",
+            "primaryjoin": "RituximabToxicity.id"
+            " == RituximabToxicityOption.rituximab_toxicity_id",
+            "secondaryjoin": "and_(Option.id == RituximabToxicityOption.option_id,"
+            " Option.option_group == 'rituximab-administration.toxicity')",
+            "viewonly": True,
+        }
+    )
 
 
 class RituximabToxicityRead(RituximabToxicityBase, HasId):
@@ -2753,23 +2785,23 @@ class SixCITRead(SixCITBase, HasId):
 class SocioEconomicBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    education_index: int
-    employment_status_index: int
-    first_language: str
-    martial_status: str
-    smoking_index: int
+    education_index: int | None = None
+    employment_status_index: int | None = None
+    first_language: str | None = None
+    martial_status: str | None = None
+    smoking_index: int | None = None
     cigarettes_per_day: int | None = None
-    has_alcohol_intake: bool
-    beer_pints: int
-    cider_pints: int
-    red_wine: int
-    white_wine: int
-    spirits: int
-    cocktails: int
-    units_per_week: int
-    literacy_index: int
-    literacy_help: str
-    diet_index: int
+    has_alcohol_intake: bool | None = None
+    beer_pints: int | None = None
+    cider_pints: int | None = None
+    red_wine: int | None = None
+    white_wine: int | None = None
+    spirits: int | None = None
+    cocktails: int | None = None
+    units_per_week: int | None = None
+    literacy_index: int | None = None
+    literacy_help: str | None = None
+    diet_index: int | None = None
     other_diet: str | None = None
 
 

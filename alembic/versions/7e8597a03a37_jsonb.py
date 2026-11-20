@@ -69,7 +69,7 @@ from alembic import op
 from sqlalchemy import select, text
 from sqlmodel import Session, SQLModel
 
-from form_fields.jsonb_form_fields import FORMS
+from form_fields.jsonb_form_fields import FORMS, SKIP, Skip
 from radar_models.radar3 import Option
 
 revision: str = "7e8597a03a37"
@@ -79,7 +79,7 @@ depends_on: str | Sequence[str] | None = None
 
 log = logging.getLogger("alembic.runtime.migration")
 
-FormFields = dict[str, str | type[SQLModel]]
+FormFields = dict[str, str | type[SQLModel] | Skip]
 FormCasts = dict[str, Callable[[Any], Any]]
 OPTION_ID = f"{Option.__tablename__}.id"
 
@@ -87,7 +87,7 @@ TABLES = list(
     dict.fromkeys(
         table
         for model, fields, _ in FORMS.values()
-        for table in (model, *(f for f in fields.values() if not isinstance(f, str)))
+        for table in (model, *(f for f in fields.values() if isinstance(f, type)))
     )
 )
 
@@ -131,7 +131,8 @@ def check_forms() -> None:
     """Checks that every field FORMS maps a key to is a field of that form's
     model, as model_validate ignores a field the model does not have; that
     every option table it maps a key to points at the form's table and has an
-    option_id; and that every key FORMS gives a cast for is a key it maps."""
+    option_id; and that every key FORMS gives a cast for is a key it maps and
+    does not skip."""
     for form_id, (model, fields, casts) in FORMS.items():
         unknown = {
             key: field
@@ -148,7 +149,7 @@ def check_forms() -> None:
         unlinked = {
             key: table.__name__
             for key, table in fields.items()
-            if not isinstance(table, str)
+            if isinstance(table, type)
             and (
                 parent_field(table, model) is None
                 or "option_id" not in table.model_fields
@@ -161,10 +162,11 @@ def check_forms() -> None:
                 + ", ".join(f"{key} -> {table}" for key, table in unlinked.items())
             )
 
-        unused = casts.keys() - fields.keys()
+        copied = {key for key, field in fields.items() if field is not SKIP}
+        unused = casts.keys() - copied
         if unused:
             raise ValueError(
-                f"form {form_id} has casts for keys it does not map: "
+                f"form {form_id} has casts for keys it does not map or skips: "
                 f"{', '.join(sorted(unused))}"
             )
 
@@ -189,7 +191,7 @@ def copy_form(
 ) -> int:
     """Copies form form_id's entries into model's table, one row per entry,
     with each key in the entry's data in the model field fields maps it to,
-    cast first if casts has a cast for the key, and looked up in options if
+    other than keys it maps to SKIP, which are left out, cast first if casts has a cast for the key, and looked up in options if
     the field holds an option; then adds a row to the option table a key is
     mapped to for each of its answers. Returns how many entries it copied."""
     entries = session.execute(
@@ -223,6 +225,8 @@ def copy_form(
         row: dict[str, Any] = {"patient_id": entry["patient_id"]}
         answers: list[tuple[type[SQLModel], int]] = []
         for key, field in fields.items():
+            if field is SKIP:
+                continue
             value = data.get(key)
             if value is not None and key in casts:
                 value = casts[key](value)

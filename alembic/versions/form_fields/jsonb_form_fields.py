@@ -4,8 +4,9 @@ FORMS maps a radar 2 form id to (model, fields, casts):
 
     fields   each key in entries.data -> the model field its answer goes to,
              or an option table: each of the key's answers becomes a row in
-             it, pointing at the copied entry and the answer's option
-    casts    key -> a function its value goes through before the model
+             it, pointing at the copied entry and the answer's option,
+             or SKIP: the key's answer is not copied
+    casts   key -> a function its value goes through before the model
              checks it (only for keys whose value the model's field cannot
              take as radar 2 stored it)
 
@@ -90,6 +91,16 @@ from radar_models.radar3 import (
     SocioEconomic,
     TubeSample,
 )
+
+
+class Skip:
+    """Marks a key in entries.data whose answer is not copied to radar 3."""
+
+    def __repr__(self) -> str:
+        return "SKIP"
+
+
+SKIP = Skip()
 
 
 def join_text(value: Any) -> str:
@@ -322,6 +333,9 @@ NURTURE_VISIT_FIELDS = {
     "yearsCocodamol": "cocodamol_years",
     "tabletsIbuprofen": "ibuprofen_tablets",
     "yearsIbuprofen": "ibuprofen_years",
+    "medicine1": SKIP,
+    "medicine2": SKIP,
+    "medicine3": SKIP,
 }
 
 HSP_ASSESSMENT_FIELDS = {
@@ -333,6 +347,8 @@ HSP_ASSESSMENT_FIELDS = {
     "s": "mest_c_s",
     "t": "mest_c_t",
     "c": "mest_c_c",
+    "aki": SKIP, # TODO ask Andy if this should be added to model as not in form but in data entry
+    "crescents": SKIP, # TODO ask Andy if this should be added to model as not in form but in data entry
 }
 
 CALCIPHYLAXIS_ASSESSMENT_FIELDS = {
@@ -345,10 +361,10 @@ CALCIPHYLAXIS_ASSESSMENT_FIELDS = {
 
 RITUXIMAB_TOXICITY_FIELDS = {
     "date": "assessment_date",
-    "drugName": "drug_name",
+    "drugName": "drug_name_index",
     "otherDrug": "other_drug",
     "dose": "dose",
-    "retreatment": "retreatment",
+    "retreatment": "is_retreatment",
     "toxicity": RituximabToxicityOption,
     "otherToxicity": "other_toxicity",
 }
