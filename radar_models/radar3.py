@@ -6,7 +6,8 @@ from sqlmodel import Field, Relationship, SQLModel
 # TODO check that the bools are either true or false and how nulls are related
 # as is a null false or is a null a lack of answer so could be true - philospophical
 
-#helpers
+# helpers
+
 
 def options_in_group(option_table: str, group: str) -> Any:
     """Read-only relationship to the options in group that option_table holds
@@ -19,6 +20,7 @@ def options_in_group(option_table: str, group: str) -> Any:
             "viewonly": True,
         }
     )
+
 
 # --- Shared mixins --- #
 
@@ -89,6 +91,7 @@ class AdverseEventBase(SQLModel):
     date_of_death: date | None = None
     cause_of_death: str | None = None
 
+
 class AdverseEvent(AdverseEventBase, BigIntPK, table=True):
     __tablename__ = "adverse_event"
 
@@ -122,24 +125,24 @@ class AlportAssessmentRead(AlportAssessmentBase, HasId):
 class AnthropometricBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    height: int|None = None
-    weight: float|None = None
-    bmi: float|None = None
-    hip: float|None = None
-    waist: float|None = None
-    arm: float|None = None
-    up_and_go: float|None = None
-    grip_dominant: float|None = None
-    grip_non_dominant: float|None = None
-    karnofsky_index: int|None = None
-    systolic_one: int|None = None
-    diastolic_one: int|None = None
-    systolic_two: int|None = None
-    diastolic_two: int|None = None
-    systolic_three: int|None = None
-    diastolic_three: int|None = None
-    systolic_mean: int|None = None
-    diastolic_mean: int|None = None
+    height: int | None = None
+    weight: float | None = None
+    bmi: float | None = None
+    hip: float | None = None
+    waist: float | None = None
+    arm: float | None = None
+    up_and_go: float | None = None
+    grip_dominant: float | None = None
+    grip_non_dominant: float | None = None
+    karnofsky_index: int | None = None
+    systolic_one: int | None = None
+    diastolic_one: int | None = None
+    systolic_two: int | None = None
+    diastolic_two: int | None = None
+    systolic_three: int | None = None
+    diastolic_three: int | None = None
+    systolic_mean: int | None = None
+    diastolic_mean: int | None = None
 
 
 class Anthropometric(AnthropometricBase, BigIntPK, table=True):
@@ -255,7 +258,6 @@ class CalciphylaxisAssessmentBase(SQLModel):
     has_infection: bool
 
 
-
 class CalciphylaxisAssessment(CalciphylaxisAssessmentBase, BigIntPK, table=True):
     __tablename__ = "calciphylaxis_assessment"
 
@@ -279,6 +281,7 @@ class CalciphylaxisAssessment(CalciphylaxisAssessmentBase, BigIntPK, table=True)
             "viewonly": True,
         }
     )
+
 
 class CalciphylaxisAssessmentRead(CalciphylaxisAssessmentBase, HasId):
     pass
@@ -351,7 +354,9 @@ class CKDAfricaGeneticBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
     sickle_cell_index: int | None = Field(foreign_key="option.id", sa_type=BigInteger)
-    other_sickle_cell_index: int | None = Field(foreign_key="option.id", sa_type=BigInteger)
+    other_sickle_cell_index: int | None = Field(
+        foreign_key="option.id", sa_type=BigInteger
+    )
     apol_1_index: int | None = Field(foreign_key="option.id", sa_type=BigInteger)
 
 
@@ -560,6 +565,7 @@ class CountryEthnicityBase(SQLModel):
     )
     country_code: str | None = Field(default=None, foreign_key="country.country_code")
 
+
 # TODO do we need a bigintpk if we say a composite key of ethnicity id and country code
 class CountryEthnicity(CountryEthnicityBase, BigIntPK, table=True):
     __tablename__ = "country_ethnicity"
@@ -570,6 +576,7 @@ class CountryEthnicityRead(CountryEthnicityBase, HasId):
 
 
 # --- CountryNationality --- #
+
 
 # TODO do we need a bigintpk if we say a composite key of nationality id and country code
 class CountryNationalityBase(SQLModel):
@@ -585,7 +592,6 @@ class CountryNationality(CountryNationalityBase, BigIntPK, table=True):
 
 class CountryNationalityRead(CountryNationalityBase, HasId):
     pass
-
 
 
 class CystinosisVisitBase(SQLModel):
@@ -843,9 +849,9 @@ class DentAndLoweAssessmentOptionRead(DentAndLoweAssessmentOptionBase, HasId):
 class DiabeticComplicationBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     retinopathy_index: int
-    has_laser_treatment: bool|None = None
-    has_peripheral_neuropathy: bool|None = None
-    has_foot_ulcer: bool|None = None
+    has_laser_treatment: bool | None = None
+    has_peripheral_neuropathy: bool | None = None
+    has_foot_ulcer: bool | None = None
 
 
 class DiabeticComplication(DiabeticComplicationBase, BigIntPK, table=True):
@@ -913,6 +919,7 @@ class DialysisRead(DialysisBase, HasId):
 
 # --- Drug --- #
 
+
 class DrugBase(SQLModel):
     drug_name: str
 
@@ -938,6 +945,7 @@ class DrugGroup(DrugGroupBase, BigIntPK, table=True):
 class DrugGroupRead(DrugGroupBase, HasId):
     pass
 
+
 # --- Drug <-> DrugGroup link --- #
 class DrugToGroupLink(SQLModel, table=True):
     __tablename__ = "drug_to_group"
@@ -954,6 +962,7 @@ class DrugToGroupLink(SQLModel, table=True):
         sa_type=BigInteger,
         ondelete="CASCADE",
     )
+
 
 # --- EQ5DY --- #
 
@@ -1084,6 +1093,7 @@ class PatientRelation(PatientRelationBase, BigIntPK, table=True):
 
 class PatientRelationRead(PatientRelationBase, HasId):
     pass
+
 
 # --- FetalAnomalyScan --- #
 
@@ -1216,20 +1226,20 @@ class GeneticsRead(GeneticsBase, HasId):
 class HADSBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    a1_index: int|None = None
-    d1_index: int|None = None
-    a2_index: int|None = None
-    d2_index: int|None = None
-    a3_index: int|None = None
-    d3_index: int|None = None
-    a4_index: int|None = None
-    d4_index: int|None = None
-    a5_index: int|None = None
-    d5_index: int|None = None
-    a6_index: int|None = None
-    d6_index: int|None = None
-    a7_index: int|None = None
-    d7_index: int|None = None
+    a1_index: int | None = None
+    d1_index: int | None = None
+    a2_index: int | None = None
+    d2_index: int | None = None
+    a3_index: int | None = None
+    d3_index: int | None = None
+    a4_index: int | None = None
+    d4_index: int | None = None
+    a5_index: int | None = None
+    d5_index: int | None = None
+    a6_index: int | None = None
+    d6_index: int | None = None
+    a7_index: int | None = None
+    d7_index: int | None = None
     anxiety_score: int
     depression_score: int
 
@@ -1743,18 +1753,18 @@ class NephrectomyRead(NephrectomyBase, HasId):
 
 class NurtureFamilyHistoryBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    has_eskd: bool| None = None
-    eskd_relative_1_index: int| None = None
-    eskd_relative_2_index: int| None = None
-    eskd_relative_3_index: int| None = None
-    has_chd: bool| None = None
-    chd_relative_1_index: int| None = None
-    chd_relative_2_index: int| None = None
-    chd_relative_3_index: int| None = None
-    has_diabetes: bool| None = None
-    diabetes_relative_1_index: int| None = None
-    diabetes_relative_2_index: int| None = None
-    diabetes_relative_3_index: int| None = None
+    has_eskd: bool | None = None
+    eskd_relative_1_index: int | None = None
+    eskd_relative_2_index: int | None = None
+    eskd_relative_3_index: int | None = None
+    has_chd: bool | None = None
+    chd_relative_1_index: int | None = None
+    chd_relative_2_index: int | None = None
+    chd_relative_3_index: int | None = None
+    has_diabetes: bool | None = None
+    diabetes_relative_1_index: int | None = None
+    diabetes_relative_2_index: int | None = None
+    diabetes_relative_3_index: int | None = None
 
 
 class NurtureFamilyHistory(NurtureFamilyHistoryBase, BigIntPK, table=True):
@@ -1794,22 +1804,22 @@ class NurtureMetadataRead(NurtureMetadataBase, HasId):
 class NurtureVisitBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     visit_date: date
-    nurture_visit_number: int|None = None
-    comorbidities: int|None = None
+    nurture_visit_number: int | None = None
+    comorbidities: int | None = None
     has_flu_vaccination: bool
     has_pneumococcal_vaccination: bool
-    has_admission: bool|None = None
-    admission_number: int|None = None
-    admission_emergency: int|None = None
-    admission_planned: int|None = None
-    admission_days: int|None = None
-    admission_antibiotics: int|None = None
-    paracetamol_tablets: int|None = None
-    paracetamol_years: int|None = None
-    cocodamol_tablets: int|None = None
-    cocodamol_years: int|None = None
-    ibuprofen_tablets: int|None = None
-    ibuprofen_years: int|None = None
+    has_admission: bool | None = None
+    admission_number: int | None = None
+    admission_emergency: int | None = None
+    admission_planned: int | None = None
+    admission_days: int | None = None
+    admission_antibiotics: int | None = None
+    paracetamol_tablets: int | None = None
+    paracetamol_years: int | None = None
+    cocodamol_tablets: int | None = None
+    cocodamol_years: int | None = None
+    ibuprofen_tablets: int | None = None
+    ibuprofen_years: int | None = None
 
 
 class NurtureVisit(NurtureVisitBase, BigIntPK, table=True):
@@ -2412,7 +2422,6 @@ class RenalCancerGeneticsBase(SQLModel):
 class RenalCancerGenetics(RenalCancerGeneticsBase, BigIntPK, table=True):
     __tablename__ = "renal_cancer_genetics"
 
-
     bap1_actions: list["Option"] = options_in_group(
         "renal_cancer_genetics_option", "renalgenetics.bap1action"
     )
@@ -2762,7 +2771,6 @@ class RituximabFollowUpAssessmentBase(SQLModel):
     immunosuppression_comments: str | None = None
 
 
-
 class RituximabFollowUpAssessment(
     RituximabFollowUpAssessmentBase, BigIntPK, table=True
 ):
@@ -2779,6 +2787,7 @@ class RituximabFollowUpAssessment(
             "viewonly": True,
         }
     )
+
 
 class RituximabFollowUpAssessmentRead(RituximabFollowUpAssessmentBase, HasId):
     pass
@@ -2894,21 +2903,21 @@ class SaltWastingClinicalFeatureRead(SaltWastingClinicalFeatureBase, HasId):
 class SampleInventoryBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     sample_date: date
-    has_urine_sample: bool |None = None
-    urine_date: date |None = None
-    urine_volume: str |None = None
-    has_serum_sample: bool |None = None
-    serum_date: date |None = None
-    serum_volume: str |None = None
-    has_plasma_sample: bool |None = None
-    plasma_date: date |None = None
-    plasma_volume: str |None = None
-    has_dna_sample: bool |None = None
-    dna_date: date |None = None
-    has_sputum_sample: bool |None = None
-    sputum_date: date |None = None
-    has_faeces_sample: bool |None = None
-    faeces_date: date |None = None
+    has_urine_sample: bool | None = None
+    urine_date: date | None = None
+    urine_volume: str | None = None
+    has_serum_sample: bool | None = None
+    serum_date: date | None = None
+    serum_volume: str | None = None
+    has_plasma_sample: bool | None = None
+    plasma_date: date | None = None
+    plasma_volume: str | None = None
+    has_dna_sample: bool | None = None
+    dna_date: date | None = None
+    has_sputum_sample: bool | None = None
+    sputum_date: date | None = None
+    has_faeces_sample: bool | None = None
+    faeces_date: date | None = None
 
 
 class SampleInventory(SampleInventoryBase, BigIntPK, table=True):
@@ -2920,6 +2929,7 @@ class SampleInventoryRead(SampleInventoryBase, HasId):
 
 
 # --- SampleType --- #
+
 
 # TODO could move into the option table?
 class SampleTypeBase(SQLModel):
@@ -2945,7 +2955,7 @@ class SixCITBase(SQLModel):
     six_cit_q4_index: int
     six_cit_q5_index: int
     six_cit_q6_index: int
-    six_cit_q7_index: int #q3 is the question q7 is the answer to q3 hence the sixcit
+    six_cit_q7_index: int  # q3 is the question q7 is the answer to q3 hence the sixcit
     six_cit_score: int
 
 
