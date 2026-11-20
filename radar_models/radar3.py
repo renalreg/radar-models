@@ -356,10 +356,18 @@ class CKDAfricaGeneticRead(CKDAfricaGeneticBase, HasId):
 class CKDAfricaRiskFactorBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    preterm_birth: str
-    low_birth_weight: str
-    malnutrition: str
-    hospital_malnutrition: str
+    preterm_birth_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    low_birth_weight_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    malnutrition_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    hospital_malnutrition_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
 
 
 class CKDAfricaRiskFactor(CKDAfricaRiskFactorBase, BigIntPK, table=True):
@@ -640,67 +648,138 @@ class CystinosisAdultVisitRead(CystinosisAdultVisitBase, HasId):
 
 class CystinosisPaedVisitBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    cystinosis_paed_visit_number: int
+    cystinosis_paed_visit_number_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
     visit_date: date
-    height: float
-    weight: float
-    urine_measurement: str
-    urine_output: float
-    voiding_overnight: str
-    continence_day: str
-    fluid_intake: float
-    admission_dehydration: int
-    constipation: str
-    diarrhea: str
-    nausea: str
-    vomiting: str
-    failure_to_thrive: str
-    enteral_feeding: str
-    feeding_start_date_1: date
-    feeding_end_date_1: date
-    feeding_start_date_2: date
-    feeding_end_date_2: date
-    feeding_start_date_3: date
-    feeding_end_date_3: date
-    normal_food_orally: str
-    supplements: str
-    growth_hormone_treatment: str
-    rickets: str
-    kyphoscoliosis: str
-    fractures: str
-    joint_surgery: str
-    muscle_strength: str
-    swallowing_difficulties: str
-    nose_snoring: str
-    tonsillectomy_date: date
-    sight_impairment: str
-    severe_sight_impairment: str
-    photophobia: str
-    photophobia_grade: str
-    keratoplasty_date: date
-    acuity: str
-    gahl_score: str
-    intraocular_pressure_r: str
-    intraocular_pressure_l: str
-    fev1: float
-    vc: float
-    snip: float
-    seizure: str
-    headache: str
-    muscle_weakness: str
-    learning_difficulties: str
-    cognitive_difficulties: str
-    movement_disorder: str
-    intracranial_hypertension: str
-    diabetes: str
-    thyroid: str
-    hypothyroidism: str
-    tanner_stage: str
-    wc_cystine: float
-    wc_cystine_date: date
-    wc_cystine_time: str
-    cysteamine_last_dose: int
-    cysteamine_effects: str
+    height: float|None=None
+    weight: float|None=None
+    urine_measurement_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    urine_output: float|None=None
+    voiding_overnight_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    continence_day_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    fluid_intake: float|None=None
+    admission_dehydration: int|None=None
+    constipation_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    diarrhea_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    nausea_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    vomiting_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    failure_to_thrive_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    enteral_feeding_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    feeding_start_date_1: date|None =None
+    feeding_end_date_1: date|None =None
+    feeding_start_date_2: date|None =None
+    feeding_end_date_2: date|None =None
+    feeding_start_date_3: date|None =None
+    feeding_end_date_3: date|None =None
+    normal_food_orally_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    supplements_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    growth_hormone_treatment_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    rickets_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    kyphoscoliosis_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    fractures_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    joint_surgery_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    muscle_strength_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    swallowing_difficulties_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    nose_snoring_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    tonsillectomy_date: date | None = None
+    adenoidectomy_date: date | None = None
+    sight_impairment_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    severe_sight_impairment_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    photophobia_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    photophobia_grade_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    keratoplasty_date: date | None = None
+    acuity: str | None = None
+    gahl_score: str | None = None
+    intraocular_pressure_r: str | None = None
+    intraocular_pressure_l: str | None = None
+    fev1: float | None = None
+    vc: float | None = None
+    snip: float | None = None
+    seizure_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    headache_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    muscle_weakness_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    learning_difficulties_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cognitive_difficulties_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    movement_disorder_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    intracranial_hypertension_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    diabetes_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    thyroid_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    hypothyroidism_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    tanner_stage_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    wc_cystine: float | None = None
+    wc_cystine_date: date | None = None
+    wc_cystine_time: str | None = None
+    cysteamine_hrs_since_last_dose: str | None = None
+    cysteamine_effects: str | None = None
 
 
 class CystinosisPaedVisit(CystinosisPaedVisitBase, BigIntPK, table=True):
@@ -2422,16 +2501,28 @@ class RenalCancerGeneticsOptionRead(RenalCancerGeneticsOptionBase, HasId):
 
 class RenalCancerTumourBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    tumor_type: str
+    tumor_type_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
     assessment_date: date
-    cns_imaging_method: str
+    cns_imaging_method_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
     progression_date: date
-    t_cat: str
-    n_cat: str
-    m_cat: str
+    t_cat_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    n_cat_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    m_cat_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
     rt_size: str
     pt_size: str
-    t_loc: str
+    t_loc_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
 
 
 class RenalCancerTumour(RenalCancerTumourBase, BigIntPK, table=True):
