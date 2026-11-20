@@ -309,18 +309,31 @@ class CalciphylaxisAssessmentOptionRead(CalciphylaxisAssessmentOptionBase, HasId
 
 class CancerTumourBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    tumour_type: str
-    other_tumour_name: str
+    tumour_type_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    other_tumour_name: str | None = None
     diagnosis_date: date
-    tumour_count: int
-    cns_image: str
-    progression_date: date
-    t_cat: str
-    n_cat: str
-    m_cat: str
-    radiologic_tumor_size: str
-    pathologic_tumor_size: str
-    tumor_location: str
+    tumour_count: int | None = None
+    cns_image_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    progression_date: date | None = None
+    t_cat_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    n_cat_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    m_cat_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    radiologic_tumour_size: str | None = None
+    pathologic_tumour_size: str | None = None
+    tumour_location_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    comments: str | None = None
 
 
 class CancerTumour(CancerTumourBase, BigIntPK, table=True):
@@ -2296,9 +2309,12 @@ class PregnancyRead(PregnancyBase, HasId):
 
 class ProcedureBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    procedure_name: str
-    other_procedure: str
+    procedure_name_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    other_procedure: str | None = None
     date_of_procedure: date
+    comments: str | None = None
 
 
 class Procedure(ProcedureBase, BigIntPK, table=True):
@@ -2462,7 +2478,7 @@ class RenalCancerGeneticsOptionRead(RenalCancerGeneticsOptionBase, HasId):
 
 class RenalCancerTumourBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    tumor_type_index: int | None = Field(
+    tumour_type_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
     assessment_date: date

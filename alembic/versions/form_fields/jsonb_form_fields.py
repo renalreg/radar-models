@@ -560,7 +560,7 @@ RENAL_CANCER_GENETICS_FIELDS = {
 }
 
 RENAL_CANCER_TUMOUR_FIELDS = {
-    "tumourtype": "tumor_type_index",
+    "tumourtype": "tumour_type_index",
     "date": "assessment_date",
     "cnsimaging": "cns_imaging_method_index",
     "progone": "progression_date",
@@ -671,24 +671,26 @@ CYSTINOSIS_ADULT_VISIT_FIELDS = {
 }
 
 PROCEDURE_FIELDS = {
-    "procedure": "procedure_name",
+    "procedure": "procedure_name_index",
     "otherprocedure": "other_procedure",
     "date": "date_of_procedure",
+    "comments": "comments",
 }
 
 CANCER_TUMOUR_FIELDS = {
-    "tumourtype": "tumour_type",
+    "tumourtype": "tumour_type_index",
     "othertumourname": "other_tumour_name",
     "date": "diagnosis_date",
     "tumournumber": "tumour_count",
-    "cnsimaging": "cns_image",
+    "cnsimaging": "cns_image_index",
     "progdate": "progression_date",
-    "tcat": "t_cat",
-    "ncat": "n_cat",
-    "mcat": "m_cat",
-    "rtsize": "radiologic_tumor_size",
-    "ptsize": "pathologic_tumor_size",
-    "tloc": "tumor_location",
+    "tcat": "t_cat_index",
+    "ncat": "n_cat_index",
+    "mcat": "m_cat_index",
+    "rtsize": "radiologic_tumour_size",
+    "ptsize": "pathologic_tumour_size",
+    "tloc": "tumour_location_index",
+    "comments": "comments",
 }
 
 CLINICAL_LETTER_FIELDS = {
@@ -736,3 +738,30 @@ FORMS = {
     36: (CancerTumour, CANCER_TUMOUR_FIELDS, {}),
     37: (ClinicalLetter, CLINICAL_LETTER_FIELDS, {}),
 }
+
+
+
+#TODO
+INFO  [alembic.runtime.migration] form 14 (ddls): 29 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 20 (rituximab-visits): 0 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 21 (ckd-clinical-pictures): 827 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 28 (test2): 0 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 30 (cysttest): 0 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 31 (cyst2): 0 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 32 (cyst3): 0 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 38 (avacopan): 90 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 39 (vasdetail): 207 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 40 (vasmeds): 304 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 41 (cakutclinicalpicture): 1,323 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 42 (cakutsurginter): 428 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 43 (lupusreview): 131 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 44 (nonrenalpath): 353 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 45 (cmvstatus): 625 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 46 (cmvantiviralresistance): 1,131 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 47 (cmvepisodes): 722 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 48 (datacheck): 4 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 49 (statuschange): 7 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 50 (secdiaght): 3 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 51 (hthistory): 2 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 52 (baselinebp): 2 entries not copied, no radar 3 model
+INFO  [alembic.runtime.migration] form 53 (htadditional): 1 entry not copied, no radar 3 model
