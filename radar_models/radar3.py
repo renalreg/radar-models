@@ -574,98 +574,22 @@ class CountryNationalityRead(CountryNationalityBase, HasId):
     pass
 
 
-# --- CystinosisAdultVisit --- #
 
-
-class CystinosisAdultVisitBase(SQLModel):
+class CystinosisVisitBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    cystinosis_adult_visit_number: int
     visit_date: date
-    urine_measurement: str
-    urine_output: float
-    voiding_overnight: str
-    continent_day: str
-    fluid_intake: float
-    admission_dehydration: int
-    constipation: str
-    diarrhea: str
-    nausea: str
-    vomiting: str
-    rickets: str
-    kyphoscoliosis: str
-    fractures: str
-    muscle_strength: str
-    ankle_strength: float
-    elbow_strength: float
-    hand_strength: float
-    hip_strength: float
-    knee_strength: float
-    shoulder_strength: float
-    wrist_strength: float
-    swallowing_difficulties: str
-    swallowing_difficulties_detail: str
-    joint_surgery: str
-    visual_impairment: str
-    photophobia: str
-    photophobia_grade: str
-    keratoplasty_date: date
-    acuity: str
-    gahl_score: str
-    intraocular_pressure_r: str
-    intraocular_pressure_l: str
-    fev1: float
-    vc: float
-    snip: float
-    seizure: str
-    headache: str
-    muscle_weakness: str
-    learning_difficulties: str
-    cognitive_difficulties: str
-    cognitive_difficulties_score: str
-    movement_disorder: str
-    intracranial_hypertension: str
-    diabetes: str
-    thyroid: str
-    hypothyroidism: str
-    tanner_stage: str
-    wc_cystine: float
-    wc_cystine_date: date
-    wc_cystine_time: str
-    cysteamine_last_dose: int
-    cysteamine_effects: str
-
-
-class CystinosisAdultVisit(CystinosisAdultVisitBase, BigIntPK, table=True):
-    __tablename__ = "cystinosis_adult_visit"
-
-
-class CystinosisAdultVisitRead(CystinosisAdultVisitBase, HasId):
-    pass
-
-
-# --- CystinosisPaedVisit --- #
-
-
-class CystinosisPaedVisitBase(SQLModel):
-    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    cystinosis_paed_visit_number_index: int | None = Field(
-        default=None, foreign_key="option.id", sa_type=BigInteger
-    )
-    visit_date: date
-    height: float|None=None
-    weight: float|None=None
     urine_measurement_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
-    urine_output: float|None=None
+    urine_output: float | None = None
     voiding_overnight_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
     continence_day_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
-    fluid_intake: float|None=None
-    admission_dehydration: int|None=None
+    fluid_intake: float | None = None
+    admission_dehydration: int | None = None
     constipation_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
@@ -676,27 +600,6 @@ class CystinosisPaedVisitBase(SQLModel):
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
     vomiting_index: int | None = Field(
-        default=None, foreign_key="option.id", sa_type=BigInteger
-    )
-    failure_to_thrive_index: int | None = Field(
-        default=None, foreign_key="option.id", sa_type=BigInteger
-    )
-    enteral_feeding_index: int | None = Field(
-        default=None, foreign_key="option.id", sa_type=BigInteger
-    )
-    feeding_start_date_1: date|None =None
-    feeding_end_date_1: date|None =None
-    feeding_start_date_2: date|None =None
-    feeding_end_date_2: date|None =None
-    feeding_start_date_3: date|None =None
-    feeding_end_date_3: date|None =None
-    normal_food_orally_index: int | None = Field(
-        default=None, foreign_key="option.id", sa_type=BigInteger
-    )
-    supplements_index: int | None = Field(
-        default=None, foreign_key="option.id", sa_type=BigInteger
-    )
-    growth_hormone_treatment_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
     rickets_index: int | None = Field(
@@ -717,15 +620,7 @@ class CystinosisPaedVisitBase(SQLModel):
     swallowing_difficulties_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
-    nose_snoring_index: int | None = Field(
-        default=None, foreign_key="option.id", sa_type=BigInteger
-    )
-    tonsillectomy_date: date | None = None
-    adenoidectomy_date: date | None = None
     sight_impairment_index: int | None = Field(
-        default=None, foreign_key="option.id", sa_type=BigInteger
-    )
-    severe_sight_impairment_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
     photophobia_index: int | None = Field(
@@ -778,8 +673,74 @@ class CystinosisPaedVisitBase(SQLModel):
     wc_cystine: float | None = None
     wc_cystine_date: date | None = None
     wc_cystine_time: str | None = None
-    cysteamine_hrs_since_last_dose: str | None = None
     cysteamine_effects: str | None = None
+    cysteamine_hrs_since_last_dose: str | None = None
+
+
+# --- CystinosisAdultVisit --- #
+
+
+class CystinosisAdultVisitBase(CystinosisVisitBase):
+    cystinosis_adult_visit_number_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    ankle_strength: float | None = None
+    elbow_strength: float | None = None
+    hand_strength: float | None = None
+    hip_strength: float | None = None
+    knee_strength: float | None = None
+    shoulder_strength: float | None = None
+    wrist_strength: float | None = None
+    swallowing_difficulties_detail: str | None = None
+    cognitive_difficulties_score: str | None = None
+
+
+class CystinosisAdultVisit(CystinosisAdultVisitBase, BigIntPK, table=True):
+    __tablename__ = "cystinosis_adult_visit"
+
+
+class CystinosisAdultVisitRead(CystinosisAdultVisitBase, HasId):
+    pass
+
+
+# --- CystinosisPaedVisit --- #
+
+
+class CystinosisPaedVisitBase(CystinosisVisitBase):
+    cystinosis_paed_visit_number_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    height: float | None = None
+    weight: float | None = None
+    failure_to_thrive_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    growth_hormone_treatment_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    enteral_feeding_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    feeding_start_date_1: date | None = None
+    feeding_end_date_1: date | None = None
+    feeding_start_date_2: date | None = None
+    feeding_end_date_2: date | None = None
+    feeding_start_date_3: date | None = None
+    feeding_end_date_3: date | None = None
+    normal_food_orally_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    supplements_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    nose_snoring_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    tonsillectomy_date: date | None = None
+    adenoidectomy_date: date | None = None
+    severe_sight_impairment_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
 
 
 class CystinosisPaedVisit(CystinosisPaedVisitBase, BigIntPK, table=True):
