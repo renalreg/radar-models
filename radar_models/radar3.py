@@ -282,9 +282,124 @@ class BiomarkerSample(BiomarkerSampleBase, BigIntPK, table=True):
 class BiomarkerSampleRead(BiomarkerSampleBase, HasId):
     pass
 
+class CakutClinicalPictureBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    clinical_picture_date: date | None = None
+    incontinent_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    voiding_difficulties_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    bladder_catheterisation_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    recurrent_uti_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    medication_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    dmsa_scan_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    dmsadate: date | None = None
+    dmsafunctionright: int | None = None
+    dmsafunctionleft: int | None = None
+    dmsarep: str | None = None
+    mcug_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mcug_date: date | None = None
+    vur_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    vur_right_grade_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    vur_left_grade_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    bladder_normal_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    urethralappearancenormal_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    bladderrep: str | None = None
+    mag3_renogram_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mag3_date: date | None = None
+    mag3_obstruction_left_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mag3_obstruction_right_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mag3_differential_function_left: float | None = None
+    mag3_differential_function_right: float | None = None
+    mag3_reflux_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mag3_renogram_rep: str | None = None
+    videourodynamics_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    videourodynamics_rep: str | None = None
+    uroflowmetry_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    uroflowmetry_rep: str | None = None
+
+
+class CakutClinicalPicture(CakutClinicalPictureBase, BigIntPK, table=True):
+    __tablename__ = "cakut_clinical_picture"
+
+    incontinent_time: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "cakut_clinical_picture_option",
+            "primaryjoin": "CakutClinicalPicture.id"
+            " == CakutClinicalPictureOption.cakut_clinical_picture_id",
+            "secondaryjoin": "and_(Option.id == CakutClinicalPictureOption.option_id,"
+            " Option.option_group == 'cakut-clinical-picture.incontinent-time')",
+            "viewonly": True,
+        }
+    )
+    bladder_catheterisation_type: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "cakut_clinical_picture_option",
+            "primaryjoin": "CakutClinicalPicture.id"
+            " == CakutClinicalPictureOption.cakut_clinical_picture_id",
+            "secondaryjoin": "and_(Option.id == CakutClinicalPictureOption.option_id,"
+            " Option.option_group == 'cakut-clinical-picture.bladder-catheterisation-type')",
+            "viewonly": True,
+        }
+    )
+    medlist: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "cakut_clinical_picture_option",
+            "primaryjoin": "CakutClinicalPicture.id"
+            " == CakutClinicalPictureOption.cakut_clinical_picture_id",
+            "secondaryjoin": "and_(Option.id == CakutClinicalPictureOption.option_id,"
+            " Option.option_group == 'cakut-clinical-picture.medication')",
+            "viewonly": True,
+        }
+    )
+
+
+class CakutClinicalPictureOptionBase(SQLModel):
+    cakut_clinical_picture_id: int = Field(
+        foreign_key="cakut_clinical_picture.id", sa_type=BigInteger
+    )
+    option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
+
+
+class CakutClinicalPictureOption(CakutClinicalPictureOptionBase, BigIntPK, table=True):
+    __tablename__ = "cakut_clinical_picture_option"
+
 
 # --- CalciphylaxisAssessment --- #
-
 
 class CalciphylaxisAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
@@ -3161,8 +3276,8 @@ class TransplantRejectionRead(TransplantRejectionBase, HasId):
 
 
 class TubeSampleBase(SQLModel):
-    patient_id: int | None = Field(
-        default=None, foreign_key="patient.id", sa_type=BigInteger
+    patient_id: int= Field(
+        foreign_key="patient.id", sa_type=BigInteger
     )
     sample_date: date
     barcode: str
@@ -3175,3 +3290,162 @@ class TubeSample(TubeSampleBase, BigIntPK, table=True):
 
 class TubeSampleRead(TubeSampleBase, HasId):
     pass
+
+class VasculitisDetailBase(SQLModel):
+    patient_id: int= Field(
+        foreign_key="patient.id", sa_type=BigInteger
+    )
+    date_of_renalflare: date | None = None
+    more_than_one_renalflare_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+
+class VasculitisDetail(VasculitisDetailBase, BigIntPK, table=True):
+    __tablename__ = "vasculitis_detail"
+
+class VasculitisRead(VasculitisDetailBase, HasId):
+    pass
+
+class VasculitisMedsBase(SQLModel):
+    patient_id: int= Field(
+        foreign_key="patient.id", sa_type=BigInteger
+    )
+    review_date: date
+    avacopan_infsel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    avacopan_start_date_1:date| None = None
+    avacopan_end_date_1:date| None = None
+    avacopan_dose_1: float | None = None
+    avacopan_start_date_2: date | None = None
+    avacopan_end_date_2:date| None = None
+    avacopan_dose_2: float | None = None
+    avacopan_start_date_3: date | None = None
+    avacopan_end_date_3: date | None = None
+    avacopan_dose_3:float | None = None
+    azathioprine_infsel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    azathioprine_start_date_1:date| None = None
+    azathioprine_end_date_1:date| None = None
+    azathioprine_dose_1:float | None = None
+    azathioprine_start_date_2:date| None = None
+    azathioprine_end_date_2:date| None = None
+    azathioprine_dose_2:float | None = None
+    azathioprine_start_date_3:date| None = None
+    azathioprine_end_date_3:date| None = None
+    azathioprine_dose_3:float | None = None
+    cyclophosphamidetab_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    cyclophosphamidetab_start_date_1:date| None = None
+    cyclophosphamidetab_end_date_1:date| None = None
+    cyclophosphamidetab_dose_1:float | None = None
+    cyclophosphamidetab_start_date_2:date| None = None
+    cyclophosphamidetab_end_date_2:date| None = None
+    cyclophosphamidetab_dose_2:float | None = None
+    cyclophosphamidetab_start_date_3:date| None = None
+    cyclophosphamidetab_end_date_3:date| None = None
+    cyclophosphamidetab_dose_3:float | None = None
+    mycophenolate_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    mycophenolate_start_date_1:date| None = None
+    mycophenolate_end_date_1:date| None = None
+    mycophenolate_dose_1:float | None = None
+    mycophenolate_start_date_2:date| None = None
+    mycophenolate_end_date_2:date| None = None
+    mycophenolate_dose_2:float | None = None
+    mycophenolate_start_date_3:date| None = None
+    mycophenolate_end_date_3:date| None = None
+    mycophenolate_dose_3:float | None = None
+    prednisolone_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    prednisolone_start_date_1:date| None = None
+    prednisolone_end_date_1:date| None = None
+    prednisolone_dose_1:float | None = None
+    prednisolone_start_date_2:date| None = None
+    prednisolone_end_date_2:date| None = None
+    prednisolone_dose_2:float | None = None
+    prednisolone_start_date_3:date| None = None
+    prednisolone_end_date_3:date| None = None
+    prednisolone_dose_3:float | None = None
+    prednisolone_start_date_4:date| None = None
+    prednisolone_end_date_4:date| None = None
+    prednisolone_dose_4:float | None = None
+    prednisolone_start_date_5:date| None = None
+    prednisolone_end_date_5:date| None = None
+    prednisolone_dose_5:float | None = None
+    prednisolone_start_date_6:date| None = None
+    prednisolone_end_date_6:date| None = None
+    prednisolone_dose_6:float | None = None
+    prednisolone_start_date_7:date| None = None
+    prednisolone_end_date_7:date| None = None
+    prednisolone_dose_7:float | None = None
+    prednisolone_start_date_8:date| None = None
+    prednisolone_end_date_8:date| None = None
+    prednisolone_dose_8:float | None = None
+    dummy_title: date| None = None
+    ivig_date: date| None = None
+    ivig_inf_number: int | None = None
+    rituximab_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    rituximab_date_1:date|None=None
+    rituximab_dose_1:float|None=None
+    rituximab_date_2:date|None=None
+    rituximab_dose_2:float|None=None
+    rituximab_date_3:date|None=None
+    rituximab_dose_3:float|None=None
+    rituximab_date_4:date|None=None
+    rituximab_dose_4:float|None=None
+    rituximab_date_5:date|None=None
+    rituximab_dose_5:float|None=None
+    rituximab_date_6:date|None=None
+    rituximab_dose_6:float|None=None
+    rituximab_date_7:date|None=None
+    rituximab_dose_7:float|None=None
+    rituximab_date_8:date|None=None
+    rituximab_dose_8:float|None=None
+    obinutuzumab_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    obinutuzumab_date_1:date|None=None
+    obinutuzumab_dose_1:float|None=None
+    obinutuzumab_date_2:date|None=None
+    obinutuzumab_dose_2:float|None=None
+    obinutuzumab_date_3:date|None=None
+    obinutuzumab_dose_3:float|None=None
+    obinutuzumab_date_4:date|None=None
+    obinutuzumab_dose_4:float|None=None
+    obinutuzumab_date_5:date|None=None
+    obinutuzumab_dose_5:float|None=None
+    obinutuzumab_date_6:date|None=None
+    obinutuzumab_dose_6:float|None=None
+    obinutuzumab_date_7:date|None=None
+    obinutuzumab_dose_7:float|None=None
+    obinutuzumab_date_8:date|None=None
+    obinutuzumab_dose_8:float|None=None
+    cyclophosphamide_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    cyclophosphamide_date_1:date|None=None
+    cyclophosphamide_dose_1:float|None=None
+    cyclophosphamide_date_2:date|None=None
+    cyclophosphamide_dose_2:float|None=None
+    cyclophosphamide_date_3:date|None=None
+    cyclophosphamide_dose_3:float|None=None
+    cyclophosphamide_date_4:date|None=None
+    cyclophosphamide_dose_4:float|None=None
+    cyclophosphamide_date_5:date|None=None
+    cyclophosphamide_dose_5:float|None=None
+    cyclophosphamide_date_6:date|None=None
+    cyclophosphamide_dose_6:float|None=None
+    cyclophosphamide_date_7:date|None=None
+    cyclophosphamide_dose_7:float|None=None
+    cyclophosphamide_date_8:date|None=None
+    cyclophosphamide_dose_8:float|None=None
+    methylprednisolone_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    methylprednisolone_date_1:date|None=None
+    methylprednisolone_dose_1:float|None=None
+    methylprednisolone_date_2:date|None=None
+    methylprednisolone_dose_2:float|None=None
+    methylprednisolone_date_3:date|None=None
+    methylprednisolone_dose_3:float|None=None
+    methylprednisolone_date_4:date|None=None
+    methylprednisolone_dose_4:float|None=None
+    methylprednisolone_date_5:date|None=None
+    methylprednisolone_dose_5:float|None=None
+    methylprednisolone_date_6:date|None=None
+    methylprednisolone_dose_6:float|None=None
+    methylprednisolone_date_7:date|None=None
+    methylprednisolone_dose_7:float|None=None
+    methylprednisolone_date_8:date|None=None
+    methylprednisolone_dose_8:float|None=None
+
+
+class VasculitisMeds(VasculitisMedsBase, BigIntPK, table=True):
+    __tablename__ = "vasculitis_meds"
