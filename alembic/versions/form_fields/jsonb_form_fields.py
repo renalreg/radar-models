@@ -91,7 +91,7 @@ from radar_models.radar3 import (
     SocioEconomic,
     TubeSample,
     DentAndLoweAssessment,
-    DentAndLoweAssessmentBase, DentAndLoweAssessmentOption,
+    DentAndLoweAssessmentBase, DentAndLoweAssessmentOption, CKDClinicalPicture,
 )
 
 
@@ -709,6 +709,11 @@ CLINICAL_LETTER_FIELDS = {
     "comments": "letter_comments",
 }
 
+CKD_CLINCICAL_PICTURE_FIELDS = {
+    "date":"date",
+    "comments":"comments",
+}
+
 FORMS = {
     1: (SixCIT, SIX_CIT_FIELDS, {}),
     2: (Anthropometric, ANTHROPOMETRIC_FIELDS, {}),
@@ -733,7 +738,7 @@ FORMS = {
         RITUXIMAB_FOLLOW_UP_ASSESSMENT_FIELDS,
         RITUXIMAB_FOLLOW_UP_ASSESSMENT_FIELDS_CAST,
     ),
-    22: (SampleInventory, SAMPLE_INVENTORY_FIELDS, {}),
+    21: (CKDClinicalPicture, CKD_CLINCICAL_PICTURE_FIELDS,{}),
     23: (IGAResearch, IGA_RESEARCH_FIELDS, {}),
     24: (EthnicOrigin, ETHNIC_ORIGIN_FIELDS, ETHNIC_ORIGIN_CASTS),
     25: (CKDAfricaGenetic, CKD_AFRICA_GENETIC_FIELDS, {}),
@@ -753,12 +758,11 @@ FORMS = {
 
 
 
-# INFO  [alembic.runtime.migration] form 20 (rituximab-visits): 0 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 21 (ckd-clinical-pictures): 827 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 28 (test2): 0 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 30 (cysttest): 0 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 31 (cyst2): 0 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 32 (cyst3): 0 entries not copied, no radar 3 model
+# dropped form 20 (rituximab-visits): 0 entries not copied, no radar 3 model
+# dropped form 28 (test2): 0 entries not copied, no radar 3 model
+# dropped form 30 (cysttest): 0 entries not copied, no radar 3 model
+# dropped form 31 (cyst2): 0 entries not copied, no radar 3 model
+# dropped form 32 (cyst3): 0 entries not copied, no radar 3 model
 # INFO  [alembic.runtime.migration] form 38 (avacopan): 90 entries not copied, no radar 3 model
 # INFO  [alembic.runtime.migration] form 39 (vasdetail): 207 entries not copied, no radar 3 model
 # INFO  [alembic.runtime.migration] form 40 (vasmeds): 304 entries not copied, no radar 3 model

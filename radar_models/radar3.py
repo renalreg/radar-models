@@ -395,10 +395,18 @@ class CKDAfricaRiskFactor(CKDAfricaRiskFactorBase, BigIntPK, table=True):
 class CKDAfricaRiskFactorRead(CKDAfricaRiskFactorBase, HasId):
     pass
 
+class CKDClinicalPictureBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id")
+    date: date
+    comments: str|None = None
+
+class CKDClinicalPicture(CKDClinicalPictureBase, BigIntPK, table=True):
+    __tablename__ = "ckd_clinical_picture"
+
+class CKDClinicalPictureRead(CKDClinicalPictureBase, HasId):
+    pass
 
 # --- ClinicalLetter --- #
-
-
 class ClinicalLetterBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     letter_date: date
