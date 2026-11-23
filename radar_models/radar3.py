@@ -2328,7 +2328,17 @@ class NephrectomyRead(NephrectomyBase, HasId):
     pass
 
 
-# --- NurtureFamilyHistory --- #
+class NonRenalPathBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    date_of_report: date
+    organ_index: int|None = Field(default=None,foreign_key="option.id", sa_type=BigInteger
+    )
+    organ_other: str| None = None
+    nonrenal_pathref: str| None = None
+    histological_summary: str| None = None
+
+class NonRenalPath(NonRenalPathBase, BigIntPK, table=True):
+    __tablename__ = "nonrenal_path"
 
 
 class NurtureFamilyHistoryBase(SQLModel):

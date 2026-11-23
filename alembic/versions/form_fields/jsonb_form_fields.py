@@ -102,6 +102,7 @@ from radar_models.radar3 import (
     CakutClinicalPictureOption,
     CakutSurginter,
     LupusReview,
+    NonRenalPath,
 )
 
 
@@ -1247,7 +1248,13 @@ LUPUS_REVIEW_CASTS = {
     'obinutuzumabinfsel':single_answer,
 }
 
-
+NON_RENAL_PATH_FIELDS = {
+    "date":"date_of_report",
+    "organ":"organ_index",
+    "organother":"organ_other",
+    "nonrenalpathref":"nonrenal_pathref",
+    "histologicalsummary":"histological_summary"
+}
 
 FORMS = {
     1: (SixCIT, SIX_CIT_FIELDS, {}),
@@ -1295,6 +1302,7 @@ FORMS = {
     41: (CakutClinicalPicture,CAKUT_FIELDS,{}),
     42: (CakutSurginter,CAKUT_SURG_FIELDS,{}),
     43: (LupusReview, LUPUS_REVIEW_FIELDS, LUPUS_REVIEW_CASTS),
+    44: (NonRenalPath,NON_RENAL_PATH_FIELDS,{})
 }
 
 
