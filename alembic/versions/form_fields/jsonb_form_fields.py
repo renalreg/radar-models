@@ -90,6 +90,8 @@ from radar_models.radar3 import (
     SixCIT,
     SocioEconomic,
     TubeSample,
+    DentAndLoweAssessment,
+    DentAndLoweAssessmentBase, DentAndLoweAssessmentOption,
 )
 
 
@@ -383,6 +385,15 @@ HSP_ASSESSMENT_FIELDS = {
     "c": "mest_c_c",
     "aki": SKIP, # TODO ask Andy if this should be added to model as not in form but in data entry
     "crescents": SKIP, # TODO ask Andy if this should be added to model as not in form but in data entry
+}
+
+DENT_AND_LOWE_FIELDS = {
+    "date": "assessment_date",
+    "aetiology":"aetiology_index",
+    "agent": "causative_agent_index",
+    "otherAgent": "other_agent",
+    "extraInvolvement": DentAndLoweAssessmentOption,
+    "otherExtraInvolvement":"other_extra_involvement",
 }
 
 CALCIPHYLAXIS_ASSESSMENT_FIELDS = {
@@ -713,6 +724,7 @@ FORMS = {
     12: (SocioEconomic, SOCIOECONOMIC_FIELDS, SOCIOECONOMIC_FIELDS_CAST),
     13: (NurtureVisit, NURTURE_VISIT_FIELDS, {}),
     15: (HSPAssessment, HSP_ASSESSMENT_FIELDS, {}),
+    14: (DentAndLoweAssessment, DENT_AND_LOWE_FIELDS, {}),
     16: (CalciphylaxisAssessment, CALCIPHYLAXIS_ASSESSMENT_FIELDS, {}),
     17: (RituximabToxicity, RITUXIMAB_TOXICITY_FIELDS, {}),
     18: (AdverseEvent, ADVERSE_EVENT_FIELDS, ADVERSE_EVENT_FIELDS_CAST),
@@ -741,27 +753,25 @@ FORMS = {
 
 
 
-#TODO
-INFO  [alembic.runtime.migration] form 14 (ddls): 29 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 20 (rituximab-visits): 0 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 21 (ckd-clinical-pictures): 827 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 28 (test2): 0 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 30 (cysttest): 0 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 31 (cyst2): 0 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 32 (cyst3): 0 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 38 (avacopan): 90 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 39 (vasdetail): 207 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 40 (vasmeds): 304 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 41 (cakutclinicalpicture): 1,323 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 42 (cakutsurginter): 428 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 43 (lupusreview): 131 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 44 (nonrenalpath): 353 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 45 (cmvstatus): 625 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 46 (cmvantiviralresistance): 1,131 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 47 (cmvepisodes): 722 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 48 (datacheck): 4 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 49 (statuschange): 7 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 50 (secdiaght): 3 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 51 (hthistory): 2 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 52 (baselinebp): 2 entries not copied, no radar 3 model
-INFO  [alembic.runtime.migration] form 53 (htadditional): 1 entry not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 20 (rituximab-visits): 0 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 21 (ckd-clinical-pictures): 827 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 28 (test2): 0 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 30 (cysttest): 0 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 31 (cyst2): 0 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 32 (cyst3): 0 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 38 (avacopan): 90 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 39 (vasdetail): 207 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 40 (vasmeds): 304 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 41 (cakutclinicalpicture): 1,323 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 42 (cakutsurginter): 428 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 43 (lupusreview): 131 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 44 (nonrenalpath): 353 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 45 (cmvstatus): 625 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 46 (cmvantiviralresistance): 1,131 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 47 (cmvepisodes): 722 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 48 (datacheck): 4 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 49 (statuschange): 7 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 50 (secdiaght): 3 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 51 (hthistory): 2 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 52 (baselinebp): 2 entries not copied, no radar 3 model
+# INFO  [alembic.runtime.migration] form 53 (htadditional): 1 entry not copied, no radar 3 model

@@ -822,6 +822,30 @@ class Death(DeathBase, BigIntPK, table=True):
 class DeathRead(DeathBase, HasId):
     pass
 
+class DentAndLoweAssessmentBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    assessment_date: date
+    aetiology_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    causative_agent_index: int|None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    other_agent: str | None = None
+    other_extra_involvement: str | None = None
+
+
+class DentAndLoweAssessment(DentAndLoweAssessmentBase, BigIntPK, table=True):
+    __tablename__ = "dent_and_lowe_assessment"
+
+    extra_involvements: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "dent_and_lowe_assessment_option",
+            "primaryjoin": "DentAndLoweAssessment.id"
+            " == DentAndLoweAssessmentOption.dent_and_lowe_assessment_id",
+            "secondaryjoin": "and_("
+            "Option.id == DentAndLoweAssessmentOption.option_id,"
+            " Option.option_group == 'dent-and-lowe-assessment.extra-involvement')",
+            "viewonly": True,
+        }
+    )
+
 
 # --- DentAndLoweAssessmentOption --- #
 
@@ -841,7 +865,6 @@ class DentAndLoweAssessmentOption(
 
 class DentAndLoweAssessmentOptionRead(DentAndLoweAssessmentOptionBase, HasId):
     pass
-
 
 # --- DiabeticComplication --- #
 
