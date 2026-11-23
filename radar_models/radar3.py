@@ -173,6 +173,41 @@ class AntibodyRead(AntibodyBase, HasId):
     pass
 
 
+class AvacopanBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    course_type_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    indication_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    start_date: date
+    diagnosis_relapse_date: date | None = None
+    baseline1weeklabel: date
+    baseline1wkdose: float | None = None
+    baseline2wkdose: float | None = None
+    baseline3wkdose: float | None = None
+    baseline4wkdose: float | None = None
+    baseline3mthdose: float | None = None
+    baseline6mthdose: float | None = None
+    baseline9mthdose: float | None = None
+    baseline12mthdose: float | None = None
+
+
+class Avacopan(AvacopanBase, BigIntPK, table=True):
+    __tablename__ = "avacopan"
+    other_conditions: list["AvacopanOption"] = Relationship(sa_relationship_kwargs={})
+
+
+class AvacopanOptionBase(SQLModel):
+    avacopan_id: int = Field(foreign_key="avacopan.id", sa_type=BigInteger)
+    option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
+
+
+class AvacopanOption(AvacopanOptionBase, BigIntPK, table=True):
+    __tablename__ = "avacopan_option"
+
+
+class AvacopanOptionRead(AvacopanOptionBase, HasId):
+    pass
+
+
 # --- Biomarker --- #
 
 
@@ -395,16 +430,20 @@ class CKDAfricaRiskFactor(CKDAfricaRiskFactorBase, BigIntPK, table=True):
 class CKDAfricaRiskFactorRead(CKDAfricaRiskFactorBase, HasId):
     pass
 
+
 class CKDClinicalPictureBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id")
     date: date
-    comments: str|None = None
+    comments: str | None = None
+
 
 class CKDClinicalPicture(CKDClinicalPictureBase, BigIntPK, table=True):
     __tablename__ = "ckd_clinical_picture"
 
+
 class CKDClinicalPictureRead(CKDClinicalPictureBase, HasId):
     pass
+
 
 # --- ClinicalLetter --- #
 class ClinicalLetterBase(SQLModel):
@@ -830,11 +869,14 @@ class Death(DeathBase, BigIntPK, table=True):
 class DeathRead(DeathBase, HasId):
     pass
 
+
 class DentAndLoweAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
     aetiology_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
-    causative_agent_index: int|None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    causative_agent_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
     other_agent: str | None = None
     other_extra_involvement: str | None = None
 
@@ -873,6 +915,7 @@ class DentAndLoweAssessmentOption(
 
 class DentAndLoweAssessmentOptionRead(DentAndLoweAssessmentOptionBase, HasId):
     pass
+
 
 # --- DiabeticComplication --- #
 

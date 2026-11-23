@@ -91,7 +91,11 @@ from radar_models.radar3 import (
     SocioEconomic,
     TubeSample,
     DentAndLoweAssessment,
-    DentAndLoweAssessmentBase, DentAndLoweAssessmentOption, CKDClinicalPicture,
+    DentAndLoweAssessmentBase,
+    DentAndLoweAssessmentOption,
+    CKDClinicalPicture,
+    Avacopan,
+    AvacopanOption,
 )
 
 
@@ -103,6 +107,7 @@ class Skip:
 
 
 SKIP = Skip()
+
 
 def is_ticked(value: Any) -> bool:
     """Whether a checkbox list with one box is ticked: ["x"] is True, [] is
@@ -116,6 +121,7 @@ def is_ticked(value: Any) -> bool:
         raise ValueError(f"expected at most one answer, got {value!r}")
     return bool(value)
 
+
 def single_answer(value: Any) -> Any:
     """The answer of a checkbox list with one box, so it can be looked up as a
     single option: ["x"] is "x", [] is None (not ticked)."""
@@ -126,6 +132,7 @@ def single_answer(value: Any) -> Any:
     if len(value) > 1:
         raise ValueError(f"expected at most one answer, got {value!r}")
     return value[0] if value else None
+
 
 def join_text(value: Any) -> str:
     """Joins a list of text into one string, its items split by ", "."""
@@ -141,19 +148,23 @@ def to_text(value: Any) -> str:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise TypeError(f"expected a number, got {type(value).__name__}")
     return str(value)
+
+
 def to_float(value: Any) -> str:
     if isinstance(value, str):
         if value.strip() == "":
             return None
     return float(value)
 
+
 def year_of_emigration(value: Any) -> Any:
     if value is None:
         return None
     if isinstance(value, str):
-        if value=='NOT DISCLOSED':
+        if value == "NOT DISCLOSED":
             return None
     return int(value)
+
 
 SIX_CIT_FIELDS = {
     "date": "completed_date",
@@ -383,17 +394,17 @@ HSP_ASSESSMENT_FIELDS = {
     "s": "mest_c_s",
     "t": "mest_c_t",
     "c": "mest_c_c",
-    "aki": SKIP, # TODO ask Andy if this should be added to model as not in form but in data entry
-    "crescents": SKIP, # TODO ask Andy if this should be added to model as not in form but in data entry
+    "aki": SKIP,  # TODO ask Andy if this should be added to model as not in form but in data entry
+    "crescents": SKIP,  # TODO ask Andy if this should be added to model as not in form but in data entry
 }
 
 DENT_AND_LOWE_FIELDS = {
     "date": "assessment_date",
-    "aetiology":"aetiology_index",
+    "aetiology": "aetiology_index",
     "agent": "causative_agent_index",
     "otherAgent": "other_agent",
     "extraInvolvement": DentAndLoweAssessmentOption,
-    "otherExtraInvolvement":"other_extra_involvement",
+    "otherExtraInvolvement": "other_extra_involvement",
 }
 
 CALCIPHYLAXIS_ASSESSMENT_FIELDS = {
@@ -506,7 +517,7 @@ ETHNIC_ORIGIN_FIELDS = {
     "ethnicoriginmother": "ethnic_origin_mother",
     "ethnicoriginfather": "ethnic_origin_father",
 }
-ETHNIC_ORIGIN_CASTS={
+ETHNIC_ORIGIN_CASTS = {
     "patientyearuk": year_of_emigration,
 }
 
@@ -576,7 +587,7 @@ RENAL_CANCER_TUMOUR_FIELDS = {
     "cnsimaging": "cns_imaging_method_index",
     "progone": "progression_date",
     "cnsimaging2": "t_cat_index",
-    "cnsimaging2": "n_cat_index", # TODO form entry duplicate definition
+    "cnsimaging2": "n_cat_index",  # TODO form entry duplicate definition
     "cnsimaging3": "m_cat_index",
     "rtsize": "rt_size",
     "ptsize": "pt_size",
@@ -710,8 +721,25 @@ CLINICAL_LETTER_FIELDS = {
 }
 
 CKD_CLINCICAL_PICTURE_FIELDS = {
-    "date":"date",
-    "comments":"comments",
+    "date": "date",
+    "comments": "comments",
+}
+
+AVACOPAN_FIELDS = {
+    "avacopancoursetype": "course_type_index",
+    "avacopanindication": "indication_index",
+    "avacopanstartdate1": "start_date",
+    "diagrelapseaavdate": "diagnosis_relapse_date",
+    "avvotherconditions": AvacopanOption,
+    "baseline1weeklabel": "baseline1weeklabel",
+    "baseline1wkdose": "baseline1wkdose",
+    "baseline2wkdose": "baseline2wkdose",
+    "baseline3wkdose": "baseline3wkdose",
+    "baseline4wkdose": "baseline4wkdose",
+    "baseline3mthdose": "baseline3mthdose",
+    "baseline6mthdose": "baseline6mthdose",
+    "baseline9mthdose": "baseline9mthdose",
+    "baseline12mth": "baseline12mthdose",
 }
 
 FORMS = {
@@ -738,7 +766,7 @@ FORMS = {
         RITUXIMAB_FOLLOW_UP_ASSESSMENT_FIELDS,
         RITUXIMAB_FOLLOW_UP_ASSESSMENT_FIELDS_CAST,
     ),
-    21: (CKDClinicalPicture, CKD_CLINCICAL_PICTURE_FIELDS,{}),
+    21: (CKDClinicalPicture, CKD_CLINCICAL_PICTURE_FIELDS, {}),
     23: (IGAResearch, IGA_RESEARCH_FIELDS, {}),
     24: (EthnicOrigin, ETHNIC_ORIGIN_FIELDS, ETHNIC_ORIGIN_CASTS),
     25: (CKDAfricaGenetic, CKD_AFRICA_GENETIC_FIELDS, {}),
@@ -754,8 +782,8 @@ FORMS = {
     35: (Procedure, PROCEDURE_FIELDS, {}),
     36: (CancerTumour, CANCER_TUMOUR_FIELDS, {}),
     37: (ClinicalLetter, CLINICAL_LETTER_FIELDS, {}),
+    38: (Avacopan, AVACOPAN_FIELDS, {}),
 }
-
 
 
 # dropped form 20 (rituximab-visits): 0 entries not copied, no radar 3 model
@@ -763,7 +791,6 @@ FORMS = {
 # dropped form 30 (cysttest): 0 entries not copied, no radar 3 model
 # dropped form 31 (cyst2): 0 entries not copied, no radar 3 model
 # dropped form 32 (cyst3): 0 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 38 (avacopan): 90 entries not copied, no radar 3 model
 # INFO  [alembic.runtime.migration] form 39 (vasdetail): 207 entries not copied, no radar 3 model
 # INFO  [alembic.runtime.migration] form 40 (vasmeds): 304 entries not copied, no radar 3 model
 # INFO  [alembic.runtime.migration] form 41 (cakutclinicalpicture): 1,323 entries not copied, no radar 3 model
