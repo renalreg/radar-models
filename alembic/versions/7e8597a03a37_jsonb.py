@@ -295,7 +295,7 @@ def upgrade() -> None:
 
         with Session(bind=bind) as session:
             options = load_options(session)
-            for form_id, (model, fields, casts) in FORMS.items():
+            for form_id, (model, fields, casts) in reversed(FORMS.items()):
                 count = copy_form(session, form_id, model, fields, casts, options)
                 log.info(
                     "%s: %s rows copied from form %d's entries",

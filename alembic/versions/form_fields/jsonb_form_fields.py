@@ -99,7 +99,7 @@ from radar_models.radar3 import (
     VasculitisDetail,
     VasculitisMeds,
     CakutClinicalPicture,
-    CakutClinicalPictureOption,
+    CakutClinicalPictureOption, CakutSurginter,
 )
 
 
@@ -938,6 +938,15 @@ CAKUT_FIELDS = {
     "uroflowmetry": "uroflowmetry_index",
     "uroflowmetryrep": "uroflowmetry_rep",
 }
+CAKUT_SURG_FIELDS ={
+    "proceduretype": "procedure_type_index",
+    "proceduredate": "procedure_date",
+    "fiprocedure": "fi_procedure",
+    "kidneyprocedure": "kidney_procedure_index",
+    "ureterprocedure": "ureter_procedure_index",
+    "bladderprocedure": "bladder_procedure_index",
+    "proceduredetails": "procedure_details",
+}
 
 FORMS = {
     1: (SixCIT, SIX_CIT_FIELDS, {}),
@@ -982,7 +991,8 @@ FORMS = {
     38: (Avacopan, AVACOPAN_FIELDS, {}),
     39: (VasculitisDetail, VAS_DETAIL_FIELDS, {}),
     40: (VasculitisMeds, VAS_MEDS_FIELDS, VAS_MEDS_CASTS),
-    41: (CakutClinicalPicture,CAKUT_FIELDS,{})
+    41: (CakutClinicalPicture,CAKUT_FIELDS,{}),
+    42: (CakutSurginter,CAKUT_SURG_FIELDS,{})
 }
 
 
