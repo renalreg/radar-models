@@ -1867,6 +1867,370 @@ class LiverTransplantIndicator(LiverTransplantIndicatorBase, BigIntPK, table=Tru
 class LiverTransplantIndicatorRead(LiverTransplantIndicatorBase, HasId):
     pass
 
+class cyclophosphamide_8(SQLModel):
+    cyclophosphamide_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    cyclophosphamide_date_1:date|None=None
+    cyclophosphamide_dose_1:float|None=None
+    cyclophosphamide_date_2:date|None=None
+    cyclophosphamide_dose_2:float|None=None
+    cyclophosphamide_date_3:date|None=None
+    cyclophosphamide_dose_3:float|None=None
+    cyclophosphamide_date_4:date|None=None
+    cyclophosphamide_dose_4:float|None=None
+    cyclophosphamide_date_5:date|None=None
+    cyclophosphamide_dose_5:float|None=None
+    cyclophosphamide_date_6:date|None=None
+    cyclophosphamide_dose_6:float|None=None
+    cyclophosphamide_date_7:date|None=None
+    cyclophosphamide_dose_7:float|None=None
+    cyclophosphamide_date_8:date|None=None
+    cyclophosphamide_dose_8:float|None=None
+
+class methylprednisolone_8(SQLModel):
+    methylprednisolone_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    methylprednisolone_date_1:date|None=None
+    methylprednisolone_dose_1:float|None=None
+    methylprednisolone_date_2:date|None=None
+    methylprednisolone_dose_2:float|None=None
+    methylprednisolone_date_3:date|None=None
+    methylprednisolone_dose_3:float|None=None
+    methylprednisolone_date_4:date|None=None
+    methylprednisolone_dose_4:float|None=None
+    methylprednisolone_date_5:date|None=None
+    methylprednisolone_dose_5:float|None=None
+    methylprednisolone_date_6:date|None=None
+    methylprednisolone_dose_6:float|None=None
+    methylprednisolone_date_7:date|None=None
+    methylprednisolone_dose_7:float|None=None
+    methylprednisolone_date_8:date|None=None
+    methylprednisolone_dose_8:float|None=None
+    methylprednisolone_date_9:date|None=None
+    methylprednisolone_dose_9:float|None=None
+    methylprednisolone_date_10:date|None=None
+    methylprednisolone_dose_10:float|None=None
+
+class rituximab_8(SQLModel):
+    rituximab_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    rituximab_inf_date_1:date|None=None
+    rituximab_inf_dose_1:float|None=None
+    rituximab_inf_date_2:date|None=None
+    rituximab_inf_dose_2:float|None=None
+    rituximab_inf_date_3:date|None=None
+    rituximab_inf_dose_3:float|None=None
+    rituximab_inf_date_4:date|None=None
+    rituximab_inf_dose_4:float|None=None
+    rituximab_inf_date_5:date|None=None
+    rituximab_inf_dose_5:float|None=None
+    rituximab_inf_date_6:date|None=None
+    rituximab_inf_dose_6:float|None=None
+    rituximab_inf_date_7: date | None = None
+    rituximab_inf_dose_7:float|None=None
+    rituximab_inf_date_8:date|None=None
+    rituximab_inf_dose_8: float | None = None
+
+class prednisolone_8(SQLModel):
+    prednisolone_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    prednisolone_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    prednisolone_newmed_startdate_1: date | None = None
+    prednisolone_newmed_enddate_1: date | None = None
+    prednisolone_newmed_startdate_2: date | None = None
+    prednisolone_newmed_enddate_2: date | None = None
+    prednisolone_newmed_startdate_3: date | None = None
+    prednisolone_newmed_enddate_3: date | None = None
+    prednisolone_newmed_startdate_4: date | None = None
+    prednisolone_newmed_enddate_4: date | None = None
+    prednisolone_newmed_startdate_5: date | None = None
+    prednisolone_newmed_enddate_5: date | None = None
+    prednisolone_newmed_startdate_6: date | None = None
+    prednisolone_newmed_enddate_6: date | None = None
+    prednisolone_newmed_startdate_7: date | None = None
+    prednisolone_newmed_enddate_7: date | None = None
+    prednisolone_newmed_startdate_8: date | None = None
+    prednisolone_newmed_enddate_8: date | None = None
+    prednisolone_newmed_startdate_9: date | None = None
+    prednisolone_newmed_enddate_9: date | None = None
+    prednisolone_newmed_startdate_10: date | None = None
+    prednisolone_newmed_enddate_10: date | None = None
+
+class obinutuzumab_inf_6(SQLModel):
+    obinutuzumab_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
+    obinutuzumab_inf_date_1:date|None=None
+    obinutuzumab_inf_dose_1:float|None=None
+    obinutuzumab_inf_date_2:date|None=None
+    obinutuzumab_inf_dose_2:float|None=None
+    obinutuzumab_inf_date_3:date|None=None
+    obinutuzumab_inf_dose_3:float|None=None
+    obinutuzumab_inf_date_4:date|None=None
+    obinutuzumab_inf_dose_4:float|None=None
+    obinutuzumab_inf_date_5:date|None=None
+    obinutuzumab_inf_dose_5:float|None=None
+    obinutuzumab_inf_date_6:date|None=None
+    obinutuzumab_inf_dose_6:float|None=None
+
+class LupusReviewBase(cyclophosphamide_8, methylprednisolone_8, rituximab_8, prednisolone_8, obinutuzumab_inf_6):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    review_date: date|None = None
+    inclass_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    overlapclass_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    biopsyconfirmation_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    number_of_live_births:float|None = None
+    flaredate_1:date|None = None
+    flaredate_2: date | None = None
+    flaredate_3: date | None = None
+    pregancy_number: int | None = None
+    infusion_confirmation_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    belimumab_inf_sel_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    belimumab_inf_given_date_1: date | None = None
+    belimumab_inf_dose_1: float | None = None
+    belimumab_inf_given_date_2: date | None = None
+    belimumab_inf_dose_2: float | None = None
+    belimumab_inf_given_date_3: date | None = None
+    belimumab_inf_dose_3: float | None = None
+    belimumab_inf_given_date_4: date | None = None
+    belimumab_inf_dose_4: float | None = None
+    belimumab_inf_given_date_5: date | None = None
+    belimumab_inf_dose_5: float | None = None
+    belimumab_inf_given_date_6: date | None = None
+    belimumab_inf_dose_6: float | None = None
+    belimumab_inf_given_date_7: date | None = None
+    belimumab_inf_dose_7: float | None = None
+    belimumab_inf_given_date_8: date | None = None
+    belimumab_inf_dose_8: float | None = None
+
+    newmedconfirmation_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    azathioprine_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    azathioprine_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    azathioprine_newmed_startdate_1: date | None = None
+    azathioprine_newmed_enddate_1: date | None = None
+    azathioprine_newmed_startdate_2: date | None = None
+    azathioprine_newmed_enddate_2: date | None = None
+    azathioprine_newmed_startdate_3: date | None = None
+    azathioprine_newmed_enddate_3: date | None = None
+
+    belimumab_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    belimumab_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    belimumab_newmed_startdate_1: date | None = None
+    belimumab_newmed_enddate_1: date | None = None
+    belimumab_newmed_startdate_2: date | None = None
+    belimumab_newmed_enddate_2: date | None = None
+    belimumab_newmed_startdate_3: date | None = None
+    belimumab_newmed_enddate_3: date | None = None
+
+    ciclosporin_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    ciclosporin_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    ciclosporin_newmed_startdate_1: date | None = None
+    ciclosporin_newmed_enddate_1: date | None = None
+    ciclosporin_newmed_startdate_2: date | None = None
+    ciclosporin_newmed_enddate_2: date | None = None
+    ciclosporin_newmed_startdate_3: date | None = None
+    ciclosporin_newmed_enddate_3: date | None = None
+
+    cyclophosphamide_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cyclophosphamide_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cyclophosphamide_newmed_startdate_1: date | None = None
+    cyclophosphamide_newmed_enddate_1: date | None = None
+    cyclophosphamide_newmed_startdate_2: date | None = None
+    cyclophosphamide_newmed_enddate_2: date | None = None
+    cyclophosphamide_newmed_startdate_3: date | None = None
+    cyclophosphamide_newmed_enddate_3: date | None = None
+
+    hydroxychloroquine_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    hydroxychloroquine_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    hydroxychloroquine_newmed_startdate_1: date | None = None
+    hydroxychloroquine_newmed_enddate_1: date | None = None
+    hydroxychloroquine_newmed_startdate_2: date | None = None
+    hydroxychloroquine_newmed_enddate_2: date | None = None
+    hydroxychloroquine_newmed_startdate_3: date | None = None
+    hydroxychloroquine_newmed_enddate_3: date | None = None
+    hydroxychloroquine_newmed_startdate_4: date | None = None
+    hydroxychloroquine_newmed_enddate_4: date | None = None
+
+
+    leflunomide_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    leflunomide_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    leflunomide_newmed_startdate_1: date | None = None
+    leflunomide_newmed_enddate_1: date | None = None
+    leflunomide_newmed_startdate_2: date | None = None
+    leflunomide_newmed_enddate_2: date | None = None
+    leflunomide_newmed_startdate_3: date | None = None
+    leflunomide_newmed_enddate_3: date | None = None
+
+    methotrexate_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    methotrexate_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    methotrexate_newmed_startdate_1: date | None = None
+    methotrexate_newmed_enddate_1: date | None = None
+    methotrexate_newmed_startdate_2: date | None = None
+    methotrexate_newmed_enddate_2: date | None = None
+    methotrexate_newmed_startdate_3: date | None = None
+    methotrexate_newmed_enddate_3: date | None = None
+
+    mycophenolate_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mycophenolate_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mycophenolate_newmed_startdate_1: date | None = None
+    mycophenolate_newmed_enddate_1: date | None = None
+    mycophenolate_newmed_startdate_2: date | None = None
+    mycophenolate_newmed_enddate_2: date | None = None
+    mycophenolate_newmed_startdate_3: date | None = None
+    mycophenolate_newmed_enddate_3: date | None = None
+    mycophenolate_newmed_startdate_4: date | None = None
+    mycophenolate_newmed_enddate_4: date | None = None
+
+    mycophenolicacid_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mycophenolicacid_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mycophenolicacid_newmed_startdate_1: date | None = None
+    mycophenolicacid_newmed_enddate_1: date | None = None
+    mycophenolicacid_newmed_startdate_2: date | None = None
+    mycophenolicacid_newmed_enddate_2: date | None = None
+    mycophenolicacid_newmed_startdate_3: date | None = None
+    mycophenolicacid_newmed_enddate_3: date | None = None
+    mycophenolicacid_newmed_startdate_4: date | None = None
+    mycophenolicacid_newmed_enddate_4: date | None = None
+
+    tacrolimus_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    tacrolimus_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    tacrolimus_newmed_startdate_1: date | None = None
+    tacrolimus_newmed_enddate_1: date | None = None
+    tacrolimus_newmed_startdate_2: date | None = None
+    tacrolimus_newmed_enddate_2: date | None = None
+    tacrolimus_newmed_startdate_3: date | None = None
+    tacrolimus_newmed_enddate_3: date | None = None
+    tacrolimus_newmed_startdate_4: date | None = None
+    tacrolimus_newmed_enddate_4: date | None = None
+
+    voclosporin_newmed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    voclosporin_indication_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    voclosporin_newmed_startdate_1: date | None = None
+    voclosporin_newmed_enddate_1: date | None = None
+    voclosporin_newmed_startdate_2: date | None = None
+    voclosporin_newmed_enddate_2: date | None = None
+    voclosporin_newmed_startdate_3: date | None = None
+    voclosporin_newmed_enddate_3: date | None = None
+    voclosporin_newmed_startdate_4: date | None = None
+    voclosporin_newmed_enddate_4: date | None = None
+
+    medstopped: str|None=None
+    azathioprine_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    azathioprine_med_stopped_enddate: date | None = None
+    belimumab_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    belimumab_med_stopped_enddate: date | None = None
+
+    ciclosporin_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    ciclosporin_med_stopped_enddate: date | None = None
+
+    cyclophosphamide_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cyclophosphamide_med_stopped_enddate: date | None = None
+
+    hydroxychloroquine_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    hydroxychloroquine_med_stopped_enddate: date | None = None
+
+    leflunomide_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    leflunomide_med_stopped_enddate: date | None = None
+
+    methotrexate_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    methotrexate_med_stopped_enddate: date | None = None
+
+    mycophenolate_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mycophenolate_med_stopped_enddate: date | None = None
+
+    mycophenolicacid_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mycophenolicacid_med_stopped_enddate: date | None = None
+
+    prednisolone_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    prednisolone_med_stopped_enddate: date | None = None
+
+    tacrolimus_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    tacrolimus_med_stopped_enddate: date | None = None
+
+    voclosporin_med_stopped_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    voclosporin_med_stopped_enddate: date | None = None
+    review_comments:str|None = None
+
+class LupusReview(LupusReviewBase,BigIntPK,table=True):
+    __tablename__ = "lupus_review"
 
 # --- Medication --- #
 
