@@ -103,6 +103,18 @@ from radar_models.radar3 import (
     CakutSurginter,
     LupusReview,
     NonRenalPath,
+    CmvSummary,
+    CmvSummaryOption,
+    CmvAntiviralResistance,
+    CmvEpisodesOption,
+    CmvEpisodes,
+    CoreDataCheck,
+    StatusChange,
+    SecondaryDiagnosisHypertension,
+    BaselineClinicBpMeasurements,
+    HypertensionHistoryOption,
+    HypertensionHistory,
+    AdditionalInvestigations,
 )
 
 
@@ -1256,6 +1268,144 @@ NON_RENAL_PATH_FIELDS = {
     "histologicalsummary":"histological_summary"
 }
 
+CMV_SUMMARY_FIELDS = {
+    "lnclass": "cmv_status_index",
+    "cmvmanagementstrategy": "cmv_management_strategy_index",
+    "cmvstrategyother": "cmv_strategy_other",
+    "prophylaxis": "prophylaxis_index",
+    "prophylaxisother": "prophylaxis_other",
+    "prophylaxisstartdate": "prophylaxis_start_date",
+    "prophylaxisendtdate": "prophylaxis_end_date",
+    "immunoattrans": CmvSummaryOption,
+    "immunoattransother": "immunosuppression_at_transplant_other",
+}
+
+CMV_ANTIVIRAL_RESISTANCE_FIELDS = {
+    "cmvantiviralresistancetesting": "cmv_antiviral_resistance_testing_index",
+    "cmvantiviralresistancetestingdate": "cmv_antiviral_resistance_testing_date",
+    "cmvantiviralresistancetestingresults": "cmv_antiviral_resistance_testing_results",
+    "cmvgenemutationtesting": "cmv_gene_mutation_testing_index",
+    "cmvgenemutationtestingdate": "cmv_gene_mutation_testing_date",
+    "cmvgenemutationtestingresults": "cmv_gene_mutation_testing_results",
+    "mutationul54": "mutation_ul54_index",
+    "mutationul97": "mutation_ul97_index",
+}
+CORE_DATA_CHECK_FIELDS = {
+    "date": "data_check_date",
+    "diagnosis": "diagnosis_index",
+    "diagnosisdetails": "diagnosis_details",
+    "biopsy": "biopsy_index",
+    "biopsydetails": "biopsy_details",
+    "genetic": "genetic_index",
+    "geneticdetails": "genetic_details",
+    "serumcreatinine": "serum_creatinine_index",
+    "serumcreatininedetails": "serum_creatinine_details",
+    "creatratio": "creat_ratio_index",
+    "creatratiodetails": "creat_ratio_details",
+    "notes": "notes",
+}
+CMV_EPISODES_FIELDS = {
+    "episodestartdate": "episode_start_date",
+    "cmvclinicalpresentation": CmvEpisodesOption,
+    "cmvclinicalpresentationother": "cmv_clinical_presentation_other",
+    "cmvrecurrence": "cmv_recurrence_index",
+    "cmvrecurrencedate": "cmv_recurrence_date",
+    "cmvdiagnosis": "cmv_diagnosis_index",
+    "immunobeforecmv": CmvEpisodesOption,
+    "immunobeforecmvother": "immunosuppression_before_cmv_other",
+    "treatmed1": "treatment_med_1_index",
+    "treatmed1other": "treatment_med_1_other",
+    "treatmed1sideeffects": "treatment_med_1_side_effects_index",
+    "treatmed1sideeffectscomments": "treatment_med_1_side_effects_comments",
+    "treatmed1maxdailydose": "treatment_med_1_max_daily_dose",
+    "treatmedstartdate1": "treatment_med_1_start_date",
+    "treatmedendtdate1": "treatment_med_1_end_date",
+    "treatmed2": "treatment_med_2_index",
+    "treatmed2other": "treatment_med_2_other",
+    "treatmed2sideeffects": "treatment_med_2_side_effects_index",
+    "treatmed2sideeffectscomments": "treatment_med_2_side_effects_comments",
+    "treatmed2maxdailydose": "treatment_med_2_max_daily_dose",
+    "treatmedstartdate2": "treatment_med_2_start_date",
+    "treatmedendtdate2": "treatment_med_2_end_date",
+    "treatmed3": "treatment_med_3_index",
+    "treatmed3other": "treatment_med_3_other",
+    "treatmed3sideeffects": "treatment_med_3_side_effects_index",
+    "treatmed3sideeffectscomments": "treatment_med_3_side_effects_comments",
+    "treatmed3maxdailydose": "treatment_med_3_max_daily_dose",
+    "treatmedstartdate3": "treatment_med_3_start_date",
+    "treatmedendtdate3": "treatment_med_3_end_date",
+    "secondaryprophylaxis": "secondary_prophylaxis_index",
+    "secondaryprophylaxisother": "secondary_prophylaxis_other",
+    "secondaryprophylaxisstartdate": "secondary_prophylaxis_start_date",
+    "secondaryprophylaxisendtdate": "secondary_prophylaxis_end_date",
+    "immunopostcmv": CmvEpisodesOption,
+    "immunopostcmvother": "immunosuppression_after_cmv_other",
+    "6monthimmunodosereduction": "immunosuppression_dose_reduction_6_month_index",
+    "6monthimmunodosereductiontemp": "immunosuppression_dose_reduction_6_month_temp_index",
+    "cmvoutcome6mnth": "cmv_outcome_6_month_index",
+    "cmvoutcome12month": "cmv_outcome_12_month_index",
+    "cmvoutcomecomments": "cmv_outcome_comments",
+}
+STATUS_CHANGE_FIELDS = {
+    "date": "data_checked_date",
+    "trans": "transplant_last_year_index",
+    "dialysisfirst": "first_dialysis_last_year_index",
+    "dod": "deceased_index",
+    "transin": "transfer_in_index",
+    "prevhospital": "previous_hospital",
+    "transout": "transfer_out_index",
+    "nexthospital": "next_hospital",
+}
+
+SECONDARY_DIAGNOSIS_HYPERTENSION_FIELDS = {
+    "secondarydiaght": "secondary_diagnosis_index",
+    "secondarydiaghtother": "secondary_diagnosis_other",
+    "secondarydiaghtdate": "secondary_diagnosis_date",
+}
+
+BASELINE_CLINIC_BP_MEASUREMENTS_FIELDS = {
+    "date": "data_collection_date",
+    "bpsysavoffice": "office_average_systolic_bp",
+    "bpdiaavoffice": "office_average_diastolic_bp",
+    "bpstandard": "bp_standardised_index",
+    "bpobserved": "bp_observed_index",
+}
+
+HYPERTENSION_HISTORY_FIELDS = {
+    "date": "data_collection_date",
+    "htpresentationyear": "presentation_year",
+    "htpresentationage": "presentation_age",
+    "bpsyspres": "presentation_systolic_bp",
+    "bpdiapres": "presentation_diastolic_bp",
+    "bpsysref": "referral_systolic_bp",
+    "bpdiaref": "referral_diastolic_bp",
+    "smoking": "smoking_index",
+    "cvdhistory": HypertensionHistoryOption,
+    "cvdhistoryother": "cvd_history_other",
+    "htpregnancy": "pregnancy_hypertension_index",
+    "abpb": "abpm_index",
+    "bpsysavday": "day_average_systolic_bp",
+    "bpdiaavday": "day_average_diastolic_bp",
+    "bpsysavnight": "night_average_systolic_bp",
+    "bpdiaavnight": "night_average_diastolic_bp",
+    "bpsysavoverall": "overall_average_systolic_bp",
+    "bpdiaavoverall": "overall_average_diastolic_bp",
+}
+
+ADDITIONAL_INVESTIGATIONS_FIELDS = {
+    "date": "assessment_date",
+    "biochemadh": "biochemical_adherence_testing_index",
+    "patfullyadh": "patient_fully_adherent_index",
+    "cfpwv": "cf_pwv",
+    "bapwv": "ba_pwv",
+    "lvmi": "lvmi",
+    "pwvdevice": "pwv_device",
+    "csbp": "central_sbp",
+    "cdbp": "central_dbp",
+    "cap": "central_ap",
+    "ca": "central_aix",
+}
+
 FORMS = {
     1: (SixCIT, SIX_CIT_FIELDS, {}),
     2: (Anthropometric, ANTHROPOMETRIC_FIELDS, {}),
@@ -1302,7 +1452,16 @@ FORMS = {
     41: (CakutClinicalPicture,CAKUT_FIELDS,{}),
     42: (CakutSurginter,CAKUT_SURG_FIELDS,{}),
     43: (LupusReview, LUPUS_REVIEW_FIELDS, LUPUS_REVIEW_CASTS),
-    44: (NonRenalPath,NON_RENAL_PATH_FIELDS,{})
+    44: (NonRenalPath,NON_RENAL_PATH_FIELDS,{}),
+    45: (CmvSummary,CMV_SUMMARY_FIELDS,{}),
+    46: (CmvAntiviralResistance,CMV_ANTIVIRAL_RESISTANCE_FIELDS,{}),
+    47: (CmvEpisodes,CMV_EPISODES_FIELDS,{}),
+    48: (CoreDataCheck,CORE_DATA_CHECK_FIELDS,{}),
+    49:(StatusChange,STATUS_CHANGE_FIELDS,{}),
+    50:(SecondaryDiagnosisHypertension,SECONDARY_DIAGNOSIS_HYPERTENSION_FIELDS,{}),
+    51:(HypertensionHistory,HYPERTENSION_HISTORY_FIELDS,{}),
+    52:(BaselineClinicBpMeasurements,BASELINE_CLINIC_BP_MEASUREMENTS_FIELDS,{}),
+    53:(AdditionalInvestigations,ADDITIONAL_INVESTIGATIONS_FIELDS,{})
 }
 
 
@@ -1311,13 +1470,3 @@ FORMS = {
 # dropped form 30 (cysttest): 0 entries not copied, no radar 3 model
 # dropped form 31 (cyst2): 0 entries not copied, no radar 3 model
 # dropped form 32 (cyst3): 0 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 44 (nonrenalpath): 353 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 45 (cmvstatus): 625 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 46 (cmvantiviralresistance): 1,131 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 47 (cmvepisodes): 722 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 48 (datacheck): 4 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 49 (statuschange): 7 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 50 (secdiaght): 3 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 51 (hthistory): 2 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 52 (baselinebp): 2 entries not copied, no radar 3 model
-# INFO  [alembic.runtime.migration] form 53 (htadditional): 1 entry not copied, no radar 3 model

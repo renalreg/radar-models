@@ -602,8 +602,215 @@ class ClinicalLetterRead(ClinicalLetterBase, HasId):
     pass
 
 
-# --- Code --- #
+class CmvSummaryBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    cmv_status_index: int= Field(foreign_key="option.id", sa_type=BigInteger
+    )
+    cmv_management_strategy_index: int = Field(
+        foreign_key="option.id", sa_type=BigInteger
+    )
+    cmv_strategy_other: str | None = None
+    prophylaxis_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    prophylaxis_other: str | None = None
+    prophylaxis_start_date: date | None = None
+    prophylaxis_end_date: date | None = None
+    immunosuppression_at_transplant_other: str | None = None
 
+
+class CmvSummary(CmvSummaryBase, BigIntPK, table=True):
+    __tablename__ = "cmv_summary"
+
+    immunosuppression_at_transplant: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "cmv_summary_option",
+            "primaryjoin": "CmvSummary.id == CmvSummaryOption.cmv_summary_id",
+            "secondaryjoin": "and_(Option.id == CmvSummaryOption.option_id,"
+            " Option.option_group == 'cmvstatus.immunoattrans')",
+            "viewonly": True,
+        }
+    )
+
+
+# --- CmvSummaryOption --- #
+
+
+class CmvSummaryOptionBase(SQLModel):
+    cmv_summary_id: int = Field(foreign_key="cmv_summary.id", sa_type=BigInteger)
+    option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
+
+
+class CmvSummaryOption(CmvSummaryOptionBase, BigIntPK, table=True):
+    __tablename__ = "cmv_summary_option"
+
+
+class CmvSummaryOptionRead(CmvSummaryOptionBase, HasId):
+    pass
+
+class CmvAntiviralResistanceBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    cmv_antiviral_resistance_testing_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cmv_antiviral_resistance_testing_date: date | None = None
+    cmv_antiviral_resistance_testing_results: str | None = None
+    cmv_gene_mutation_testing_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cmv_gene_mutation_testing_date: date | None = None
+    cmv_gene_mutation_testing_results: str | None = None
+    mutation_ul54_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    mutation_ul97_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+
+
+class CmvAntiviralResistance(CmvAntiviralResistanceBase, BigIntPK, table=True):
+    __tablename__ = "cmv_antiviral_resistance"
+
+
+
+class CmvEpisodesBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    episode_start_date: date | None = None
+    cmv_clinical_presentation_other: str | None = None
+    cmv_recurrence_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cmv_recurrence_date: date | None = None
+    cmv_diagnosis_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    immunosuppression_before_cmv_other: str | None = None
+    treatment_med_1_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    treatment_med_1_other: str | None = None
+    treatment_med_1_side_effects_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    treatment_med_1_side_effects_comments: str | None = None
+    treatment_med_1_max_daily_dose: float | None = None
+    treatment_med_1_start_date: date | None = None
+    treatment_med_1_end_date: date | None = None
+    treatment_med_2_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    treatment_med_2_other: str | None = None
+    treatment_med_2_side_effects_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    treatment_med_2_side_effects_comments: str | None = None
+    treatment_med_2_max_daily_dose: float | None = None
+    treatment_med_2_start_date: date | None = None
+    treatment_med_2_end_date: date | None = None
+    treatment_med_3_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    treatment_med_3_other: str | None = None
+    treatment_med_3_side_effects_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    treatment_med_3_side_effects_comments: str | None = None
+    treatment_med_3_max_daily_dose: float | None = None
+    treatment_med_3_start_date: date | None = None
+    treatment_med_3_end_date: date | None = None
+    secondary_prophylaxis_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    secondary_prophylaxis_other: str | None = None
+    secondary_prophylaxis_start_date: date | None = None
+    secondary_prophylaxis_end_date: date | None = None
+    immunosuppression_after_cmv_other: str | None = None
+    immunosuppression_dose_reduction_6_month_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    immunosuppression_dose_reduction_6_month_temp_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cmv_outcome_6_month_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cmv_outcome_12_month_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cmv_outcome_comments: str | None = None
+
+
+class CmvEpisodes(CmvEpisodesBase, BigIntPK, table=True):
+    __tablename__ = "cmv_episodes"
+
+    cmv_clinical_presentation: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "cmv_episodes_option",
+            "primaryjoin": "CmvEpisodes.id == CmvEpisodesOption.cmv_episodes_id",
+            "secondaryjoin": "and_(Option.id == CmvEpisodesOption.option_id,"
+            " Option.option_group == 'cmvepisodes.cmvclinicalpresentation')",
+            "viewonly": True,
+        }
+    )
+    immunosuppression_before_cmv: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "cmv_episodes_option",
+            "primaryjoin": "CmvEpisodes.id == CmvEpisodesOption.cmv_episodes_id",
+            "secondaryjoin": "and_(Option.id == CmvEpisodesOption.option_id,"
+            " Option.option_group == 'cmvepisodes.immunobeforecmv')",
+            "viewonly": True,
+        }
+    )
+    immunosuppression_after_cmv: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "cmv_episodes_option",
+            "primaryjoin": "CmvEpisodes.id == CmvEpisodesOption.cmv_episodes_id",
+            "secondaryjoin": "and_(Option.id == CmvEpisodesOption.option_id,"
+            " Option.option_group == 'cmvepisodes.immunopostcmv')",
+            "viewonly": True,
+        }
+    )
+
+class CmvEpisodesOptionBase(SQLModel):
+    cmv_episodes_id: int = Field(foreign_key="cmv_episodes.id", sa_type=BigInteger)
+    option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
+
+
+class CmvEpisodesOption(CmvEpisodesOptionBase, BigIntPK, table=True):
+    __tablename__ = "cmv_episodes_option"
+
+
+class CmvEpisodesOptionRead(CmvEpisodesOptionBase, HasId):
+    pass
+
+class CoreDataCheckBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    data_check_date: date | None = None
+    diagnosis_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    diagnosis_details: str | None = None
+    biopsy_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    biopsy_details: str | None = None
+    genetic_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    genetic_details: str | None = None
+    serum_creatinine_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    serum_creatinine_details: str | None = None
+    creat_ratio_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    creat_ratio_details: str | None = None
+    notes: str | None = None
+
+
+class CoreDataCheck(CoreDataCheckBase, BigIntPK, table=True):
+    __tablename__ = "core_data_check"
 
 class CodeBase(SQLModel):
     coding_system: str
@@ -3860,3 +4067,138 @@ class VasculitisMedsBase(SQLModel):
 
 class VasculitisMeds(VasculitisMedsBase, BigIntPK, table=True):
     __tablename__ = "vasculitis_meds"
+
+
+class StatusChangeBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    data_checked_date: date | None = None
+    transplant_last_year_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    first_dialysis_last_year_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    deceased_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    transfer_in_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    previous_hospital: str | None = None
+    transfer_out_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    next_hospital: str | None = None
+
+
+class StatusChange(StatusChangeBase, BigIntPK, table=True):
+    __tablename__ = "status_change"
+
+
+class SecondaryDiagnosisHypertensionBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    secondary_diagnosis_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    secondary_diagnosis_other: str | None = None
+    secondary_diagnosis_date: date | None = None
+
+
+class SecondaryDiagnosisHypertension(
+    SecondaryDiagnosisHypertensionBase, BigIntPK, table=True
+):
+    __tablename__ = "secondary_diagnosis_hypertension"
+
+
+class BaselineClinicBpMeasurementsBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    data_collection_date: date | None = None
+    office_average_systolic_bp: int | None = None
+    office_average_diastolic_bp: int | None = None
+    bp_standardised_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    bp_observed_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+
+
+class BaselineClinicBpMeasurements(
+    BaselineClinicBpMeasurementsBase, BigIntPK, table=True
+):
+    __tablename__ = "baseline_clinic_bp_measurements"
+
+class HypertensionHistoryBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    data_collection_date: date | None = None
+    presentation_year: str | None = None
+    presentation_age: int | None = None
+    presentation_systolic_bp: int | None = None
+    presentation_diastolic_bp: int | None = None
+    referral_systolic_bp: int | None = None
+    referral_diastolic_bp: int | None = None
+    smoking_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cvd_history_other: str | None = None
+    pregnancy_hypertension_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    abpm_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    day_average_systolic_bp: int | None = None
+    day_average_diastolic_bp: int | None = None
+    night_average_systolic_bp: int | None = None
+    night_average_diastolic_bp: int | None = None
+    overall_average_systolic_bp: int | None = None
+    overall_average_diastolic_bp: int | None = None
+
+
+class HypertensionHistory(HypertensionHistoryBase, BigIntPK, table=True):
+    __tablename__ = "hypertension_history"
+
+    cvd_history: list["Option"] = Relationship(
+        sa_relationship_kwargs={
+            "secondary": "hypertension_history_option",
+            "primaryjoin": "HypertensionHistory.id"
+            " == HypertensionHistoryOption.hypertension_history_id",
+            "secondaryjoin": "and_(Option.id == HypertensionHistoryOption.option_id,"
+            " Option.option_group == 'hthistory.cvdhistory')",
+            "viewonly": True,
+        }
+    )
+
+class HypertensionHistoryOptionBase(SQLModel):
+    hypertension_history_id: int = Field(foreign_key="hypertension_history.id", sa_type=BigInteger)
+    option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
+
+
+class HypertensionHistoryOption(HypertensionHistoryOptionBase, BigIntPK, table=True):
+    __tablename__ = "hypertension_history_option"
+
+
+class HypertensionHistoryOptionRead(HypertensionHistoryOptionBase, HasId):
+    pass
+
+class AdditionalInvestigationsBase(SQLModel):
+    patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
+    assessment_date: date | None = None
+    biochemical_adherence_testing_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    patient_fully_adherent_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cf_pwv: float | None = None
+    ba_pwv: float | None = None
+    lvmi: float | None = None
+    pwv_device: str | None = None
+    central_sbp: int | None = None
+    central_dbp: int | None = None
+    central_ap: int | None = None
+    central_aix: int | None = None
+
+
+class AdditionalInvestigations(AdditionalInvestigationsBase, BigIntPK, table=True):
+    __tablename__ = "additional_investigations"
