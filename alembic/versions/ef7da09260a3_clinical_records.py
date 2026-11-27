@@ -1,28 +1,4 @@
 """radar 2 -> radar 3: clinical record tables
-
-Creates the radar 3 clinical record tables in the radar3 schema from their models
-and copies radar 2's rows into them. Radar 2's tables are left as they are.
-    (none: new in radar 3)          -> clinical_letter             created empty
-    dialysis                        -> dialysis                    new ids
-    fetal_anomaly_scans             -> fetal_anomaly_scan          new ids
-    fetal_ultrasounds               -> fetal_ultrasound            new ids
-    genetics                        -> genetics                    new ids
-    hospitalisations                -> hospitalisation             new ids
-    liver_diseases                  -> liver_disease               new ids
-    liver_imaging                   -> liver_imaging               new ids
-    liver_transplants               -> liver_transplant            new ids
-    liver_transplants (indications) -> liver_transplant_indicator  new ids
-    nephrectomies                   -> nephrectomy                 new ids
-    nutrition                       -> nutrition                   new ids
-    pathology                       -> pathology                   new ids
-    plasmapheresis                  -> plasmapheresis              new ids
-    pregnancies                     -> pregnancy                   new ids
-    renal_imaging                   -> renal_imaging               new ids
-    renal_progressions              -> renal_progression           new ids
-    transplants                     -> transplant                  new ids
-    transplant_biopsies             -> transplant_biopsy           ids kept
-    transplant_rejections           -> transplant_rejection        ids kept
-
 One-way migration.
 
 Revision ID: ef7da09260a3

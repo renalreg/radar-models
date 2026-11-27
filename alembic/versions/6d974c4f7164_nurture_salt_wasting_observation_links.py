@@ -1,18 +1,5 @@
 """radar 2 -> radar 3: nurture metadata, salt wasting, observation links
 
-Copies nurture_data, salt_wasting_clinical_features and group_observations
-into radar3 with new ids, each row checked with its model, and links each
-observation to its options and PV code:
-
-    observations.options  (code, description pairs) -> option, observation_option
-    observations.pv_code  -> code (coding_system PV), observation_code
-
-group_observations rows on non-cohort groups are not copied, and their count is
-logged as a warning. sample_inventory is created empty: radar 2 has no table
-for it.
-
-[D1] radar 2 NULLs in the true/false columns become false.
-
 One-way migration.
 
 Revision ID: 6d974c4f7164

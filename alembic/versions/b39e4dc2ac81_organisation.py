@@ -1,28 +1,4 @@
 """radar 2 -> radar 3: organisation tables
-
-Creates the radar 3 organisation tables in the radar3 schema from their models and
-copies radar 2's rows into them. Rows are read from radar 2 with SQL, checked
-against the model with model_validate, then added with the session. Radar 2's
-tables are left as they are.
-
-    specialties                          -> specialty            ids kept
-    consultants                          -> consultant           ids kept
-    groups (type = 'HOSPITAL')           -> hospital             ids kept
-    group_consultants (HOSPITAL groups)  -> hospital_consultant  ids kept
-    groups (type = 'COHORT')             -> cohort               ids kept
-    consents                             -> consent              ids kept
-
-Hospitals and cohorts keep their radar 2 group ids, so any radar 2 group_id maps
-straight to a hospital or cohort id. group_consultants rows on other groups have
-no radar 3 home: they are not copied, and their count is logged as a warning.
-
-[D1] radar 2 NULLs in the true/false columns (consents.paediatric,
-consents.retired, groups.is_transplant_centre) become false.
-[D6] radar 2 columns with no radar 3 home are dropped: see each query.
-
-A row that does not fit its model stops the migration, listing every bad row in
-that table, and the whole step is rolled back.
-
 One-way migration.
 
 Revision ID: b39e4dc2ac81

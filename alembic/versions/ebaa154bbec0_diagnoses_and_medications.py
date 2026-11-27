@@ -1,20 +1,5 @@
 """radar 2 -> radar 3: patient diagnoses and medications
 
-Creates the radar 3 patient diagnosis, drug and medication tables in the radar3
-schema from their models and copies radar 2's rows into them. Radar 2's tables
-are left as they are.
-
-    patient_diagnoses               -> patient_diagnosis           new ids
-    patient_diagnoses (antibody_id) -> antibody                    new ids
-    drugs                           -> drug                        ids kept
-    drug_groups                     -> drug_group                  ids kept
-    drugs.drug_group_id, and every group above it
-                                    -> drug_to_group
-    medications + current_medications
-                                    -> medication                  new ids
-
-One-way migration.
-
 Revision ID: ebaa154bbec0
 Revises: ef7da09260a3
 Create Date: 2026-11-18 15:40:00.000000

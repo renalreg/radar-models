@@ -1,9 +1,5 @@
 """radar 2 -> radar 3: clinical pictures to assessments
 
-Copies alport, fuan, hnf1b, ins and mpgn clinical pictures into their radar 3
-assessment tables with new ids, in patient and date order, each row checked
-with its model. fuan's family_gout_relatives is not copied: radar 3 has no
-column for it. One-way migration.
 
 Revision ID: 46cad851886e
 Revises: d1aa40c7d72c

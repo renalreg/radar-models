@@ -1,10 +1,5 @@
 """radar 2 -> radar 3: rituximab baseline assessments and criteria
 
-Adds radar 2's supportive medications and treatments to option, then copies
-rituximab_baseline_assessment, its supportive medications and previous
-treatments, and rituximab_criteria, each row checked with its model.
-One-way migration.
-
 Revision ID: 809d34638caf
 Revises: 7e8597a03a37
 Create Date: 2026-11-27 14:15:00.000000

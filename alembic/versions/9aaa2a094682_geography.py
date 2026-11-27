@@ -1,19 +1,5 @@
 """radar 2 -> radar 3, step 1: geography tables
 
-Creates the radar 3 geography tables in the radar3 schema from their models and
-copies radar 2's rows into them. Rows are read from radar 2 with SQL, checked
-against the model with model_validate, then added with the session. Radar 2's
-tables are left as they are.
-
-    countries             -> country              code -> country_code (primary key)
-    ethnicities           -> ethnicity            ids kept
-    nationalities         -> nationality          ids kept
-    country_ethnicities   -> country_ethnicity    ids kept; country_code kept
-    country_nationalities -> country_nationality  ids kept; country_code kept
-
-radar 3 keys countries by their 2-letter code, as radar 2 does, so later steps that
-point at a country copy the code straight across.
-
 One-way migration.
 
 Revision ID: 9aaa2a094682

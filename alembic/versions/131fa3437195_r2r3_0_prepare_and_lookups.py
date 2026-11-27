@@ -1,17 +1,5 @@
 """radar 2 -> radar 3, step 0: radar3 schema and lookup tables
 
-Creates the radar3 schema, then creates and fills the lookup tables later steps
-point at: data_source, front_page_stat, identifier, indicator, option, sample_type.
-
-Radar 2 is left untouched in the public schema. Every radar 3 table is created
-from its radar_models.radar3 model in the radar3 schema. Rows are read from radar 2
-with SQL, checked against the model with model_validate, then added with the session.
-
-option holds every radar 2 enum value, plus every {label, value} from the "options"
-arrays in the radar 2 form definitions (public.forms.data), grouped by form and
-field: <form slug>.<field name>, e.g. ddls.extraInvolvement, plus radar 2's
-antibodies under the group "antibody".
-
 One-way migration.
 
 Revision ID: 131fa3437195

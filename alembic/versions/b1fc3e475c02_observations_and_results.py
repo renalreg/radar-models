@@ -1,38 +1,4 @@
 """radar 2 -> radar 3: observations and results
-
-Creates the radar 3 observation and result tables in the radar3 schema from
-their models and copies radar 2's rows into them. Radar 2's tables are left as
-they are. results is likely radar 2's biggest table, so it has this step to
-itself and is copied in batches (see copy_result).
-
-    observations                    -> observation                 ids kept
-    results                         -> result                      new ids
-
-observation is copied as the other steps copy their tables: its rows are read
-with SQL under their radar 2 column names, mapped to the model's fields in a
-dict, checked with the model and added with the session.
-
-result's rows are checked with the model too, but as radar 2 has about 61
-million results they are copied in batches of RESULT_BATCH_SIZE rows, and each
-batch is inserted with one execute rather than added with the session (see
-copy_result). The model cannot check that every patient, observation, hospital
-and data source pointed at exists; the database checks that when result's
-foreign keys are added after the copy.
-
-Any error stops the migration and the whole step is rolled back.
-
-
-
-Times: results.date, a radar 2 timestamptz, keeps the UTC time, with or without
-a zone as the radar 3 column takes it (see utc()).
-
-Dropped from every table: source_group_id and source_type (looked up as above),
-created_user_id, created_date, modified_user_id, modified_date.
-could change: observations' value_type, pv_code, min_length, max_length and
-options, and group_observations, are not copied yet: radar 3's observation has
-no columns for them, and observation_code, observation_option and
-cohort_observation have no mapping.
-
 One-way migration.
 
 Revision ID: b1fc3e475c02

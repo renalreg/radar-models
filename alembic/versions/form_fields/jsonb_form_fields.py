@@ -13,38 +13,6 @@ FORMS maps a radar 2 form id to (model, fields, casts):
 A field with a foreign key to option.id gets the id of the answer's option,
 not the answer.
 
-Forms copied:
-
-     1  6cit                       -> six_cit
-     2  anthropometrics            -> anthropometric
-     3  chu9d                      -> paeds_chu9d
-     4  diabetic-complications     -> diabetic_complication
-     5  eq-5d-5l                   -> adult_eq5d5l
-     6  eq-5d-y                    -> eq5dy
-     7  family-history             -> nurture_family_history
-     8  hads                       -> hads
-     9  ipos                       -> ipos
-    10  pam                        -> pam
-    11  samples                    -> tube_sample
-    12  socio-economic             -> socioeconomic
-    13  nurtureckd                 -> nurture_visit
-    15  igan                       -> hsp_assessment
-    16  calciphylaxis              -> calciphylaxis_assessment
-    17  rituximab-administration   -> rituximab_toxicity
-    18  rituximab-adverse-events   -> adverse_event
-    19  rituximab-assessment       -> rituximab_follow_up_assessment
-    22  igan-inventory             -> sample_inventory
-    23  igan-research              -> iga_research
-    24  origin                     -> ethnic_origin
-    25  specgenetics               -> ckd_africa_genetic
-    26  renalgenetics              -> renal_cancer_genetics
-    27  renaltumour                -> renal_cancer_tumour
-    29  riskckd                    -> ckd_africa_risk_factor
-    33  paedcyst                   -> cystinosis_paed_visit
-    34  cystadult                  -> cystinosis_adult_visit
-    35  procedures                 -> procedure
-    36  cancertumours              -> cancer_tumour
-    37  letters                    -> clinical_letter
 
 Lives in versions/form_fields/, not versions/ itself, as Alembic loads every
 .py file in versions/ as a migration.

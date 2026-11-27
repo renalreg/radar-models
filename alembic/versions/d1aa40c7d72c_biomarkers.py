@@ -1,10 +1,5 @@
 """radar 2 -> radar 3: biomarkers and codes
 
-Copies codes, biomarkers, biomarker_barcodes, biomarker_samples and
-biomarker_results into radar3, keeping their ids, each row checked with its
-model. biomarker_results' proc_date and hospital are not copied: radar 3 has no
-columns for them. One-way migration.
-
 Revision ID: d1aa40c7d72c
 Revises: 809d34638caf
 Create Date: 2026-11-27 15:08:15.674152

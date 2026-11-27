@@ -1,14 +1,5 @@
 """radar 2 -> radar 3: posts, cohort diagnoses, diagnosis codes, ins relapses
 
-Copies posts, group_diagnoses, diagnosis_codes and ins_relapses into radar3
-with new ids, each row checked with its model. A cohort diagnosis's type
-(PRIMARY, SECONDARY) becomes an option in DIAGNOSIS_TYPE_GROUP; group_diagnoses
-rows on non-cohort groups are not copied, and their count is logged as a
-warning.
-
-[D1] radar 2 NULLs in the true/false columns become false.
-[D6] radar 2 columns with no radar 3 home are dropped: see each query.
-
 One-way migration.
 
 Revision ID: 37b72cbd4103
