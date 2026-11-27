@@ -3419,11 +3419,11 @@ class RituximabBaselineAssessmentBase(SQLModel):
     )
     assessment_date: date
     nephropathy: str | None = None
-    has_steroids: bool
+    has_steroids: bool | None = None
     other_previous_treatment: str | None = None
-    has_past_remission: bool
+    has_past_remission: bool | None = None
     performance_status_index: int | None = None
-    has_comorbidities: bool
+    has_comorbidities: bool | None = None
 
 
 class RituximabBaselineAssessment(
@@ -3466,6 +3466,7 @@ class RituximabBaselinePreviousTreatmentBase(SQLModel):
         foreign_key="rituximab_baseline_assessment.id", sa_type=BigInteger
     )
     option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
+    total_dose: str | None = None
     treatment_start_date: date
     treatment_end_date: date | None = None
 
@@ -3492,28 +3493,28 @@ class RituximabBaselinePreviousTreatmentRead(
 class RituximabCriteriaBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     assessment_date: date
-    has_criterion_1: bool
-    has_criterion_2: bool
-    has_criterion_3: bool
-    has_criterion_4: bool
-    has_criterion_5: bool
-    has_criterion_6: bool
-    has_criterion_7: bool
-    has_alkylating_complication: bool
-    has_alkylating_failure_monitoring_requirements: bool
-    has_cancer: bool
-    has_cni_failure_monitoring_requirements: bool
-    has_cni_therapy_complication: bool
-    has_diabetes: bool
-    has_drug_associated_toxicity: bool
-    has_fall_in_egfr: bool
-    has_hypersensitivity: bool
-    has_risk_factors: bool
-    has_ongoing_severe_disease: bool
-    has_threatened_fertility: bool
-    has_mood_disturbance: bool
-    has_osteoporosis_osteopenia: bool
-    has_previous_hospitalization: bool
+    has_criterion_1: bool | None = None
+    has_criterion_2: bool | None = None
+    has_criterion_3: bool | None = None
+    has_criterion_4: bool | None = None
+    has_criterion_5: bool | None = None
+    has_criterion_6: bool | None = None
+    has_criterion_7: bool | None = None
+    has_alkylating_complication: bool | None = None
+    has_alkylating_failure_monitoring_requirements: bool | None = None
+    has_cancer: bool | None = None
+    has_cni_failure_monitoring_requirements: bool | None = None
+    has_cni_therapy_complication: bool | None = None
+    has_diabetes: bool | None = None
+    has_drug_associated_toxicity: bool | None = None
+    has_fall_in_egfr: bool | None = None
+    has_hypersensitivity: bool | None = None
+    has_risk_factors: bool | None = None
+    has_ongoing_severe_disease: bool | None = None
+    has_threatened_fertility: bool | None = None
+    has_mood_disturbance: bool | None = None
+    has_osteoporosis_osteopenia: bool | None = None
+    has_previous_hospitalization: bool | None = None
 
 
 class RituximabCriteria(RituximabCriteriaBase, BigIntPK, table=True):
