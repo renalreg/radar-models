@@ -1605,11 +1605,11 @@ class FrontPageStatRead(FrontPageStatBase, HasId):
 class FuanAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     picture_date: date
-    has_gout: bool
+    has_gout: bool | None = None
     gout_date: date | None = None
-    has_family_gout: bool
+    has_family_gout: bool | None = None
     thp: str | None = None
-    has_uti: bool
+    has_uti: bool | None = None
     fuan_comments: str | None = None
 
 
@@ -1681,12 +1681,12 @@ class HADSRead(HADSBase, HasId):
 class Hnf1bAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_picture: date
-    has_single_kidney: bool
-    has_hyperuricemia_gout: bool
-    has_genital_malformation: bool
-    genital_malformation_details: str
-    has_familial_cystic_disease: bool
-    has_hypertension: bool
+    has_single_kidney: bool| None = None
+    has_hyperuricemia_gout: bool| None = None
+    has_genital_malformation: bool| None = None
+    genital_malformation_details: str| None = None
+    has_familial_cystic_disease: bool| None = None
+    has_hypertension: bool| None = None
 
 
 class Hnf1bAssessment(Hnf1bAssessmentBase, BigIntPK, table=True):
@@ -1864,18 +1864,18 @@ class IndicatorRead(IndicatorBase, HasId):
 class InsAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_picture: date
-    has_oedema: bool
-    has_hypovoloemia: bool
-    has_fever: bool
-    has_thrombosis: bool
-    has_peritonitis: bool
-    has_pulmonary_oedema: bool
-    has_hypertension: bool
-    has_rash: bool
+    has_oedema: bool| None = None
+    has_hypovoloemia: bool| None = None
+    has_fever: bool| None = None
+    has_thrombosis: bool| None = None
+    has_peritonitis: bool| None = None
+    has_pulmonary_oedema: bool| None = None
+    has_hypertension: bool| None = None
+    has_rash: bool| None = None
     rash_details: str | None = None
-    has_infection: bool
+    has_infection: bool| None = None
     infection_details: str | None = None
-    has_ophthalmoscopy: bool
+    has_ophthalmoscopy: bool| None = None
     ophthalmoscopy_details: str | None = None
     ins_comments: str | None = None
 
@@ -2476,13 +2476,13 @@ class MedicationRead(MedicationBase, HasId):
 class MpgnAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_picture: date
-    has_oedema: bool
-    has_hypertension: bool
-    has_urticaria: bool
-    has_partial_lipodystrophy: bool
-    has_infection: bool
+    has_oedema: bool| None = None
+    has_hypertension: bool| None = None
+    has_urticaria: bool| None = None
+    has_partial_lipodystrophy: bool| None = None
+    has_infection: bool| None = None
     infection_details: str | None = None
-    has_ophthalmoscopy: bool
+    has_ophthalmoscopy: bool| None = None
     ophthalmoscopy_details: str | None = None
     mpgn_comments: str | None = None
 
