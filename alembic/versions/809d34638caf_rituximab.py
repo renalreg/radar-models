@@ -56,6 +56,7 @@ TREATMENT_OPTIONS = {
 # a previous_treatment entry's keys besides its own name
 TREATMENT_KEYS = {"start_date", "end_date", "total_dose"}
 
+
 def hospital_id(row: RowMapping) -> int | None:
     """[D3] the source group if it is a hospital, else NULL."""
     if row["type"] == "HOSPITAL":

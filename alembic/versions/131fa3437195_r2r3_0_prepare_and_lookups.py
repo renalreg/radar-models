@@ -147,7 +147,9 @@ def seed_options(session: Session) -> None:
     seen: set[tuple[str, str]] = set()
     for enum_name, value in rows:
         key = (enum_to_option_group(enum_name), value)
-        if (key in seen) or (enum_name in [SAMPLE_TYPE_ENUM,"antibody_type_enum","group_type"]):
+        if (key in seen) or (
+            enum_name in [SAMPLE_TYPE_ENUM, "antibody_type_enum", "group_type"]
+        ):
             continue
         seen.add(key)
         session.add(
@@ -281,8 +283,9 @@ def seed_antibodies(session: Session) -> None:
     )
     session.flush()
 
+
 def seed_relation(session: Session) -> None:
-    RELATIONSHIPS=[
+    RELATIONSHIPS = [
         (1, "Mother"),
         (2, "Father"),
         (3, "Sister"),
@@ -305,13 +308,11 @@ def seed_relation(session: Session) -> None:
         (20, "Grandson"),
     ]
 
-
-    rows = [
-        {"id": code, "relation_label": label} for code, label in RELATIONSHIPS
-    ]
+    rows = [{"id": code, "relation_label": label} for code, label in RELATIONSHIPS]
 
     session.add_all([Relation.model_validate(dict(row)) for row in rows])
     session.flush()
+
 
 def seed_diagnosis(session: Session) -> None:
     radar2_rows = session.execute(
@@ -332,6 +333,7 @@ def seed_diagnosis(session: Session) -> None:
 
     session.add_all([Diagnosis.model_validate(dict(row)) for row in rows])
     session.flush()
+
 
 def upgrade() -> None:
     bind = op.get_bind()

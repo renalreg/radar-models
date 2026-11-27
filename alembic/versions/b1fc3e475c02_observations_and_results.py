@@ -284,7 +284,9 @@ def upgrade() -> None:
         with Session(bind=bind) as session:
             copy_observation(session)
             count = copy_result(session)
-            log.info("result: %s rows copied from radar 2's results, in all", f"{count:,}")
+            log.info(
+                "result: %s rows copied from radar 2's results, in all", f"{count:,}"
+            )
 
         # a result with no patient, observation, hospital or data source to
         # point at stops the migration here

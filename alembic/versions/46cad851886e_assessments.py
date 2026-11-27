@@ -84,8 +84,9 @@ def copy_alport(session: Session) -> None:
 
 def copy_fuan(session: Session) -> None:
     """Copies fuan_clinical_pictures to fuan_assessment."""
-    rows = session.execute(
-        text("""
+    rows = (
+        session.execute(
+            text("""
         SELECT
             fuan.id,
             fuan.patient_id,
@@ -100,7 +101,10 @@ def copy_fuan(session: Session) -> None:
         FROM public.fuan_clinical_pictures AS fuan
         ORDER BY fuan.patient_id, fuan.picture_date, fuan.id
     """)
-    ).mappings().all()
+        )
+        .mappings()
+        .all()
+    )
     add_copies(
         session,
         FuanAssessment,
@@ -156,9 +160,7 @@ def copy_hnf1b(session: Session) -> None:
                     "has_single_kidney": row["single_kidney"],
                     "has_hyperuricemia_gout": row["hyperuricemia_gout"],
                     "has_genital_malformation": row["genital_malformation"],
-                    "genital_malformation_details": row[
-                        "genital_malformation_details"
-                    ],
+                    "genital_malformation_details": row["genital_malformation_details"],
                     "has_familial_cystic_disease": row["familial_cystic_disease"],
                     "has_hypertension": row["hypertension"],
                 }

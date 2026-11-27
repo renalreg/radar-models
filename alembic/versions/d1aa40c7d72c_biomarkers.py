@@ -10,6 +10,7 @@ Revises: 809d34638caf
 Create Date: 2026-11-27 15:08:15.674152
 
 """
+
 import logging
 from datetime import UTC, datetime
 from typing import Sequence, Union
@@ -27,8 +28,8 @@ from radar_models.radar3 import (
 )
 
 # revision identifiers, used by Alembic.
-revision: str = 'd1aa40c7d72c'
-down_revision: Union[str, Sequence[str], None] = '809d34638caf'
+revision: str = "d1aa40c7d72c"
+down_revision: Union[str, Sequence[str], None] = "809d34638caf"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

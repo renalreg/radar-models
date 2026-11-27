@@ -191,8 +191,7 @@ def copy_dialysis(session: Session) -> dict[Any, int]:
 
     # the flush gave each row its new id
     return {
-        row["id"]: record.id
-        for row, record in zip(radar2_rows, dialysis, strict=True)
+        row["id"]: record.id for row, record in zip(radar2_rows, dialysis, strict=True)
     }
 
 
@@ -381,8 +380,7 @@ def copy_genetics(session: Session) -> dict[Any, int]:
 
     # the flush gave each row its new id
     return {
-        row["id"]: record.id
-        for row, record in zip(radar2_rows, genetics, strict=True)
+        row["id"]: record.id for row, record in zip(radar2_rows, genetics, strict=True)
     }
 
 
@@ -781,8 +779,7 @@ def copy_nutrition(session: Session) -> dict[Any, int]:
 
     # the flush gave each row its new id
     return {
-        row["id"]: record.id
-        for row, record in zip(radar2_rows, nutrition, strict=True)
+        row["id"]: record.id for row, record in zip(radar2_rows, nutrition, strict=True)
     }
 
 
@@ -841,8 +838,7 @@ def copy_pathology(session: Session) -> dict[Any, int]:
 
     # the flush gave each row its new id
     return {
-        row["id"]: record.id
-        for row, record in zip(radar2_rows, pathology, strict=True)
+        row["id"]: record.id for row, record in zip(radar2_rows, pathology, strict=True)
     }
 
 
@@ -1195,9 +1191,7 @@ def copy_transplant_biopsy(session: Session, transplant_ids: dict[Any, int]) -> 
     reset_sequence(session, "transplant_biopsy")
 
 
-def copy_transplant_rejection(
-    session: Session, transplant_ids: dict[Any, int]
-) -> None:
+def copy_transplant_rejection(session: Session, transplant_ids: dict[Any, int]) -> None:
     """Copies transplant_rejections, keeping their ids."""
     radar2_rows = session.execute(
         text("""

@@ -7,6 +7,7 @@ Create Date: 2026-10-30
 This revision exists so the migration chain has a root that matches
 databases already stamped with a22849217d2. It makes no changes.
 """
+
 from typing import Sequence, Union
 
 

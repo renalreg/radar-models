@@ -604,8 +604,7 @@ class ClinicalLetterRead(ClinicalLetterBase, HasId):
 
 class CmvSummaryBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    cmv_status_index: int= Field(foreign_key="option.id", sa_type=BigInteger
-    )
+    cmv_status_index: int = Field(foreign_key="option.id", sa_type=BigInteger)
     cmv_management_strategy_index: int = Field(
         foreign_key="option.id", sa_type=BigInteger
     )
@@ -648,6 +647,7 @@ class CmvSummaryOption(CmvSummaryOptionBase, BigIntPK, table=True):
 class CmvSummaryOptionRead(CmvSummaryOptionBase, HasId):
     pass
 
+
 class CmvAntiviralResistanceBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     cmv_antiviral_resistance_testing_index: int | None = Field(
@@ -670,7 +670,6 @@ class CmvAntiviralResistanceBase(SQLModel):
 
 class CmvAntiviralResistance(CmvAntiviralResistanceBase, BigIntPK, table=True):
     __tablename__ = "cmv_antiviral_resistance"
-
 
 
 class CmvEpisodesBase(SQLModel):
@@ -771,6 +770,7 @@ class CmvEpisodes(CmvEpisodesBase, BigIntPK, table=True):
         }
     )
 
+
 class CmvEpisodesOptionBase(SQLModel):
     cmv_episodes_id: int = Field(foreign_key="cmv_episodes.id", sa_type=BigInteger)
     option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
@@ -782,6 +782,7 @@ class CmvEpisodesOption(CmvEpisodesOptionBase, BigIntPK, table=True):
 
 class CmvEpisodesOptionRead(CmvEpisodesOptionBase, HasId):
     pass
+
 
 class CoreDataCheckBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
@@ -811,6 +812,7 @@ class CoreDataCheckBase(SQLModel):
 
 class CoreDataCheck(CoreDataCheckBase, BigIntPK, table=True):
     __tablename__ = "core_data_check"
+
 
 class CodeBase(SQLModel):
     coding_system: str
@@ -1681,12 +1683,12 @@ class HADSRead(HADSBase, HasId):
 class Hnf1bAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_picture: date
-    has_single_kidney: bool| None = None
-    has_hyperuricemia_gout: bool| None = None
-    has_genital_malformation: bool| None = None
-    genital_malformation_details: str| None = None
-    has_familial_cystic_disease: bool| None = None
-    has_hypertension: bool| None = None
+    has_single_kidney: bool | None = None
+    has_hyperuricemia_gout: bool | None = None
+    has_genital_malformation: bool | None = None
+    genital_malformation_details: str | None = None
+    has_familial_cystic_disease: bool | None = None
+    has_hypertension: bool | None = None
 
 
 class Hnf1bAssessment(Hnf1bAssessmentBase, BigIntPK, table=True):
@@ -1864,18 +1866,18 @@ class IndicatorRead(IndicatorBase, HasId):
 class InsAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_picture: date
-    has_oedema: bool| None = None
-    has_hypovoloemia: bool| None = None
-    has_fever: bool| None = None
-    has_thrombosis: bool| None = None
-    has_peritonitis: bool| None = None
-    has_pulmonary_oedema: bool| None = None
-    has_hypertension: bool| None = None
-    has_rash: bool| None = None
+    has_oedema: bool | None = None
+    has_hypovoloemia: bool | None = None
+    has_fever: bool | None = None
+    has_thrombosis: bool | None = None
+    has_peritonitis: bool | None = None
+    has_pulmonary_oedema: bool | None = None
+    has_hypertension: bool | None = None
+    has_rash: bool | None = None
     rash_details: str | None = None
-    has_infection: bool| None = None
+    has_infection: bool | None = None
     infection_details: str | None = None
-    has_ophthalmoscopy: bool| None = None
+    has_ophthalmoscopy: bool | None = None
     ophthalmoscopy_details: str | None = None
     ins_comments: str | None = None
 
@@ -2074,66 +2076,76 @@ class LiverTransplantIndicator(LiverTransplantIndicatorBase, BigIntPK, table=Tru
 class LiverTransplantIndicatorRead(LiverTransplantIndicatorBase, HasId):
     pass
 
+
 class cyclophosphamide_8(SQLModel):
-    cyclophosphamide_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
-    cyclophosphamide_date_1:date|None=None
-    cyclophosphamide_dose_1:float|None=None
-    cyclophosphamide_date_2:date|None=None
-    cyclophosphamide_dose_2:float|None=None
-    cyclophosphamide_date_3:date|None=None
-    cyclophosphamide_dose_3:float|None=None
-    cyclophosphamide_date_4:date|None=None
-    cyclophosphamide_dose_4:float|None=None
-    cyclophosphamide_date_5:date|None=None
-    cyclophosphamide_dose_5:float|None=None
-    cyclophosphamide_date_6:date|None=None
-    cyclophosphamide_dose_6:float|None=None
-    cyclophosphamide_date_7:date|None=None
-    cyclophosphamide_dose_7:float|None=None
-    cyclophosphamide_date_8:date|None=None
-    cyclophosphamide_dose_8:float|None=None
+    cyclophosphamide_inf_sel_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cyclophosphamide_date_1: date | None = None
+    cyclophosphamide_dose_1: float | None = None
+    cyclophosphamide_date_2: date | None = None
+    cyclophosphamide_dose_2: float | None = None
+    cyclophosphamide_date_3: date | None = None
+    cyclophosphamide_dose_3: float | None = None
+    cyclophosphamide_date_4: date | None = None
+    cyclophosphamide_dose_4: float | None = None
+    cyclophosphamide_date_5: date | None = None
+    cyclophosphamide_dose_5: float | None = None
+    cyclophosphamide_date_6: date | None = None
+    cyclophosphamide_dose_6: float | None = None
+    cyclophosphamide_date_7: date | None = None
+    cyclophosphamide_dose_7: float | None = None
+    cyclophosphamide_date_8: date | None = None
+    cyclophosphamide_dose_8: float | None = None
+
 
 class methylprednisolone_8(SQLModel):
-    methylprednisolone_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
-    methylprednisolone_date_1:date|None=None
-    methylprednisolone_dose_1:float|None=None
-    methylprednisolone_date_2:date|None=None
-    methylprednisolone_dose_2:float|None=None
-    methylprednisolone_date_3:date|None=None
-    methylprednisolone_dose_3:float|None=None
-    methylprednisolone_date_4:date|None=None
-    methylprednisolone_dose_4:float|None=None
-    methylprednisolone_date_5:date|None=None
-    methylprednisolone_dose_5:float|None=None
-    methylprednisolone_date_6:date|None=None
-    methylprednisolone_dose_6:float|None=None
-    methylprednisolone_date_7:date|None=None
-    methylprednisolone_dose_7:float|None=None
-    methylprednisolone_date_8:date|None=None
-    methylprednisolone_dose_8:float|None=None
-    methylprednisolone_date_9:date|None=None
-    methylprednisolone_dose_9:float|None=None
-    methylprednisolone_date_10:date|None=None
-    methylprednisolone_dose_10:float|None=None
+    methylprednisolone_inf_sel_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    methylprednisolone_date_1: date | None = None
+    methylprednisolone_dose_1: float | None = None
+    methylprednisolone_date_2: date | None = None
+    methylprednisolone_dose_2: float | None = None
+    methylprednisolone_date_3: date | None = None
+    methylprednisolone_dose_3: float | None = None
+    methylprednisolone_date_4: date | None = None
+    methylprednisolone_dose_4: float | None = None
+    methylprednisolone_date_5: date | None = None
+    methylprednisolone_dose_5: float | None = None
+    methylprednisolone_date_6: date | None = None
+    methylprednisolone_dose_6: float | None = None
+    methylprednisolone_date_7: date | None = None
+    methylprednisolone_dose_7: float | None = None
+    methylprednisolone_date_8: date | None = None
+    methylprednisolone_dose_8: float | None = None
+    methylprednisolone_date_9: date | None = None
+    methylprednisolone_dose_9: float | None = None
+    methylprednisolone_date_10: date | None = None
+    methylprednisolone_dose_10: float | None = None
+
 
 class rituximab_8(SQLModel):
-    rituximab_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
-    rituximab_inf_date_1:date|None=None
-    rituximab_inf_dose_1:float|None=None
-    rituximab_inf_date_2:date|None=None
-    rituximab_inf_dose_2:float|None=None
-    rituximab_inf_date_3:date|None=None
-    rituximab_inf_dose_3:float|None=None
-    rituximab_inf_date_4:date|None=None
-    rituximab_inf_dose_4:float|None=None
-    rituximab_inf_date_5:date|None=None
-    rituximab_inf_dose_5:float|None=None
-    rituximab_inf_date_6:date|None=None
-    rituximab_inf_dose_6:float|None=None
+    rituximab_inf_sel_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    rituximab_inf_date_1: date | None = None
+    rituximab_inf_dose_1: float | None = None
+    rituximab_inf_date_2: date | None = None
+    rituximab_inf_dose_2: float | None = None
+    rituximab_inf_date_3: date | None = None
+    rituximab_inf_dose_3: float | None = None
+    rituximab_inf_date_4: date | None = None
+    rituximab_inf_dose_4: float | None = None
+    rituximab_inf_date_5: date | None = None
+    rituximab_inf_dose_5: float | None = None
+    rituximab_inf_date_6: date | None = None
+    rituximab_inf_dose_6: float | None = None
     rituximab_inf_date_7: date | None = None
-    rituximab_inf_dose_7:float|None=None
-    rituximab_inf_date_8:date|None=None
+    rituximab_inf_dose_7: float | None = None
+    rituximab_inf_date_8: date | None = None
     rituximab_inf_dose_8: float | None = None
+
 
 class prednisolone_8(SQLModel):
     prednisolone_newmed_index: int | None = Field(
@@ -2163,24 +2175,34 @@ class prednisolone_8(SQLModel):
     prednisolone_newmed_startdate_10: date | None = None
     prednisolone_newmed_enddate_10: date | None = None
 
-class obinutuzumab_inf_6(SQLModel):
-    obinutuzumab_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
-    obinutuzumab_inf_date_1:date|None=None
-    obinutuzumab_inf_dose_1:float|None=None
-    obinutuzumab_inf_date_2:date|None=None
-    obinutuzumab_inf_dose_2:float|None=None
-    obinutuzumab_inf_date_3:date|None=None
-    obinutuzumab_inf_dose_3:float|None=None
-    obinutuzumab_inf_date_4:date|None=None
-    obinutuzumab_inf_dose_4:float|None=None
-    obinutuzumab_inf_date_5:date|None=None
-    obinutuzumab_inf_dose_5:float|None=None
-    obinutuzumab_inf_date_6:date|None=None
-    obinutuzumab_inf_dose_6:float|None=None
 
-class LupusReviewBase(cyclophosphamide_8, methylprednisolone_8, rituximab_8, prednisolone_8, obinutuzumab_inf_6):
+class obinutuzumab_inf_6(SQLModel):
+    obinutuzumab_inf_sel_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    obinutuzumab_inf_date_1: date | None = None
+    obinutuzumab_inf_dose_1: float | None = None
+    obinutuzumab_inf_date_2: date | None = None
+    obinutuzumab_inf_dose_2: float | None = None
+    obinutuzumab_inf_date_3: date | None = None
+    obinutuzumab_inf_dose_3: float | None = None
+    obinutuzumab_inf_date_4: date | None = None
+    obinutuzumab_inf_dose_4: float | None = None
+    obinutuzumab_inf_date_5: date | None = None
+    obinutuzumab_inf_dose_5: float | None = None
+    obinutuzumab_inf_date_6: date | None = None
+    obinutuzumab_inf_dose_6: float | None = None
+
+
+class LupusReviewBase(
+    cyclophosphamide_8,
+    methylprednisolone_8,
+    rituximab_8,
+    prednisolone_8,
+    obinutuzumab_inf_6,
+):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    review_date: date|None = None
+    review_date: date | None = None
     inclass_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
@@ -2190,8 +2212,8 @@ class LupusReviewBase(cyclophosphamide_8, methylprednisolone_8, rituximab_8, pre
     biopsyconfirmation_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
-    number_of_live_births:float|None = None
-    flaredate_1:date|None = None
+    number_of_live_births: float | None = None
+    flaredate_1: date | None = None
     flaredate_2: date | None = None
     flaredate_3: date | None = None
     pregancy_number: int | None = None
@@ -2288,7 +2310,6 @@ class LupusReviewBase(cyclophosphamide_8, methylprednisolone_8, rituximab_8, pre
     hydroxychloroquine_newmed_startdate_4: date | None = None
     hydroxychloroquine_newmed_enddate_4: date | None = None
 
-
     leflunomide_newmed_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
@@ -2375,7 +2396,7 @@ class LupusReviewBase(cyclophosphamide_8, methylprednisolone_8, rituximab_8, pre
     voclosporin_newmed_startdate_4: date | None = None
     voclosporin_newmed_enddate_4: date | None = None
 
-    medstopped: str|None=None
+    medstopped: str | None = None
     azathioprine_med_stopped_index: int | None = Field(
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
@@ -2434,10 +2455,12 @@ class LupusReviewBase(cyclophosphamide_8, methylprednisolone_8, rituximab_8, pre
         default=None, foreign_key="option.id", sa_type=BigInteger
     )
     voclosporin_med_stopped_enddate: date | None = None
-    review_comments:str|None = None
+    review_comments: str | None = None
 
-class LupusReview(LupusReviewBase,BigIntPK,table=True):
+
+class LupusReview(LupusReviewBase, BigIntPK, table=True):
     __tablename__ = "lupus_review"
+
 
 # --- Medication --- #
 
@@ -2476,13 +2499,13 @@ class MedicationRead(MedicationBase, HasId):
 class MpgnAssessmentBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_picture: date
-    has_oedema: bool| None = None
-    has_hypertension: bool| None = None
-    has_urticaria: bool| None = None
-    has_partial_lipodystrophy: bool| None = None
-    has_infection: bool| None = None
+    has_oedema: bool | None = None
+    has_hypertension: bool | None = None
+    has_urticaria: bool | None = None
+    has_partial_lipodystrophy: bool | None = None
+    has_infection: bool | None = None
     infection_details: str | None = None
-    has_ophthalmoscopy: bool| None = None
+    has_ophthalmoscopy: bool | None = None
     ophthalmoscopy_details: str | None = None
     mpgn_comments: str | None = None
 
@@ -2538,11 +2561,13 @@ class NephrectomyRead(NephrectomyBase, HasId):
 class NonRenalPathBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     date_of_report: date
-    organ_index: int|None = Field(default=None,foreign_key="option.id", sa_type=BigInteger
+    organ_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
     )
-    organ_other: str| None = None
-    nonrenal_pathref: str| None = None
-    histological_summary: str| None = None
+    organ_other: str | None = None
+    nonrenal_pathref: str | None = None
+    histological_summary: str | None = None
+
 
 class NonRenalPath(NonRenalPathBase, BigIntPK, table=True):
     __tablename__ = "nonrenal_path"
@@ -3671,19 +3696,19 @@ class RituximabToxicityOptionRead(RituximabToxicityOptionBase, HasId):
 
 class SaltWastingClinicalFeatureBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
-    is_normal_pregnancy: bool
+    is_normal_pregnancy: bool | None = None
     abnormal_pregnancy_text: str | None = None
-    has_neurological_problems: bool
-    has_seizures: bool
-    has_abnormal_gait: bool
-    has_deafness: bool
-    has_other_neurological_problem: bool
+    has_neurological_problems: bool | None = None
+    has_seizures: bool | None = None
+    has_abnormal_gait: bool | None = None
+    has_deafness: bool | None = None
+    has_other_neurological_problem: bool | None = None
     other_neurological_problem_text: str | None = None
-    has_joint_problems: bool
+    has_joint_problems: bool | None = None
     joint_problems_age: int | None = None
-    has_x_ray_abnormalities: bool
-    has_chondrocalcinosis: bool
-    has_other_x_ray_abnormality: bool
+    has_x_ray_abnormalities: bool | None = None
+    has_chondrocalcinosis: bool | None = None
+    has_other_x_ray_abnormality: bool | None = None
     other_x_ray_abnormality_text: str | None = None
 
 
@@ -3991,79 +4016,87 @@ class VasculitisMedsBase(SQLModel):
     prednisolone_end_date_7: date | None = None
     prednisolone_dose_7: float | None = None
     prednisolone_start_date_8: date | None = None
-    prednisolone_end_date_8:date| None = None
-    prednisolone_dose_8:float | None = None
-    dummy_title: date| None = None
-    ivig_date: date| None = None
+    prednisolone_end_date_8: date | None = None
+    prednisolone_dose_8: float | None = None
+    dummy_title: date | None = None
+    ivig_date: date | None = None
     ivig_inf_number: int | None = None
-    rituximab_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
-    rituximab_date_1:date|None=None
-    rituximab_dose_1:float|None=None
-    rituximab_date_2:date|None=None
-    rituximab_dose_2:float|None=None
-    rituximab_date_3:date|None=None
-    rituximab_dose_3:float|None=None
-    rituximab_date_4:date|None=None
-    rituximab_dose_4:float|None=None
-    rituximab_date_5:date|None=None
-    rituximab_dose_5:float|None=None
-    rituximab_date_6:date|None=None
-    rituximab_dose_6:float|None=None
-    rituximab_date_7:date|None=None
-    rituximab_dose_7:float|None=None
-    rituximab_date_8:date|None=None
-    rituximab_dose_8:float|None=None
-    obinutuzumab_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
-    obinutuzumab_date_1:date|None=None
-    obinutuzumab_dose_1:float|None=None
-    obinutuzumab_date_2:date|None=None
-    obinutuzumab_dose_2:float|None=None
-    obinutuzumab_date_3:date|None=None
-    obinutuzumab_dose_3:float|None=None
-    obinutuzumab_date_4:date|None=None
-    obinutuzumab_dose_4:float|None=None
-    obinutuzumab_date_5:date|None=None
-    obinutuzumab_dose_5:float|None=None
-    obinutuzumab_date_6:date|None=None
-    obinutuzumab_dose_6:float|None=None
-    obinutuzumab_date_7:date|None=None
-    obinutuzumab_dose_7:float|None=None
-    obinutuzumab_date_8:date|None=None
-    obinutuzumab_dose_8:float|None=None
-    cyclophosphamide_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
-    cyclophosphamide_date_1:date|None=None
-    cyclophosphamide_dose_1:float|None=None
-    cyclophosphamide_date_2:date|None=None
-    cyclophosphamide_dose_2:float|None=None
-    cyclophosphamide_date_3:date|None=None
-    cyclophosphamide_dose_3:float|None=None
-    cyclophosphamide_date_4:date|None=None
-    cyclophosphamide_dose_4:float|None=None
-    cyclophosphamide_date_5:date|None=None
-    cyclophosphamide_dose_5:float|None=None
-    cyclophosphamide_date_6:date|None=None
-    cyclophosphamide_dose_6:float|None=None
-    cyclophosphamide_date_7:date|None=None
-    cyclophosphamide_dose_7:float|None=None
-    cyclophosphamide_date_8:date|None=None
-    cyclophosphamide_dose_8:float|None=None
-    methylprednisolone_inf_sel_index: int | None = Field(default=None,foreign_key="option.id", sa_type=BigInteger)
-    methylprednisolone_date_1:date|None=None
-    methylprednisolone_dose_1:float|None=None
-    methylprednisolone_date_2:date|None=None
-    methylprednisolone_dose_2:float|None=None
-    methylprednisolone_date_3:date|None=None
-    methylprednisolone_dose_3:float|None=None
-    methylprednisolone_date_4:date|None=None
-    methylprednisolone_dose_4:float|None=None
-    methylprednisolone_date_5:date|None=None
-    methylprednisolone_dose_5:float|None=None
-    methylprednisolone_date_6:date|None=None
-    methylprednisolone_dose_6:float|None=None
-    methylprednisolone_date_7:date|None=None
-    methylprednisolone_dose_7:float|None=None
-    methylprednisolone_date_8:date|None=None
-    methylprednisolone_dose_8:float|None=None
+    rituximab_inf_sel_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    rituximab_date_1: date | None = None
+    rituximab_dose_1: float | None = None
+    rituximab_date_2: date | None = None
+    rituximab_dose_2: float | None = None
+    rituximab_date_3: date | None = None
+    rituximab_dose_3: float | None = None
+    rituximab_date_4: date | None = None
+    rituximab_dose_4: float | None = None
+    rituximab_date_5: date | None = None
+    rituximab_dose_5: float | None = None
+    rituximab_date_6: date | None = None
+    rituximab_dose_6: float | None = None
+    rituximab_date_7: date | None = None
+    rituximab_dose_7: float | None = None
+    rituximab_date_8: date | None = None
+    rituximab_dose_8: float | None = None
+    obinutuzumab_inf_sel_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    obinutuzumab_date_1: date | None = None
+    obinutuzumab_dose_1: float | None = None
+    obinutuzumab_date_2: date | None = None
+    obinutuzumab_dose_2: float | None = None
+    obinutuzumab_date_3: date | None = None
+    obinutuzumab_dose_3: float | None = None
+    obinutuzumab_date_4: date | None = None
+    obinutuzumab_dose_4: float | None = None
+    obinutuzumab_date_5: date | None = None
+    obinutuzumab_dose_5: float | None = None
+    obinutuzumab_date_6: date | None = None
+    obinutuzumab_dose_6: float | None = None
+    obinutuzumab_date_7: date | None = None
+    obinutuzumab_dose_7: float | None = None
+    obinutuzumab_date_8: date | None = None
+    obinutuzumab_dose_8: float | None = None
+    cyclophosphamide_inf_sel_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    cyclophosphamide_date_1: date | None = None
+    cyclophosphamide_dose_1: float | None = None
+    cyclophosphamide_date_2: date | None = None
+    cyclophosphamide_dose_2: float | None = None
+    cyclophosphamide_date_3: date | None = None
+    cyclophosphamide_dose_3: float | None = None
+    cyclophosphamide_date_4: date | None = None
+    cyclophosphamide_dose_4: float | None = None
+    cyclophosphamide_date_5: date | None = None
+    cyclophosphamide_dose_5: float | None = None
+    cyclophosphamide_date_6: date | None = None
+    cyclophosphamide_dose_6: float | None = None
+    cyclophosphamide_date_7: date | None = None
+    cyclophosphamide_dose_7: float | None = None
+    cyclophosphamide_date_8: date | None = None
+    cyclophosphamide_dose_8: float | None = None
+    methylprednisolone_inf_sel_index: int | None = Field(
+        default=None, foreign_key="option.id", sa_type=BigInteger
+    )
+    methylprednisolone_date_1: date | None = None
+    methylprednisolone_dose_1: float | None = None
+    methylprednisolone_date_2: date | None = None
+    methylprednisolone_dose_2: float | None = None
+    methylprednisolone_date_3: date | None = None
+    methylprednisolone_dose_3: float | None = None
+    methylprednisolone_date_4: date | None = None
+    methylprednisolone_dose_4: float | None = None
+    methylprednisolone_date_5: date | None = None
+    methylprednisolone_dose_5: float | None = None
+    methylprednisolone_date_6: date | None = None
+    methylprednisolone_dose_6: float | None = None
+    methylprednisolone_date_7: date | None = None
+    methylprednisolone_dose_7: float | None = None
+    methylprednisolone_date_8: date | None = None
+    methylprednisolone_dose_8: float | None = None
 
 
 class VasculitisMeds(VasculitisMedsBase, BigIntPK, table=True):
@@ -4129,6 +4162,7 @@ class BaselineClinicBpMeasurements(
 ):
     __tablename__ = "baseline_clinic_bp_measurements"
 
+
 class HypertensionHistoryBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     data_collection_date: date | None = None
@@ -4170,8 +4204,11 @@ class HypertensionHistory(HypertensionHistoryBase, BigIntPK, table=True):
         }
     )
 
+
 class HypertensionHistoryOptionBase(SQLModel):
-    hypertension_history_id: int = Field(foreign_key="hypertension_history.id", sa_type=BigInteger)
+    hypertension_history_id: int = Field(
+        foreign_key="hypertension_history.id", sa_type=BigInteger
+    )
     option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
 
 
@@ -4181,6 +4218,7 @@ class HypertensionHistoryOption(HypertensionHistoryOptionBase, BigIntPK, table=T
 
 class HypertensionHistoryOptionRead(HypertensionHistoryOptionBase, HasId):
     pass
+
 
 class AdditionalInvestigationsBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
