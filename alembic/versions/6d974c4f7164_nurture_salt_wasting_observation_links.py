@@ -19,7 +19,7 @@ from radar_models.radar3 import (
     CohortObservation,
     NurtureMetadata,
     ObservationCode,
-    ObservationOption,
+    ObservationOptions,
     Option,
     SaltWastingClinicalFeature,
     SampleInventory,
@@ -247,9 +247,9 @@ def copy_observation_option(session: Session) -> None:
 
     add_copies(
         session,
-        ObservationOption,
+        ObservationOptions,
         [
-            ObservationOption.model_validate(
+            ObservationOptions.model_validate(
                 {
                     "observation_id": observation_id,  # observation kept its ids
                     "option_id": existing[observation_group(observation_id), code],
@@ -334,7 +334,7 @@ def upgrade() -> None:
             SampleInventory,
             CohortObservation,
             ObservationCode,
-            ObservationOption,
+            ObservationOptions,
         ):
             model.__table__.create(bind)
 

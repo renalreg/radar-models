@@ -195,6 +195,10 @@ class Avacopan(AvacopanBase, BigIntPK, table=True):
     other_conditions: list["AvacopanOption"] = Relationship(sa_relationship_kwargs={})
 
 
+class AvacopanRead(AvacopanBase, HasId):
+    pass
+
+
 class AvacopanOptionBase(SQLModel):
     avacopan_id: int = Field(foreign_key="avacopan.id", sa_type=BigInteger)
     option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
@@ -389,6 +393,10 @@ class CakutClinicalPicture(CakutClinicalPictureBase, BigIntPK, table=True):
     )
 
 
+class CakutClinicalPictureRead(CakutClinicalPictureBase, HasId):
+    pass
+
+
 class CakutClinicalPictureOptionBase(SQLModel):
     cakut_clinical_picture_id: int = Field(
         foreign_key="cakut_clinical_picture.id", sa_type=BigInteger
@@ -398,6 +406,10 @@ class CakutClinicalPictureOptionBase(SQLModel):
 
 class CakutClinicalPictureOption(CakutClinicalPictureOptionBase, BigIntPK, table=True):
     __tablename__ = "cakut_clinical_picture_option"
+
+
+class CakutClinicalPictureOptionRead(CakutClinicalPictureOptionBase, HasId):
+    pass
 
 
 class CakutSurginterBase(SQLModel):
@@ -632,7 +644,8 @@ class CmvSummary(CmvSummaryBase, BigIntPK, table=True):
     )
 
 
-# --- CmvSummaryOption --- #
+class CmvSummaryRead(CmvSummaryBase, HasId):
+    pass
 
 
 class CmvSummaryOptionBase(SQLModel):
@@ -670,6 +683,10 @@ class CmvAntiviralResistanceBase(SQLModel):
 
 class CmvAntiviralResistance(CmvAntiviralResistanceBase, BigIntPK, table=True):
     __tablename__ = "cmv_antiviral_resistance"
+
+
+class CmvAntiviralResistanceRead(CmvAntiviralResistanceBase, HasId):
+    pass
 
 
 class CmvEpisodesBase(SQLModel):
@@ -771,6 +788,10 @@ class CmvEpisodes(CmvEpisodesBase, BigIntPK, table=True):
     )
 
 
+class CmvEpisodesRead(CmvEpisodesBase, HasId):
+    pass
+
+
 class CmvEpisodesOptionBase(SQLModel):
     cmv_episodes_id: int = Field(foreign_key="cmv_episodes.id", sa_type=BigInteger)
     option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
@@ -812,6 +833,10 @@ class CoreDataCheckBase(SQLModel):
 
 class CoreDataCheck(CoreDataCheckBase, BigIntPK, table=True):
     __tablename__ = "core_data_check"
+
+
+class CoreDataCheckRead(CoreDataCheckBase, HasId):
+    pass
 
 
 class CodeBase(SQLModel):
@@ -1246,6 +1271,10 @@ class DentAndLoweAssessment(DentAndLoweAssessmentBase, BigIntPK, table=True):
             "viewonly": True,
         }
     )
+
+
+class DentAndLoweAssessmentRead(DentAndLoweAssessmentBase, HasId):
+    pass
 
 
 # --- DentAndLoweAssessmentOption --- #
@@ -2462,6 +2491,10 @@ class LupusReview(LupusReviewBase, BigIntPK, table=True):
     __tablename__ = "lupus_review"
 
 
+class LupusReviewRead(LupusReviewBase, HasId):
+    pass
+
+
 # --- Medication --- #
 
 
@@ -2571,6 +2604,10 @@ class NonRenalPathBase(SQLModel):
 
 class NonRenalPath(NonRenalPathBase, BigIntPK, table=True):
     __tablename__ = "nonrenal_path"
+
+
+class NonRenalPathRead(NonRenalPathBase, HasId):
+    pass
 
 
 class NurtureFamilyHistoryBase(SQLModel):
@@ -2712,19 +2749,16 @@ class ObservationCodeRead(ObservationCodeBase, HasId):
     pass
 
 
-# --- ObservationOptions --- #
-
-
 class ObservationOptionsBase(SQLModel):
     observation_id: int = Field(foreign_key="observation.id", sa_type=BigInteger)
     option_id: int = Field(foreign_key="option.id", sa_type=BigInteger)
 
 
-class ObservationOption(ObservationOptionsBase, BigIntPK, table=True):
+class ObservationOptions(ObservationOptionsBase, BigIntPK, table=True):
     __tablename__ = "observation_option"
 
 
-class ObservationOptionRead(ObservationOptionsBase, HasId):
+class ObservationOptionsRead(ObservationOptionsBase, HasId):
     pass
 
 
@@ -3936,7 +3970,7 @@ class VasculitisDetail(VasculitisDetailBase, BigIntPK, table=True):
     __tablename__ = "vasculitis_detail"
 
 
-class VasculitisRead(VasculitisDetailBase, HasId):
+class VasculitisDetailRead(VasculitisDetailBase, HasId):
     pass
 
 
@@ -4103,6 +4137,10 @@ class VasculitisMeds(VasculitisMedsBase, BigIntPK, table=True):
     __tablename__ = "vasculitis_meds"
 
 
+class VasculitisMedsRead(VasculitisMedsBase, HasId):
+    pass
+
+
 class StatusChangeBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     data_checked_date: date | None = None
@@ -4129,6 +4167,10 @@ class StatusChange(StatusChangeBase, BigIntPK, table=True):
     __tablename__ = "status_change"
 
 
+class StatusChangeRead(StatusChangeBase, HasId):
+    pass
+
+
 class SecondaryDiagnosisHypertensionBase(SQLModel):
     patient_id: int = Field(foreign_key="patient.id", sa_type=BigInteger)
     secondary_diagnosis_index: int | None = Field(
@@ -4142,6 +4184,10 @@ class SecondaryDiagnosisHypertension(
     SecondaryDiagnosisHypertensionBase, BigIntPK, table=True
 ):
     __tablename__ = "secondary_diagnosis_hypertension"
+
+
+class SecondaryDiagnosisHypertensionRead(SecondaryDiagnosisHypertensionBase, HasId):
+    pass
 
 
 class BaselineClinicBpMeasurementsBase(SQLModel):
@@ -4161,6 +4207,10 @@ class BaselineClinicBpMeasurements(
     BaselineClinicBpMeasurementsBase, BigIntPK, table=True
 ):
     __tablename__ = "baseline_clinic_bp_measurements"
+
+
+class BaselineClinicBpMeasurementsRead(BaselineClinicBpMeasurementsBase, HasId):
+    pass
 
 
 class HypertensionHistoryBase(SQLModel):
@@ -4205,6 +4255,10 @@ class HypertensionHistory(HypertensionHistoryBase, BigIntPK, table=True):
     )
 
 
+class HypertensionHistoryRead(HypertensionHistoryBase, HasId):
+    pass
+
+
 class HypertensionHistoryOptionBase(SQLModel):
     hypertension_history_id: int = Field(
         foreign_key="hypertension_history.id", sa_type=BigInteger
@@ -4241,3 +4295,7 @@ class AdditionalInvestigationsBase(SQLModel):
 
 class AdditionalInvestigations(AdditionalInvestigationsBase, BigIntPK, table=True):
     __tablename__ = "additional_investigations"
+
+
+class AdditionalInvestigationsRead(AdditionalInvestigationsBase, HasId):
+    pass
